@@ -3,6 +3,7 @@ variables:
 
 stages:
   - build
+  - quality
 
 ### RULES
 .release_rules:
@@ -58,3 +59,14 @@ build-release:
     - .release_rules
   variables:
     CONFIGURATION: Release
+
+### QUALITY
+format-check:
+  extends:
+    - .debug_rules
+  stage: quality
+  image: mcr.microsoft.com/dotnet/sdk:8.0
+  tags:
+    - shared-fi
+  script:
+    - dotnet format --verify-no-changes
