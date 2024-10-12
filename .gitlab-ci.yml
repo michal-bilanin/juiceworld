@@ -35,11 +35,6 @@ stages:
       when: manual
       allow_failure: true
 
-# Caching does not work with the shared runner, still a good practice
-cache:
-  paths:
-    - .nuget/packages/
-
 ### BUILD
 .build-template:
   stage: build
