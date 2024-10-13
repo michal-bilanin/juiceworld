@@ -12,5 +12,8 @@ Create an electronic commerce platform for the company named "JuiceWorld" with t
 
 Moreover, it is requested that the code be made available for retrieval after the completion of the "Milestone 2" phase, enabling deployment on our test server. The code should be obtained exclusively from the master branch, ensuring its reliability and stability. Additionally, we expect the application to be optimized for efficient performance. To achieve this, we require the implementation of a cache mechanism that refreshes every 10 minutes to enhance response times and overall system efficiency.
 
+## Use Case Diagram
+The use case diagram can be found on the project's wiki here: [https://gitlab.fi.muni.cz/xbilanin/juiceworld/-/wikis/Use-Case-Diagram](https://gitlab.fi.muni.cz/xbilanin/juiceworld/-/wikis/Use-Case-Diagram)
+
 ## Entity Relationship Diagram
 The entity relationship diagram can be found on the project's wiki here: [https://gitlab.fi.muni.cz/xbilanin/juiceworld/-/wikis/Entity-Relationship-Diagram](https://gitlab.fi.muni.cz/xbilanin/juiceworld/-/wikis/Entity-Relationship-Diagram)
