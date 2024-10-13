@@ -1,8 +1,12 @@
-﻿using System;
+﻿using JuiceWorld.Entities;
+using System;
 
-public class Class1
+public class Review: BaseEntity
 {
-	public Class1()
-	{
-	}
+    public int Rating { get; set; }
+    public string Body { get; set; }
+    public int ProductId { get; set; }
+    public int UserId { get; set; }
+    public Product Product { get; set; }
+    public User User { get; set; }
 }

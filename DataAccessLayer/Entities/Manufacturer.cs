@@ -1,8 +1,8 @@
-﻿using System;
+﻿using JuiceWorld.Entities;
+using System;
 
-public class Class1
+public class Manufacturer: BaseEntity
 {
-	public Class1()
-	{
-	}
+    public string Name { get; set; }
+    public virtual IEnumerable<Product> Products { get; set; }
 }

@@ -1,8 +1,10 @@
-﻿using System;
+﻿using JuiceWorld.Entities;
+using System;
 
-public class Class1
+public class WishListItem: BaseEntity
 {
-	public Class1()
-	{
-	}
+    public int ProductId { get; set; }
+    public int UserId { get; set; }
+    public Product Product { get; set; }
+    public User User { get; set; }
 }

@@ -1,8 +1,17 @@
-﻿using System;
+﻿using JuiceWorld.Entities;
+using System;
 
-public class Class1
+public class Product: BaseEntity
 {
-	public Class1()
-	{
-	}
+    public string Name { get; set; }
+    public double Price { get; set; }
+    public string ImageUrl { get; set; }
+    public string Description { get; set; }
+    public string Category { get; set; }
+    public string UsageType { get; set; }
+    public int ManufacturerId { get; set; }
+    public Manufacturer Manufacturer { get; set; }
+    public virtual IEnumerable<Review> Reviews { get; set; }
+    public virtual IEnumerable<CartItem> CartItems { get; set; }
+    public virtual IEnumerable<WishListItem> WishListItems { get; set; }
 }
