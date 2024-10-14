@@ -9,8 +9,8 @@ public class Order: BaseEntity
     public string Arrival { get; set; }
     public string PaymentMethodType { get; set; }
     public int UserId { get; set; }
-    public User User { get; set; }
+    public virtual User User { get; set; }
     public int AddressId { get; set; }
-    public Address Address { get; set; }
+    public virtual Address Address { get; set; }
     public virtual IEnumerable<CartItem> CartItems { get; set; }
 }

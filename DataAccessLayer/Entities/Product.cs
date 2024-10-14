@@ -10,7 +10,7 @@ public class Product: BaseEntity
     public string Category { get; set; }
     public string UsageType { get; set; }
     public int ManufacturerId { get; set; }
-    public Manufacturer Manufacturer { get; set; }
+    public virtual Manufacturer Manufacturer { get; set; }
     public virtual IEnumerable<Review> Reviews { get; set; }
     public virtual IEnumerable<CartItem> CartItems { get; set; }
     public virtual IEnumerable<WishListItem> WishListItems { get; set; }

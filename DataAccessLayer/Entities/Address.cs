@@ -11,6 +11,6 @@ public class Address: BaseEntity
     public string Country { get; set; }
     public string Type{ get; set; }
     public int UserId { get; set; }
-    public User User { get; set; }
+    public virtual User User { get; set; }
     public virtual IEnumerable<Order> Orders { get; set; }
 }
