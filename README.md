@@ -17,3 +17,40 @@ The use case diagram can be found on the project's wiki here: [https://gitlab.fi
 
 ## Entity Relationship Diagram
 The entity relationship diagram can be found on the project's wiki here: [https://gitlab.fi.muni.cz/xbilanin/juiceworld/-/wikis/Entity-Relationship-Diagram](https://gitlab.fi.muni.cz/xbilanin/juiceworld/-/wikis/Entity-Relationship-Diagram)
+
+## Setup For Development
+The development environment could be set up either natively (having .NET installed) on the host machine or in a Dev Container.
+The Dev Container can be launched by running:
+```bash
+docker compose run juiceworld-dev
+```
+
+1. Clone the repository
+2. Install the required NuGet packages by running the following command in the project's root directory:
+```bash
+dotnet restore
+```
+3. Set up your `.env` file in the project's root directory. You can use the provided `.env.example` file as a template.
+4. If you're developing in a Dev Container, the database should start automatically. In case it doesn't, or you're not
+   developing in the Dev Container, run the database container by executing the following command in the project's root directory:
+```bash
+docker compose up postgres
+```
+5. After that, you can select one of the `*-development` launch profiles and run the application:
+```bash
+dotnet run --project WebApi --launch-profile <launch-profile>
+```
+
+### Running Migrations
+To run the migrations, it is required to set the `DB_CONNECTION_STRING` environment variable before running the migrations.
+Make sure to also set the correct project and startup project. The full command could look like this:
+```bash
+DB_CONNECTION_STRING="Host=localhost;Port=5432;Database=juiceworld;Username=postgres;Password=postgres" dotnet ef migrations add <message> --project DataAccessLayer --startup-project WebApi
+```
+Make sure to customise the connection string and the migration message to your needs.
+
+### Updating The Database
+The database update follows the same principle as running the migrations. The full command could look like this:
+```bash
+DB_CONNECTION_STRING="Host=localhost;Port=5432;Database=juiceworld;Username=postgres;Password=postgres" dotnet ef database update --project DataAccessLayer --startup-project WebApi
+```
