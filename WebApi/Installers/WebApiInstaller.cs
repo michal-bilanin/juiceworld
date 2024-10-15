@@ -1,11 +1,10 @@
-using JuiceWorld.Entities;
 using Microsoft.OpenApi.Models;
 
 namespace WebApi.Installers;
 
 public static class WebApiInstaller
 {
-    public static IServiceCollection WebApiInstall(this IServiceCollection services, string secret)
+    public static IServiceCollection WebApiInstall(this IServiceCollection services)
     {
         services.AddControllers();
         services.AddEndpointsApiExplorer();

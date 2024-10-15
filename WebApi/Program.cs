@@ -4,7 +4,7 @@ using WebApi.Installers;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.WebApiInstall("secret");
+builder.Services.WebApiInstall();
 
 builder.Services.AddDbContextFactory<JuiceWorldDbContext>(options =>
 {
