@@ -14,4 +14,5 @@ public class Product : BaseEntity
     public virtual IEnumerable<Review> Reviews { get; set; }
     public virtual IEnumerable<CartItem> CartItems { get; set; }
     public virtual IEnumerable<WishListItem> WishListItems { get; set; }
+    public virtual IEnumerable<OrderProduct> OrdersProducts { get; set; }
 }
