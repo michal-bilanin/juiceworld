@@ -1,13 +1,10 @@
 using JuiceWorld.Data;
 using Microsoft.EntityFrameworkCore;
+using WebApi.Installers;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddControllers();
-
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.WebApiInstall("secret");
 
 builder.Services.AddDbContextFactory<JuiceWorldDbContext>(options =>
 {
@@ -51,6 +48,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
