@@ -1,7 +1,7 @@
 ﻿using JuiceWorld.Entities;
 using System;
 
-public class Order: BaseEntity
+public class Order : BaseEntity
 {
     public string DeliveryType { get; set; }
     public string Status { get; set; }

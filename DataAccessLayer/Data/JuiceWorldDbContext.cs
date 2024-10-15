@@ -41,7 +41,7 @@ public class JuiceWorldDbContext(DbContextOptions<JuiceWorldDbContext> options)
             .WithMany(u => u.CartItems)
             .HasForeignKey(ci => ci.UserId)
             .OnDelete(DeleteBehavior.Cascade); // Cascade delete CartItems if User is deleted
-        
+
         // CartItem to Order (Optional Many-to-One)
         modelBuilder.Entity<CartItem>()
             .HasOne(ci => ci.Order)

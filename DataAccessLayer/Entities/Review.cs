@@ -1,7 +1,7 @@
 ﻿using JuiceWorld.Entities;
 using System;
 
-public class Review: BaseEntity
+public class Review : BaseEntity
 {
     public int Rating { get; set; }
     public string Body { get; set; }

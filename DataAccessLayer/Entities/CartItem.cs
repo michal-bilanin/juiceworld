@@ -1,7 +1,7 @@
 ﻿using JuiceWorld.Entities;
 using System;
 
-public class CartItem: BaseEntity
+public class CartItem : BaseEntity
 {
     public int Quantity { get; set; }
     public int ProductId { get; set; }
