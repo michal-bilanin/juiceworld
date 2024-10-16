@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text.Json;
 using JuiceWorld.Data;
 using Microsoft.AspNetCore.Diagnostics;
@@ -16,7 +17,7 @@ builder.Services.AddDbContextFactory<JuiceWorldDbContext>(options =>
 
     if (connectionString == null)
     {
-        System.Diagnostics.Debug.Fail(
+        Debug.Fail(
             $"Connection string is null, make sure it is specified " +
             $"in the environment variable: {connectionStringKey}");
         return;
@@ -24,7 +25,7 @@ builder.Services.AddDbContextFactory<JuiceWorldDbContext>(options =>
 
     options
         .UseNpgsql(connectionString)
-        .LogTo(s => System.Diagnostics.Debug.WriteLine(s))
+        .LogTo(s => Debug.WriteLine(s))
         .UseLazyLoadingProxies();
 });
 
@@ -34,7 +35,7 @@ const string apiPortKey = "API_PORT";
 var apiPort = Environment.GetEnvironmentVariable(apiPortKey);
 if (apiPort == null)
 {
-    System.Diagnostics.Debug.Fail(
+    Debug.Fail(
         $"API port is null, make sure it is specified " +
         $"in the environment variable: {apiPortKey}");
     return;
