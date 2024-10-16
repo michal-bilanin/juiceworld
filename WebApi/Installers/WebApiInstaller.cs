@@ -6,6 +6,7 @@ public static class WebApiInstaller
 {
     public static IServiceCollection WebApiInstall(this IServiceCollection services)
     {
+        services.AddLogging();
         services.AddControllers();
         services.AddEndpointsApiExplorer();
 
