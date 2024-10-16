@@ -1,6 +1,6 @@
 ﻿namespace JuiceWorld.Entities;
 
-public class OrderProduct: BaseEntity
+public class OrderProduct : BaseEntity
 {
     public int Quantity { get; set; }
     public int OrderId { get; set; }

@@ -18,7 +18,7 @@ public class JuiceWorldDbContext(DbContextOptions<JuiceWorldDbContext> options)
     public DbSet<Address> Addresses { get; set; }
     public DbSet<Order> Orders { get; set; }
     public DbSet<OrderProduct> OrderProducts { get; set; }
-    
+
     public override int SaveChanges()
     {
         foreach (var entry in ChangeTracker.Entries())
@@ -33,7 +33,7 @@ public class JuiceWorldDbContext(DbContextOptions<JuiceWorldDbContext> options)
 
         return base.SaveChanges();
     }
-    
+
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         foreach (var entry in ChangeTracker.Entries())
@@ -52,89 +52,89 @@ public class JuiceWorldDbContext(DbContextOptions<JuiceWorldDbContext> options)
     {
         modelBuilder.Seed();
 
-    // Product -> Manufacturer
-    modelBuilder.Entity<Product>()
-        .HasOne(p => p.Manufacturer)
-        .WithMany()
-        .HasForeignKey(p => p.ManufacturerId)
-        .OnDelete(DeleteBehavior.Cascade);
+        // Product -> Manufacturer
+        modelBuilder.Entity<Product>()
+            .HasOne(p => p.Manufacturer)
+            .WithMany()
+            .HasForeignKey(p => p.ManufacturerId)
+            .OnDelete(DeleteBehavior.Cascade);
 
-    // CartItem -> Product
-    modelBuilder.Entity<CartItem>()
-        .HasOne(ci => ci.Product)
-        .WithMany()
-        .HasForeignKey(ci => ci.ProductId)
-        .OnDelete(DeleteBehavior.Cascade);
+        // CartItem -> Product
+        modelBuilder.Entity<CartItem>()
+            .HasOne(ci => ci.Product)
+            .WithMany()
+            .HasForeignKey(ci => ci.ProductId)
+            .OnDelete(DeleteBehavior.Cascade);
 
-    // CartItem -> User
-    modelBuilder.Entity<CartItem>()
-        .HasOne(ci => ci.User)
-        .WithMany()
-        .HasForeignKey(ci => ci.UserId)
-        .OnDelete(DeleteBehavior.Cascade);
+        // CartItem -> User
+        modelBuilder.Entity<CartItem>()
+            .HasOne(ci => ci.User)
+            .WithMany()
+            .HasForeignKey(ci => ci.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
 
-    // Review -> Product
-    modelBuilder.Entity<Review>()
-        .HasOne(r => r.Product)
-        .WithMany()
-        .HasForeignKey(r => r.ProductId)
-        .OnDelete(DeleteBehavior.Cascade);
+        // Review -> Product
+        modelBuilder.Entity<Review>()
+            .HasOne(r => r.Product)
+            .WithMany()
+            .HasForeignKey(r => r.ProductId)
+            .OnDelete(DeleteBehavior.Cascade);
 
-    // Review -> User
-    modelBuilder.Entity<Review>()
-        .HasOne(r => r.User)
-        .WithMany()
-        .HasForeignKey(r => r.UserId)
-        .OnDelete(DeleteBehavior.Cascade);
+        // Review -> User
+        modelBuilder.Entity<Review>()
+            .HasOne(r => r.User)
+            .WithMany()
+            .HasForeignKey(r => r.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
 
-    // WishListItem -> Product
-    modelBuilder.Entity<WishListItem>()
-        .HasOne(wl => wl.Product)
-        .WithMany()
-        .HasForeignKey(wl => wl.ProductId)
-        .OnDelete(DeleteBehavior.Cascade);
+        // WishListItem -> Product
+        modelBuilder.Entity<WishListItem>()
+            .HasOne(wl => wl.Product)
+            .WithMany()
+            .HasForeignKey(wl => wl.ProductId)
+            .OnDelete(DeleteBehavior.Cascade);
 
-    // WishListItem -> User
-    modelBuilder.Entity<WishListItem>()
-        .HasOne(wl => wl.User)
-        .WithMany()
-        .HasForeignKey(wl => wl.UserId)
-        .OnDelete(DeleteBehavior.Cascade);
+        // WishListItem -> User
+        modelBuilder.Entity<WishListItem>()
+            .HasOne(wl => wl.User)
+            .WithMany()
+            .HasForeignKey(wl => wl.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
 
-    // Order -> User
-    modelBuilder.Entity<Order>()
-        .HasOne(o => o.User)
-        .WithMany()
-        .HasForeignKey(o => o.UserId)
-        .OnDelete(DeleteBehavior.Cascade);
+        // Order -> User
+        modelBuilder.Entity<Order>()
+            .HasOne(o => o.User)
+            .WithMany()
+            .HasForeignKey(o => o.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
 
-    // Order -> Address
-    modelBuilder.Entity<Order>()
-        .HasOne(o => o.Address)
-        .WithMany()
-        .HasForeignKey(o => o.AddressId)
-        .OnDelete(DeleteBehavior.Cascade);
+        // Order -> Address
+        modelBuilder.Entity<Order>()
+            .HasOne(o => o.Address)
+            .WithMany()
+            .HasForeignKey(o => o.AddressId)
+            .OnDelete(DeleteBehavior.Cascade);
 
-    // OrderProduct -> Product
-    modelBuilder.Entity<OrderProduct>()
-        .HasOne(op => op.Product)
-        .WithMany()
-        .HasForeignKey(op => op.ProductId)
-        .OnDelete(DeleteBehavior.Cascade);
+        // OrderProduct -> Product
+        modelBuilder.Entity<OrderProduct>()
+            .HasOne(op => op.Product)
+            .WithMany()
+            .HasForeignKey(op => op.ProductId)
+            .OnDelete(DeleteBehavior.Cascade);
 
-    // OrderProduct -> Order
-    modelBuilder.Entity<OrderProduct>()
-        .HasOne(op => op.Order)
-        .WithMany()
-        .HasForeignKey(op => op.OrderId)
-        .OnDelete(DeleteBehavior.Cascade);
+        // OrderProduct -> Order
+        modelBuilder.Entity<OrderProduct>()
+            .HasOne(op => op.Order)
+            .WithMany()
+            .HasForeignKey(op => op.OrderId)
+            .OnDelete(DeleteBehavior.Cascade);
 
-    // Address -> User
-    modelBuilder.Entity<Address>()
-        .HasOne(a => a.User)
-        .WithMany()
-        .HasForeignKey(a => a.UserId)
-        .OnDelete(DeleteBehavior.Cascade);
+        // Address -> User
+        modelBuilder.Entity<Address>()
+            .HasOne(a => a.User)
+            .WithMany()
+            .HasForeignKey(a => a.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
         base.OnModelCreating(modelBuilder);
     }
 }
