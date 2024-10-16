@@ -1,4 +1,6 @@
+using System.Text.Json;
 using JuiceWorld.Data;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using WebApi.Installers;
 using WebApi.Middleware;
@@ -47,13 +49,29 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseMiddleware<RequestLoggingMiddleware>();
+app.UseExceptionHandler(errorApp =>
+{
+    errorApp.Run(async context =>
+    {
+        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        context.Response.ContentType = "application/json";
 
+        var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
+        if (exceptionHandlerPathFeature != null)
+        {
+            var exception = exceptionHandlerPathFeature.Error;
+
+            var result = JsonSerializer.Serialize(new { error = exception.Message });
+            await context.Response.WriteAsync(result);
+        }
+    });
+});
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers();
+app.UseMiddleware<RequestLoggingMiddleware>();
 
+app.MapControllers();
 app.Run();
