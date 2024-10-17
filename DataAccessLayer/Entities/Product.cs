@@ -1,0 +1,18 @@
+﻿using JuiceWorld.Entities;
+using System;
+
+public class Product : BaseEntity
+{
+    public string Name { get; set; }
+    public double Price { get; set; }
+    public string ImageUrl { get; set; }
+    public string Description { get; set; }
+    public string Category { get; set; }
+    public string UsageType { get; set; }
+    public int ManufacturerId { get; set; }
+    public virtual Manufacturer Manufacturer { get; set; }
+    public virtual IEnumerable<Review> Reviews { get; set; }
+    public virtual IEnumerable<CartItem> CartItems { get; set; }
+    public virtual IEnumerable<WishListItem> WishListItems { get; set; }
+    public virtual IEnumerable<OrderProduct> OrdersProducts { get; set; }
+}
