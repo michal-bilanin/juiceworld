@@ -27,7 +27,7 @@ public class JuiceWorldDbContext(DbContextOptions<JuiceWorldDbContext> options)
             {
                 // Change the state from Deleted to Modified, and set the DeletedAt time
                 entry.State = EntityState.Modified;
-                entry.CurrentValues["DeletedAt"] = DateTime.Now;
+                entry.CurrentValues[nameof(BaseEntity.DeletedAt)] = DateTime.Now;
             }
         }
 
