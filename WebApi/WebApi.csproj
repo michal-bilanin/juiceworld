@@ -15,15 +15,12 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+        <PackageReference Include="NSwag.Annotations" Version="14.1.0"/>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\DataAccessLayer\DataAccessLayer.csproj"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <Folder Include="Controllers\"/>
     </ItemGroup>
 
 </Project>

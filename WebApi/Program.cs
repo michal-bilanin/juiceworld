@@ -1,13 +1,14 @@
+using System.Diagnostics;
+using System.Text.Json;
 using JuiceWorld.Data;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
+using WebApi.Installers;
+using WebApi.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddControllers();
-
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.WebApiInstall();
 
 builder.Services.AddDbContextFactory<JuiceWorldDbContext>(options =>
 {
@@ -16,7 +17,7 @@ builder.Services.AddDbContextFactory<JuiceWorldDbContext>(options =>
 
     if (connectionString == null)
     {
-        System.Diagnostics.Debug.Fail(
+        Debug.Fail(
             $"Connection string is null, make sure it is specified " +
             $"in the environment variable: {connectionStringKey}");
         return;
@@ -24,7 +25,7 @@ builder.Services.AddDbContextFactory<JuiceWorldDbContext>(options =>
 
     options
         .UseNpgsql(connectionString)
-        .LogTo(s => System.Diagnostics.Debug.WriteLine(s))
+        .LogTo(s => Debug.WriteLine(s))
         .UseLazyLoadingProxies();
 });
 
@@ -34,7 +35,7 @@ const string apiPortKey = "API_PORT";
 var apiPort = Environment.GetEnvironmentVariable(apiPortKey);
 if (apiPort == null)
 {
-    System.Diagnostics.Debug.Fail(
+    Debug.Fail(
         $"API port is null, make sure it is specified " +
         $"in the environment variable: {apiPortKey}");
     return;
@@ -49,10 +50,29 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseExceptionHandler(errorApp =>
+{
+    errorApp.Run(async context =>
+    {
+        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        context.Response.ContentType = "application/json";
+
+        var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
+        if (exceptionHandlerPathFeature != null)
+        {
+            var exception = exceptionHandlerPathFeature.Error;
+
+            var result = JsonSerializer.Serialize(new { error = exception.Message });
+            await context.Response.WriteAsync(result);
+        }
+    });
+});
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers();
+app.UseMiddleware<RequestLoggingMiddleware>();
 
+app.MapControllers();
 app.Run();
