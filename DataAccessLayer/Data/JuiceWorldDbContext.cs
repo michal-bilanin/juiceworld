@@ -50,8 +50,6 @@ public class JuiceWorldDbContext(DbContextOptions<JuiceWorldDbContext> options)
     }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Seed();
-
         // Product -> Manufacturer
         modelBuilder.Entity<Product>()
             .HasOne(p => p.Manufacturer)
@@ -135,6 +133,9 @@ public class JuiceWorldDbContext(DbContextOptions<JuiceWorldDbContext> options)
             .WithMany()
             .HasForeignKey(a => a.UserId)
             .OnDelete(DeleteBehavior.Cascade);
+
         base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Seed();
     }
 }
