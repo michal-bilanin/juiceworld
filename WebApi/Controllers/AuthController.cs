@@ -34,11 +34,6 @@ public class AuthController : ControllerBase
             return NotFound();
         }
 
-        // if (user.PasswordHash != login.Password)
-        // {
-        //     return Unauthorized();
-        // }
-
         return _authService.Create(user);
     }
 }

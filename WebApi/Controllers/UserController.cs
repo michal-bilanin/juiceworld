@@ -23,7 +23,6 @@ public class UserController : ControllerBase
     [OpenApiOperation(ApiBaseName + nameof(CreateUser))]
     public async Task<ActionResult<bool>> CreateUser(LoginModel userLogin)
     {
-        // var user = _dbContext.Users.Add(userLogin);
         var newUser = new User
         {
             UserName = userLogin.UserName,
