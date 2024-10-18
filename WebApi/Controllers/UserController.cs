@@ -13,7 +13,7 @@ public class UserController : ControllerBase
 {
     private const string ApiBaseName = "User";
     private readonly JuiceWorldDbContext _dbContext;
-    
+
     public UserController(JuiceWorldDbContext dbContext)
     {
         _dbContext = dbContext;

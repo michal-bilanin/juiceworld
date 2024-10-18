@@ -17,7 +17,7 @@ public static class WebApiInstaller
         services.AddControllers();
         services.AddEndpointsApiExplorer();
         services.AddTransient<AuthService>();
-        
+
         services.AddSwaggerGen(opt =>
         {
             opt.SwaggerDoc("v1", new OpenApiInfo { Title = "MyAPI", Version = "v1" });
@@ -46,12 +46,12 @@ public static class WebApiInstaller
                 }
             });
         });
-        
+
         var secret = Environment.GetEnvironmentVariable("JWT_SECRET");
         if (secret == null)
             throw new Exception($"JWT secret is null, make sure it is specified " +
                                 $"in the environment variable: JWT_SECRET");
-        
+
         services.AddAuthentication(x =>
         {
             x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -60,13 +60,13 @@ public static class WebApiInstaller
         {
             x.TokenValidationParameters = new TokenValidationParameters
             {
-        
+
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret)),
                 ValidateIssuer = false,
                 ValidateAudience = false
             };
         });
-        
+
         services.AddDbContextFactory<JuiceWorldDbContext>(options =>
         {
             const string connectionStringKey = "DB_CONNECTION_STRING";
@@ -85,7 +85,7 @@ public static class WebApiInstaller
                 .LogTo(s => Debug.WriteLine(s))
                 .UseLazyLoadingProxies();
         });
-    
+
         return services;
     }
 }

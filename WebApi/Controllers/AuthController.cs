@@ -14,15 +14,15 @@ public class AuthController : ControllerBase
 {
     private const string ApiBaseName = "CartItem";
     private readonly AuthService _authService;
-    
+
     private readonly JuiceWorldDbContext _dbContext;
-    
-    public AuthController(JuiceWorldDbContext dbContext,  AuthService authService)
+
+    public AuthController(JuiceWorldDbContext dbContext, AuthService authService)
     {
-         _dbContext = dbContext;
-         _authService = authService;
+        _dbContext = dbContext;
+        _authService = authService;
     }
-    
+
     [HttpPost]
     [OpenApiOperation(ApiBaseName + nameof(Login))]
     [AllowAnonymous]
@@ -33,12 +33,12 @@ public class AuthController : ControllerBase
         {
             return NotFound();
         }
-        
+
         // if (user.PasswordHash != login.Password)
         // {
         //     return Unauthorized();
         // }
-        
+
         return _authService.Create(user);
     }
 }
