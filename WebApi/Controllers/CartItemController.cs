@@ -6,7 +6,7 @@ namespace WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "test")]
+[Authorize(Roles = "user")]
 public class CartItemController : ControllerBase
 {
     private const string ApiBaseName = "CartItem";

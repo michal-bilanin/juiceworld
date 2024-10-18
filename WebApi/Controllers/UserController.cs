@@ -8,7 +8,7 @@ namespace WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-// [Authorize(Roles = "Admin")]
+[Authorize(Roles = "user")]
 public class UserController : ControllerBase
 {
     private const string ApiBaseName = "User";
