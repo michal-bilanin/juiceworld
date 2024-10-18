@@ -1,4 +1,4 @@
-namespace JuiceWorld.Constants;
+namespace JuiceWorld.Enums;
 
 public enum OrderStatus
 {

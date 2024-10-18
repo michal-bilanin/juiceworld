@@ -1,4 +1,4 @@
-﻿using JuiceWorld.Constants;
+﻿using JuiceWorld.Enums;
 
 namespace JuiceWorld.Entities;
 

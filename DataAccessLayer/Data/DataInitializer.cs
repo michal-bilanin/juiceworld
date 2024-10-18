@@ -1,5 +1,5 @@
-﻿using JuiceWorld.Constants;
-using JuiceWorld.Entities;
+﻿using JuiceWorld.Entities;
+using JuiceWorld.Enums;
 using JuiceWorld.Utils;
 using Microsoft.EntityFrameworkCore;
 
