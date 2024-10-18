@@ -1,9 +1,7 @@
-﻿using System.Security.Cryptography;
-using JuiceWorld.Constants;
+﻿using JuiceWorld.Constants;
 using JuiceWorld.Entities;
 using JuiceWorld.Utils;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 
 namespace JuiceWorld.Data;
 
@@ -33,8 +31,8 @@ public static class DataInitializer
 
     private static List<User> _users =
     [
-        CreateUser(1, "user@example.com", "user", "password", UserRole.Customer),
-        CreateUser(2, "admin@example.com", "admin", "password", UserRole.Admin)
+        CreateUser(1, "user@example.com", "user", "password", "I am a steroid user!", UserRole.Customer),
+        CreateUser(2, "admin@example.com", "admin", "password", "I am a steroid Admin!", UserRole.Admin)
     ];
 
     private static List<Address> _addresses =
@@ -84,7 +82,7 @@ public static class DataInitializer
         new() { Id = 1, OrderId = 1, ProductId = 9, Quantity = 5 },
         new() { Id = 2, OrderId = 1, ProductId = 3, Quantity = 7 },
         new() { Id = 3, OrderId = 2, ProductId = 8, Quantity = 12 },
-        new() { Id = 3, OrderId = 2, ProductId = 1, Quantity = 9 },
+        new() { Id = 4, OrderId = 2, ProductId = 1, Quantity = 9 },
     ];
 
     private static List<Review> _reviews =
@@ -101,13 +99,14 @@ public static class DataInitializer
         new() { Id = 3, ProductId = 3, UserId = 2 },
     ];
 
-    private static User CreateUser(int id, string email, string userName, string password, UserRole role)
+    private static User CreateUser(int id, string email, string userName, string password, string bio, UserRole role)
     {
         var user = new User
         {
             Id = id,
             Email = email,
             UserName = userName,
+            Bio = bio,
             UserRole = role,
             PasswordSalt = AuthUtils.GenerateSalt(),
             PasswordHashRounds = 10
