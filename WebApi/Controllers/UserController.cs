@@ -1,19 +1,43 @@
+using JuiceWorld.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
+using WebApi.Models;
 
 namespace WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+// [Authorize(Roles = "Admin")]
 public class UserController : ControllerBase
 {
     private const string ApiBaseName = "User";
+    private readonly JuiceWorldDbContext _dbContext;
+    
+    public UserController(JuiceWorldDbContext dbContext)
+    {
+        _dbContext = dbContext;
+    }
 
     [HttpPost]
     [OpenApiOperation(ApiBaseName + nameof(CreateUser))]
-    public async Task<ActionResult<bool>> CreateUser()
+    public async Task<ActionResult<bool>> CreateUser(LoginModel userLogin)
     {
-        return Problem();
+        // var user = _dbContext.Users.Add(userLogin);
+        var newUser = new User
+        {
+            UserName = userLogin.UserName,
+            PasswordHash = userLogin.Password,
+            Email = "test",
+            PasswordHashRounds = "test",
+            PasswordSalt = "test",
+            UserRole = "test",
+            Bio = "test"
+        };
+        _dbContext.Users.Add(newUser);
+        await _dbContext.SaveChangesAsync();
+        var dbUser = await _dbContext.Users.FindAsync(newUser.Id);
+        return Ok(dbUser);
     }
 
     [HttpGet]

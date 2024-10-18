@@ -14,7 +14,8 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "API_PORT": "6969",
-        "DB_CONNECTION_STRING": "Host=localhost;Port=5432;Database=juiceworld;Username=postgres;Password=postgres"
+        "DB_CONNECTION_STRING": "Host=localhost;Port=5432;Database=juiceworld;Username=johndoe;Password=randompassword",
+        "JWT_SECRET": "bAafd@A7d9#@F4*V!LHZs#ebKQrkE6pad2f3kj34c3dXy@"
       },
       "dotnetRunMessages": true
     },
@@ -32,7 +33,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "API_PORT": "6969",
-        "DB_CONNECTION_STRING": "Host=localhost;Port=5432;Database=juiceworld;Username=postgres;Password=postgres"
+        "DB_CONNECTION_STRING": "Host=localhost;Port=5432;Database=juiceworld;Username=johndoe;Password=postgrandompasswordres"
       },
       "dotnetRunMessages": true
     },
@@ -49,7 +50,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "API_PORT": "6969",
-        "DB_CONNECTION_STRING": "Host=localhost;Port=5432;Database=juiceworld;Username=postgres;Password=postgres"
+        "DB_CONNECTION_STRING": "Host=localhost;Port=5432;Database=juiceworld;Username=johndoe;Password=posrandompasswordtgres"
       }
     }
   },
