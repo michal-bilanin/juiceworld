@@ -1,5 +1,4 @@
-﻿using JuiceWorld.Entities;
-using System;
+﻿namespace JuiceWorld.Entities;
 
 public class WishListItem : BaseEntity
 {
