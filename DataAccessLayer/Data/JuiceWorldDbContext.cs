@@ -55,6 +55,14 @@ public class JuiceWorldDbContext(DbContextOptions<JuiceWorldDbContext> options)
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Product>()
+            .Property(p => p.Category)
+            .HasConversion<string>();
+
+        modelBuilder.Entity<Product>()
+            .Property(p => p.UsageType)
+            .HasConversion<string>();
+
         // Product -> Manufacturer
         modelBuilder.Entity<Product>()
             .HasOne(p => p.Manufacturer)
@@ -111,6 +119,18 @@ public class JuiceWorldDbContext(DbContextOptions<JuiceWorldDbContext> options)
             .HasForeignKey(o => o.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        modelBuilder.Entity<Order>()
+            .Property(o => o.Status)
+            .HasConversion<string>();
+
+        modelBuilder.Entity<Order>()
+            .Property(o => o.DeliveryType)
+            .HasConversion<string>();
+
+        modelBuilder.Entity<Order>()
+            .Property(o => o.PaymentMethodType)
+            .HasConversion<string>();
+
         // Order -> Address
         modelBuilder.Entity<Order>()
             .HasOne(o => o.Address)
@@ -132,12 +152,20 @@ public class JuiceWorldDbContext(DbContextOptions<JuiceWorldDbContext> options)
             .HasForeignKey(op => op.OrderId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        modelBuilder.Entity<Address>()
+            .Property(a => a.Type)
+            .HasConversion<string>();
+
         // Address -> User
         modelBuilder.Entity<Address>()
             .HasOne(a => a.User)
             .WithMany(user => user.Addresses)
             .HasForeignKey(a => a.UserId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<User>()
+            .Property(u => u.UserRole)
+            .HasConversion<string>();
 
         base.OnModelCreating(modelBuilder);
 
