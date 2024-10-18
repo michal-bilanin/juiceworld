@@ -31,7 +31,7 @@ public class UserController : ControllerBase
             Email = "test",
             PasswordHashRounds = "test",
             PasswordSalt = "test",
-            UserRole = "test",
+            UserRole = "user",
             Bio = "test"
         };
         _dbContext.Users.Add(newUser);
