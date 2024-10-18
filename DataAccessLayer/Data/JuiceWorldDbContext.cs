@@ -23,12 +23,14 @@ public class JuiceWorldDbContext(DbContextOptions<JuiceWorldDbContext> options)
     {
         foreach (var entry in ChangeTracker.Entries())
         {
-            if (entry.State == EntityState.Deleted)
+            if (entry.State != EntityState.Deleted)
             {
-                // Change the state from Deleted to Modified, and set the DeletedAt time
-                entry.State = EntityState.Modified;
-                entry.CurrentValues[nameof(BaseEntity.DeletedAt)] = DateTime.Now;
+                continue;
             }
+
+            // Change the state from Deleted to Modified, and set the DeletedAt time
+            entry.State = EntityState.Modified;
+            entry.CurrentValues[nameof(BaseEntity.DeletedAt)] = DateTime.Now;
         }
 
         return base.SaveChanges();
@@ -38,16 +40,19 @@ public class JuiceWorldDbContext(DbContextOptions<JuiceWorldDbContext> options)
     {
         foreach (var entry in ChangeTracker.Entries())
         {
-            if (entry.State == EntityState.Deleted)
+            if (entry.State != EntityState.Deleted)
             {
-                // Change the state from Deleted to Modified, and set the DeletedAt time
-                entry.State = EntityState.Modified;
-                entry.CurrentValues["DeletedAt"] = DateTime.Now;
+                continue;
             }
+
+            // Change the state from Deleted to Modified, and set the DeletedAt time
+            entry.State = EntityState.Modified;
+            entry.CurrentValues["DeletedAt"] = DateTime.Now;
         }
 
         return await base.SaveChangesAsync(cancellationToken);
     }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // Product -> Manufacturer
