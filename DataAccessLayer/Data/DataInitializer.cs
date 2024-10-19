@@ -39,18 +39,39 @@ public static class DataInitializer
     [
         new()
         {
-            Id = 1, Name = "Jozef Tringál", City = "Brno", Street = "Hrnčířská", HouseNumber = "18", ZipCode = "60200",
-            Country = "Czech Republic", Type = AddressType.Shipping, UserId = 1
+            Id = 1,
+            Name = "Jozef Tringál",
+            City = "Brno",
+            Street = "Hrnčířská",
+            HouseNumber = "18",
+            ZipCode = "60200",
+            Country = "Czech Republic",
+            Type = AddressType.Shipping,
+            UserId = 1
         },
         new()
         {
-            Id = 2, Name = "Jozef Tringál", City = "Brno", Street = "Hrnčířská", HouseNumber = "18", ZipCode = "60200",
-            Country = "Czech Republic", Type = AddressType.Billing, UserId = 1
+            Id = 2,
+            Name = "Jozef Tringál",
+            City = "Brno",
+            Street = "Hrnčířská",
+            HouseNumber = "18",
+            ZipCode = "60200",
+            Country = "Czech Republic",
+            Type = AddressType.Billing,
+            UserId = 1
         },
         new()
         {
-            Id = 3, Name = "Ignác Lakeť", City = "Bratislava", Street = "Malý trh", HouseNumber = "2",
-            ZipCode = "81108", Country = "Slovakia", Type = AddressType.Billing, UserId = 2
+            Id = 3,
+            Name = "Ignác Lakeť",
+            City = "Bratislava",
+            Street = "Malý trh",
+            HouseNumber = "2",
+            ZipCode = "81108",
+            Country = "Slovakia",
+            Type = AddressType.Billing,
+            UserId = 2
         },
     ];
 
@@ -58,15 +79,27 @@ public static class DataInitializer
     [
         new()
         {
-            Id = 1, DeliveryType = DeliveryType.Standard, Status = OrderStatus.Pending, UserId = 1, AddressId = 1
+            Id = 1,
+            DeliveryType = DeliveryType.Standard,
+            Status = OrderStatus.Pending,
+            UserId = 1,
+            AddressId = 1
         },
         new()
         {
-            Id = 2, DeliveryType = DeliveryType.Express, Status = OrderStatus.Delivered, UserId = 1, AddressId = 2
+            Id = 2,
+            DeliveryType = DeliveryType.Express,
+            Status = OrderStatus.Delivered,
+            UserId = 1,
+            AddressId = 2
         },
         new()
         {
-            Id = 3, DeliveryType = DeliveryType.Standard, Status = OrderStatus.Pending, UserId = 2, AddressId = 3
+            Id = 3,
+            DeliveryType = DeliveryType.Standard,
+            Status = OrderStatus.Pending,
+            UserId = 2,
+            AddressId = 3
         },
     ];
 
