@@ -1,10 +1,10 @@
 ﻿using JuiceWorld.Data;
-using jwtAuth.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NSwag.Annotations;
 using WebApi.Models;
+using WebApi.Services;
 
 namespace WebApi.Controllers;
 
