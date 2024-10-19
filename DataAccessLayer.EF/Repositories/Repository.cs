@@ -15,11 +15,11 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
         _dbSet = _context.Set<TEntity>();
     }
 
-    public async Task<TEntity> Create(TEntity entity)
+    public async Task<TEntity?> Create(TEntity entity)
     {
         var result = await _dbSet.AddAsync(entity);
-        await _context.SaveChangesAsync();
-        return result.Entity;
+        int savedEntries = await _context.SaveChangesAsync();
+        return savedEntries == 1 ? result.Entity : null;
     }
 
     public async Task<TEntity?> GetById(object id)
@@ -27,12 +27,17 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
         return await _dbSet.FindAsync(id);
     }
 
-    public async Task<TEntity> Update(TEntity entity)
+    public async Task<IEnumerable<TEntity>> GetAll()
+    {
+        return await _dbSet.ToListAsync();
+    }
+
+    public async Task<TEntity?> Update(TEntity entity)
     {
         _dbSet.Attach(entity);
         _context.Entry(entity).State = EntityState.Modified;
-        await _context.SaveChangesAsync();
-        return entity;
+        int savedEntries = await _context.SaveChangesAsync();
+        return savedEntries == 1 ? entity : null;
     }
 
     public async Task<bool> Delete(object id)
