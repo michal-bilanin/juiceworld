@@ -1,13 +1,14 @@
-﻿using JuiceWorld.Entities;
-using System;
+﻿using JuiceWorld.Enums;
+
+namespace JuiceWorld.Entities;
 
 public class Order : BaseEntity
 {
-    public string DeliveryType { get; set; }
-    public string Status { get; set; }
-    public string Departure { get; set; }
-    public string Arrival { get; set; }
-    public string PaymentMethodType { get; set; }
+    public DeliveryType DeliveryType { get; set; } = DeliveryType.Standard;
+    public OrderStatus Status { get; set; } = OrderStatus.Pending;
+    public DateTime? Departure { get; set; }
+    public DateTime? Arrival { get; set; }
+    public PaymentMethodType PaymentMethodType { get; set; } = PaymentMethodType.Monero;
     public int UserId { get; set; }
     public virtual User User { get; set; }
     public int AddressId { get; set; }

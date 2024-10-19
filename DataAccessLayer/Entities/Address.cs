@@ -1,5 +1,6 @@
-﻿using JuiceWorld.Entities;
-using System;
+﻿using JuiceWorld.Enums;
+
+namespace JuiceWorld.Entities;
 
 public class Address : BaseEntity
 {
@@ -9,7 +10,7 @@ public class Address : BaseEntity
     public string HouseNumber { get; set; }
     public string ZipCode { get; set; }
     public string Country { get; set; }
-    public string Type { get; set; }
+    public AddressType Type { get; set; } = AddressType.Shipping;
     public int UserId { get; set; }
     public virtual User User { get; set; }
     public virtual IEnumerable<Order> Orders { get; set; }

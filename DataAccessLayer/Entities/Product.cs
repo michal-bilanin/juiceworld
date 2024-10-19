@@ -1,14 +1,15 @@
-﻿using JuiceWorld.Entities;
-using System;
+﻿using JuiceWorld.Enums;
+
+namespace JuiceWorld.Entities;
 
 public class Product : BaseEntity
 {
     public string Name { get; set; }
-    public double Price { get; set; }
-    public string ImageUrl { get; set; }
+    public decimal Price { get; set; }
+    public string? ImageUrl { get; set; }
     public string Description { get; set; }
-    public string Category { get; set; }
-    public string UsageType { get; set; }
+    public ProductCategory Category { get; set; } = ProductCategory.Testosterone;
+    public ProductUsageType UsageType { get; set; } = ProductUsageType.Injectable;
     public int ManufacturerId { get; set; }
     public virtual Manufacturer Manufacturer { get; set; }
     public virtual IEnumerable<Review> Reviews { get; set; }

@@ -1,14 +1,15 @@
-﻿using JuiceWorld.Entities;
-using System;
+﻿using JuiceWorld.Enums;
+
+namespace JuiceWorld.Entities;
 
 public class User : BaseEntity
 {
     public string UserName { get; set; }
     public string Email { get; set; }
     public string PasswordHash { get; set; }
-    public string PasswordHashRounds { get; set; }
+    public int PasswordHashRounds { get; set; }
     public string PasswordSalt { get; set; }
-    public string UserRole { get; set; }
+    public UserRole UserRole { get; set; } = UserRole.Customer;
     public string Bio { get; set; }
 
     public virtual IEnumerable<CartItem> CartItems { get; set; }
