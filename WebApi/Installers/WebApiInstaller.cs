@@ -1,11 +1,12 @@
 using System.Diagnostics;
 using System.Text;
 using JuiceWorld.Data;
-using jwtAuth.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using WebApi.Constants;
+using WebApi.Services;
 
 namespace WebApi.Installers;
 
@@ -20,7 +21,7 @@ public static class WebApiInstaller
 
         services.AddSwaggerGen(opt =>
         {
-            opt.SwaggerDoc("v1", new OpenApiInfo { Title = "MyAPI", Version = "v1" });
+            opt.SwaggerDoc("v1", new OpenApiInfo { Title = "JuiceWorld WebApi", Version = "v1" });
             opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
                 In = ParameterLocation.Header,
@@ -47,10 +48,12 @@ public static class WebApiInstaller
             });
         });
 
-        var secret = Environment.GetEnvironmentVariable("JWT_SECRET");
+        var secret = Environment.GetEnvironmentVariable(EnvironmentConstants.JwtSecret);
         if (secret == null)
+        {
             throw new Exception($"JWT secret is null, make sure it is specified " +
                                 $"in the environment variable: JWT_SECRET");
+        }
 
         services.AddAuthentication(x =>
         {
@@ -69,15 +72,13 @@ public static class WebApiInstaller
 
         services.AddDbContextFactory<JuiceWorldDbContext>(options =>
         {
-            const string connectionStringKey = "DB_CONNECTION_STRING";
-            var connectionString = Environment.GetEnvironmentVariable(connectionStringKey);
+            var connectionString = Environment.GetEnvironmentVariable(EnvironmentConstants.DbConnectionString);
 
             if (connectionString == null)
             {
-                Debug.Fail(
+                throw new Exception(
                     $"Connection string is null, make sure it is specified " +
-                    $"in the environment variable: {connectionStringKey}");
-                return;
+                    $"in the environment variable: {EnvironmentConstants.DbConnectionString}");
             }
 
             options

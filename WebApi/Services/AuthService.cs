@@ -2,8 +2,9 @@
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
+using WebApi.Constants;
 
-namespace jwtAuth.Services;
+namespace WebApi.Services;
 
 public class AuthService
 {
@@ -11,10 +12,12 @@ public class AuthService
     {
         var handler = new JwtSecurityTokenHandler();
 
-        var secret = Environment.GetEnvironmentVariable("JWT_SECRET");
+        var secret = Environment.GetEnvironmentVariable(EnvironmentConstants.JwtSecret);
 
         if (secret == null)
-            throw new Exception("JWT_SECRET environment variable is not set");
+        {
+            throw new Exception($"{EnvironmentConstants.JwtSecret} environment variable is not set");
+        }
 
         var privateKey = Encoding.UTF8.GetBytes(secret);
 
@@ -37,7 +40,7 @@ public class AuthService
     {
         var ci = new ClaimsIdentity();
 
-        ci.AddClaim(new Claim("id", user.Id.ToString()));
+        ci.AddClaim(new Claim(ClaimTypes.Sid, user.Id.ToString()));
         ci.AddClaim(new Claim(ClaimTypes.Name, user.UserName));
         ci.AddClaim(new Claim(ClaimTypes.Email, user.Email));
         ci.AddClaim(new Claim(ClaimTypes.Role, user.UserRole));
