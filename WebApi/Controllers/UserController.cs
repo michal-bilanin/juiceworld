@@ -1,4 +1,6 @@
 using JuiceWorld.Data;
+using JuiceWorld.Entities;
+using JuiceWorld.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
@@ -28,9 +30,9 @@ public class UserController : ControllerBase
             UserName = userLogin.UserName,
             PasswordHash = userLogin.Password,
             Email = "test",
-            PasswordHashRounds = "test",
+            PasswordHashRounds = 10,
             PasswordSalt = "test",
-            UserRole = "user",
+            UserRole = UserRole.Customer,
             Bio = "test"
         };
         _dbContext.Users.Add(newUser);
