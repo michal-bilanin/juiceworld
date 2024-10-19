@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAccessLayer.EF", "DataA
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApi", "WebApi\WebApi.csproj", "{2ADEA2EA-26B8-4769-89A8-7BC9A8647978}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Commons", "Commons\Commons.csproj", "{D1481AD0-DCF6-411A-B8A8-88BC83B4AFF1}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{898EB918-2521-4644-8CED-7FB8003CA39C}"
 EndProject
 Global
@@ -25,10 +23,6 @@ Global
 		{2ADEA2EA-26B8-4769-89A8-7BC9A8647978}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2ADEA2EA-26B8-4769-89A8-7BC9A8647978}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2ADEA2EA-26B8-4769-89A8-7BC9A8647978}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D1481AD0-DCF6-411A-B8A8-88BC83B4AFF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D1481AD0-DCF6-411A-B8A8-88BC83B4AFF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D1481AD0-DCF6-411A-B8A8-88BC83B4AFF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D1481AD0-DCF6-411A-B8A8-88BC83B4AFF1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{898EB918-2521-4644-8CED-7FB8003CA39C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{898EB918-2521-4644-8CED-7FB8003CA39C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{898EB918-2521-4644-8CED-7FB8003CA39C}.Release|Any CPU.ActiveCfg = Release|Any CPU
