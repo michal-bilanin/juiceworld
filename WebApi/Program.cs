@@ -1,33 +1,12 @@
 using System.Diagnostics;
 using System.Text.Json;
-using JuiceWorld.Data;
 using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.EntityFrameworkCore;
 using WebApi.Installers;
 using WebApi.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.WebApiInstall();
-
-builder.Services.AddDbContextFactory<JuiceWorldDbContext>(options =>
-{
-    const string connectionStringKey = "DB_CONNECTION_STRING";
-    var connectionString = Environment.GetEnvironmentVariable(connectionStringKey);
-
-    if (connectionString == null)
-    {
-        Debug.Fail(
-            $"Connection string is null, make sure it is specified " +
-            $"in the environment variable: {connectionStringKey}");
-        return;
-    }
-
-    options
-        .UseNpgsql(connectionString)
-        .LogTo(s => Debug.WriteLine(s))
-        .UseLazyLoadingProxies();
-});
 
 var app = builder.Build();
 
@@ -67,6 +46,7 @@ app.UseExceptionHandler(errorApp =>
         }
     });
 });
+
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
