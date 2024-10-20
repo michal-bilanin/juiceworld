@@ -2,7 +2,7 @@ using System.Linq.Expressions;
 
 namespace Infrastructure.QueryObjects;
 
-public interface IQueryObject<TEntity> where TEntity : class, new()
+public interface IQueryObject<TEntity> where TEntity : class
 {
     IQueryObject<TEntity> Filter(Expression<Func<TEntity, bool>> filter);
 

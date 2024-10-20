@@ -1,10 +1,11 @@
 using Infrastructure.Repositories;
 using JuiceWorld.Data;
+using JuiceWorld.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace JuiceWorld.Repositories;
 
-public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
+public class Repository<TEntity> : IRepository<TEntity> where TEntity : BaseEntity
 {
     private readonly JuiceWorldDbContext _context;
     private readonly DbSet<TEntity> _dbSet;
@@ -24,26 +25,26 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
 
     public async Task<TEntity?> GetById(object id)
     {
-        return await _dbSet.FindAsync(id);
+        return await _dbSet.Where(e => e.Id == (int)id && e.DeletedAt == null).FirstOrDefaultAsync();
     }
 
     public async Task<IEnumerable<TEntity>> GetAll()
     {
-        return await _dbSet.ToListAsync();
+        return await _dbSet.Where(e => e.DeletedAt == null).ToListAsync();
     }
 
     public async Task<TEntity?> Update(TEntity entity)
     {
         _dbSet.Attach(entity);
         _context.Entry(entity).State = EntityState.Modified;
-        int savedEntries = await _context.SaveChangesAsync();
+        var savedEntries = await _context.SaveChangesAsync();
         return savedEntries == 1 ? entity : null;
     }
 
     public async Task<bool> Delete(object id)
     {
         var entity = await _dbSet.FindAsync(id);
-        if (entity == null)
+        if (entity is not { DeletedAt: null })
         {
             return false;
         }

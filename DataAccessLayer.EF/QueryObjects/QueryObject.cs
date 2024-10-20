@@ -1,12 +1,13 @@
 using System.Linq.Expressions;
 using Infrastructure.QueryObjects;
 using JuiceWorld.Data;
+using JuiceWorld.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace JuiceWorld.QueryObjects;
 
 public class QueryObject<TEntity>(JuiceWorldDbContext context) : IQueryObject<TEntity>
-    where TEntity : class, new()
+    where TEntity : BaseEntity
 {
     private IQueryable<TEntity> _query = context.Set<TEntity>();
 
@@ -30,6 +31,6 @@ public class QueryObject<TEntity>(JuiceWorldDbContext context) : IQueryObject<TE
 
     public async Task<IEnumerable<TEntity>> Execute()
     {
-        return await _query.ToListAsync();
+        return await _query.Where(e => e.DeletedAt == null).ToListAsync();
     }
 }
