@@ -9,7 +9,7 @@ namespace JuiceWorld.QueryObjects;
 public class QueryObject<TEntity>(JuiceWorldDbContext context) : IQueryObject<TEntity>
     where TEntity : BaseEntity
 {
-    private IQueryable<TEntity> _query = context.Set<TEntity>();
+    private IQueryable<TEntity> _query = context.Set<TEntity>().Where(e => e.DeletedAt == null);
 
     public IQueryObject<TEntity> Filter(Expression<Func<TEntity, bool>> filter)
     {
@@ -31,6 +31,6 @@ public class QueryObject<TEntity>(JuiceWorldDbContext context) : IQueryObject<TE
 
     public async Task<IEnumerable<TEntity>> Execute()
     {
-        return await _query.Where(e => e.DeletedAt == null).ToListAsync();
+        return await _query.ToListAsync();
     }
 }
