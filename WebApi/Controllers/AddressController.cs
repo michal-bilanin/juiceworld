@@ -1,3 +1,6 @@
+using Infrastructure.UnitOfWork;
+using JuiceWorld.Entities;
+using JuiceWorld.UnitOfWork;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
@@ -7,42 +10,75 @@ namespace WebApi.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize(Roles = "user")]
-public class AddressController : ControllerBase
+public class AddressController(IUnitOfWorkProvider<UnitOfWork> unitOfWorkProvider) : ControllerBase
 {
     private const string ApiBaseName = "Address";
 
     [HttpPost]
     [OpenApiOperation(ApiBaseName + nameof(CreateAddress))]
-    public async Task<ActionResult<bool>> CreateAddress()
+    public async Task<ActionResult<Address>> CreateAddress(Address address)
     {
-        return Problem();
+        using var unitOfWork = unitOfWorkProvider.Create();
+        var result = await unitOfWork.AddressRepository.Create(address);
+        if (result == null)
+        {
+            return Problem();
+        }
+
+        await unitOfWork.Commit();
+        return Ok(result);
     }
 
     [HttpGet]
     [OpenApiOperation(ApiBaseName + nameof(GetAllAddresses))]
-    public async Task<ActionResult<bool>> GetAllAddresses()
+    public async Task<ActionResult<List<Address>>> GetAllAddresses()
     {
-        return Problem();
+        using var unitOfWork = unitOfWorkProvider.Create();
+        var result = await unitOfWork.AddressRepository.GetAll();
+        return Ok(result);
     }
 
     [HttpGet("{addressId:int}")]
     [OpenApiOperation(ApiBaseName + nameof(GetAddress))]
-    public async Task<ActionResult<bool>> GetAddress(int addressId)
+    public async Task<ActionResult<Address>> GetAddress(int addressId)
     {
-        return Problem();
+        using var unitOfWork = unitOfWorkProvider.Create();
+        var result = await unitOfWork.AddressRepository.GetById(addressId);
+        if (result == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(result);
     }
 
-    [HttpPut("{addressId:int}")]
+    [HttpPut]
     [OpenApiOperation(ApiBaseName + nameof(UpdateAddress))]
-    public async Task<ActionResult<bool>> UpdateAddress(int addressId)
+    public async Task<ActionResult<Address>> UpdateAddress(Address address)
     {
-        return Problem();
+        using var unitOfWork = unitOfWorkProvider.Create();
+        var result = await unitOfWork.AddressRepository.Update(address);
+        if (result == null)
+        {
+            return Problem();
+        }
+
+        await unitOfWork.Commit();
+        return Ok(result);
     }
 
     [HttpDelete("{addressId:int}")]
     [OpenApiOperation(ApiBaseName + nameof(DeleteAddress))]
     public async Task<ActionResult<bool>> DeleteAddress(int addressId)
     {
-        return Problem();
+        using var unitOfWork = unitOfWorkProvider.Create();
+        var result = await unitOfWork.AddressRepository.Delete(addressId);
+        if (!result)
+        {
+            return Problem();
+        }
+
+        await unitOfWork.Commit();
+        return Ok(result);
     }
 }

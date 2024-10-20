@@ -1,6 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using JuiceWorld.Entities;
 using Microsoft.IdentityModel.Tokens;
 using WebApi.Constants;
 
@@ -43,7 +44,7 @@ public class AuthService
         ci.AddClaim(new Claim(ClaimTypes.Sid, user.Id.ToString()));
         ci.AddClaim(new Claim(ClaimTypes.Name, user.UserName));
         ci.AddClaim(new Claim(ClaimTypes.Email, user.Email));
-        ci.AddClaim(new Claim(ClaimTypes.Role, user.UserRole));
+        ci.AddClaim(new Claim(ClaimTypes.Role, user.UserRole.ToString()));
 
         return ci;
     }

@@ -1,69 +1,84 @@
-using JuiceWorld.Data;
+using Infrastructure.UnitOfWork;
+using JuiceWorld.Entities;
+using JuiceWorld.UnitOfWork;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
-using WebApi.Models;
 
 namespace WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 [Authorize(Roles = "user")]
-public class UserController : ControllerBase
+public class UserController(IUnitOfWorkProvider<UnitOfWork> unitOfWorkProvider) : ControllerBase
 {
     private const string ApiBaseName = "User";
-    private readonly JuiceWorldDbContext _dbContext;
-
-    public UserController(JuiceWorldDbContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
 
     [HttpPost]
     [OpenApiOperation(ApiBaseName + nameof(CreateUser))]
-    public async Task<ActionResult<bool>> CreateUser(LoginModel userLogin)
+    public async Task<ActionResult<User>> CreateUser(User user)
     {
-        var newUser = new User
+        using var unitOfWork = unitOfWorkProvider.Create();
+        var result = await unitOfWork.UserRepository.Create(user);
+        if (result == null)
         {
-            UserName = userLogin.UserName,
-            PasswordHash = userLogin.Password,
-            Email = "test",
-            PasswordHashRounds = "test",
-            PasswordSalt = "test",
-            UserRole = "user",
-            Bio = "test"
-        };
-        _dbContext.Users.Add(newUser);
-        await _dbContext.SaveChangesAsync();
-        var dbUser = await _dbContext.Users.FindAsync(newUser.Id);
-        return Ok(dbUser);
+            return Problem();
+        }
+
+        await unitOfWork.Commit();
+        return Ok(result);
     }
 
     [HttpGet]
     [OpenApiOperation(ApiBaseName + nameof(GetAllUsers))]
-    public async Task<ActionResult<bool>> GetAllUsers()
+    public async Task<ActionResult<List<User>>> GetAllUsers()
     {
-        return Problem();
+        using var unitOfWork = unitOfWorkProvider.Create();
+        var result = await unitOfWork.UserRepository.GetAll();
+        return Ok(result);
     }
 
     [HttpGet("{userId:int}")]
     [OpenApiOperation(ApiBaseName + nameof(GetUser))]
-    public async Task<ActionResult<bool>> GetUser(int userId)
+    public async Task<ActionResult<User>> GetUser(int userId)
     {
-        return Problem();
+        using var unitOfWork = unitOfWorkProvider.Create();
+        var result = await unitOfWork.UserRepository.GetById(userId);
+        if (result == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(result);
     }
 
-    [HttpPut("{userId:int}")]
+    [HttpPut]
     [OpenApiOperation(ApiBaseName + nameof(UpdateUser))]
-    public async Task<ActionResult<bool>> UpdateUser(int userId)
+    public async Task<ActionResult<User>> UpdateUser(User user)
     {
-        return Problem();
+        using var unitOfWork = unitOfWorkProvider.Create();
+        var result = await unitOfWork.UserRepository.Update(user);
+        if (result == null)
+        {
+            return Problem();
+        }
+
+        await unitOfWork.Commit();
+        return Ok(result);
     }
 
     [HttpDelete("{userId:int}")]
     [OpenApiOperation(ApiBaseName + nameof(DeleteUser))]
-    public async Task<ActionResult<bool>> DeleteUser(int userId)
+    public async Task<ActionResult> DeleteUser(int userId)
     {
-        return Problem();
+        using var unitOfWork = unitOfWorkProvider.Create();
+        var result = await unitOfWork.UserRepository.Delete(userId);
+        if (!result)
+        {
+            return Problem();
+        }
+
+        await unitOfWork.Commit();
+        return Ok();
     }
 }

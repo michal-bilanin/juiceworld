@@ -10,30 +10,21 @@ namespace WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class AuthController : ControllerBase
+public class AuthController(JuiceWorldDbContext dbContext, AuthService authService) : ControllerBase
 {
     private const string ApiBaseName = "CartItem";
-    private readonly AuthService _authService;
-
-    private readonly JuiceWorldDbContext _dbContext;
-
-    public AuthController(JuiceWorldDbContext dbContext, AuthService authService)
-    {
-        _dbContext = dbContext;
-        _authService = authService;
-    }
 
     [HttpPost]
     [OpenApiOperation(ApiBaseName + nameof(Login))]
     [AllowAnonymous]
-    public async Task<ActionResult<String>> Login(LoginModel login)
+    public async Task<ActionResult<string>> Login(LoginModel login)
     {
-        var user = await _dbContext.Users.Where(u => u.UserName == login.UserName).FirstAsync();
+        var user = await dbContext.Users.Where(u => u.UserName == login.UserName).FirstOrDefaultAsync();
         if (user == null)
         {
             return NotFound();
         }
 
-        return _authService.Create(user);
+        return authService.Create(user);
     }
 }

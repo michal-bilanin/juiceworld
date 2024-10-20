@@ -1,3 +1,6 @@
+using Infrastructure.UnitOfWork;
+using JuiceWorld.Entities;
+using JuiceWorld.UnitOfWork;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
@@ -7,42 +10,75 @@ namespace WebApi.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize(Roles = "user")]
-public class ReviewController : ControllerBase
+public class ReviewController(IUnitOfWorkProvider<UnitOfWork> unitOfWorkProvider) : ControllerBase
 {
     private const string ApiBaseName = "Review";
 
     [HttpPost]
     [OpenApiOperation(ApiBaseName + nameof(CreateReview))]
-    public async Task<ActionResult<bool>> CreateReview()
+    public async Task<ActionResult<Review>> CreateReview(Review review)
     {
-        return Problem();
+        using var unitOfWork = unitOfWorkProvider.Create();
+        var result = await unitOfWork.ReviewRepository.Create(review);
+        if (result == null)
+        {
+            return Problem();
+        }
+
+        await unitOfWork.Commit();
+        return Ok(result);
     }
 
     [HttpGet]
     [OpenApiOperation(ApiBaseName + nameof(GetAllReviews))]
-    public async Task<ActionResult<bool>> GetAllReviews()
+    public async Task<ActionResult<List<Review>>> GetAllReviews()
     {
-        return Problem();
+        using var unitOfWork = unitOfWorkProvider.Create();
+        var result = await unitOfWork.ReviewRepository.GetAll();
+        return Ok(result);
     }
 
     [HttpGet("{reviewId:int}")]
     [OpenApiOperation(ApiBaseName + nameof(GetReview))]
-    public async Task<ActionResult<bool>> GetReview(int reviewId)
+    public async Task<ActionResult<Review>> GetReview(int reviewId)
     {
-        return Problem();
+        using var unitOfWork = unitOfWorkProvider.Create();
+        var result = await unitOfWork.ReviewRepository.GetById(reviewId);
+        if (result == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(result);
     }
 
-    [HttpPut("{reviewId:int}")]
+    [HttpPut]
     [OpenApiOperation(ApiBaseName + nameof(UpdateReview))]
-    public async Task<ActionResult<bool>> UpdateReview(int reviewId)
+    public async Task<ActionResult<Review>> UpdateReview(Review review)
     {
-        return Problem();
+        using var unitOfWork = unitOfWorkProvider.Create();
+        var result = await unitOfWork.ReviewRepository.Update(review);
+        if (result == null)
+        {
+            return Problem();
+        }
+
+        await unitOfWork.Commit();
+        return Ok(result);
     }
 
     [HttpDelete("{reviewId:int}")]
     [OpenApiOperation(ApiBaseName + nameof(DeleteReview))]
     public async Task<ActionResult<bool>> DeleteReview(int reviewId)
     {
-        return Problem();
+        using var unitOfWork = unitOfWorkProvider.Create();
+        var result = await unitOfWork.ReviewRepository.Delete(reviewId);
+        if (!result)
+        {
+            return NotFound();
+        }
+
+        await unitOfWork.Commit();
+        return Ok(result);
     }
 }
