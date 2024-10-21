@@ -57,14 +57,13 @@ public class OrderController(IUnitOfWorkProvider<UnitOfWork> unitOfWorkProvider)
     public async Task<ActionResult<Order>> UpdateOrder(Order order)
     {
         using var unitOfWork = unitOfWorkProvider.Create();
-        var result = await unitOfWork.OrderRepository.Update(order);
-        if (result == null)
+        if (!await unitOfWork.OrderRepository.Update(order))
         {
-            return Problem();
+            return NotFound();
         }
 
         await unitOfWork.Commit();
-        return Ok(result);
+        return Ok(order);
     }
 
     [HttpDelete("{orderId:int}")]

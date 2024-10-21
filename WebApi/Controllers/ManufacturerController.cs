@@ -57,14 +57,13 @@ public class ManufacturerController(IUnitOfWorkProvider<UnitOfWork> unitOfWorkPr
     public async Task<ActionResult<Manufacturer>> UpdateManufacturer(Manufacturer manufacturer)
     {
         using var unitOfWork = unitOfWorkProvider.Create();
-        var result = await unitOfWork.ManufacturerRepository.Update(manufacturer);
-        if (result == null)
+        if (!await unitOfWork.ManufacturerRepository.Update(manufacturer))
         {
-            return Problem();
+            return NotFound();
         }
 
         await unitOfWork.Commit();
-        return Ok(result);
+        return Ok(manufacturer);
     }
 
     [HttpDelete("{manufacturerId:int}")]

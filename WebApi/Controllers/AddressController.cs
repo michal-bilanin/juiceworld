@@ -57,14 +57,13 @@ public class AddressController(IUnitOfWorkProvider<UnitOfWork> unitOfWorkProvide
     public async Task<ActionResult<Address>> UpdateAddress(Address address)
     {
         using var unitOfWork = unitOfWorkProvider.Create();
-        var result = await unitOfWork.AddressRepository.Update(address);
-        if (result == null)
+        if (!await unitOfWork.AddressRepository.Update(address))
         {
-            return Problem();
+            return NotFound();
         }
 
         await unitOfWork.Commit();
-        return Ok(result);
+        return Ok(address);
     }
 
     [HttpDelete("{addressId:int}")]
