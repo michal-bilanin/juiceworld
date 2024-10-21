@@ -10,9 +10,9 @@ public static class AuthUtils
         return Convert.ToBase64String(RandomNumberGenerator.GetBytes(bytesCount));
     }
 
-    public static string HashPassword(string password, string salt)
+    public static string HashPassword(string password, string salt, int rounds)
     {
-        var hashedBytes = SHA256.HashData(Encoding.UTF8.GetBytes(password + salt));
-        return Convert.ToBase64String(hashedBytes);
+        using var rfc2898DeriveBytes = new Rfc2898DeriveBytes(password, Encoding.UTF8.GetBytes(salt), rounds, HashAlgorithmName.SHA3_256);
+        return Convert.ToBase64String(rfc2898DeriveBytes.GetBytes(32));
     }
 }

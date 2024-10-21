@@ -1,4 +1,9 @@
-﻿using JuiceWorld.Data;
+﻿using Infrastructure.UnitOfWork;
+using JuiceWorld.Data;
+using JuiceWorld.Entities;
+using JuiceWorld.Enums;
+using JuiceWorld.QueryObjects;
+using JuiceWorld.UnitOfWork;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +15,7 @@ namespace WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class AuthController(JuiceWorldDbContext dbContext, AuthService authService) : ControllerBase
+public class AuthController(QueryObject<User> userQueryObject, AuthService authService) : ControllerBase
 {
     private const string ApiBaseName = "CartItem";
 
@@ -19,12 +24,17 @@ public class AuthController(JuiceWorldDbContext dbContext, AuthService authServi
     [AllowAnonymous]
     public async Task<ActionResult<string>> Login(LoginModel login)
     {
-        var user = await dbContext.Users.Where(u => u.UserName == login.UserName).FirstOrDefaultAsync();
+        var user = (await userQueryObject.Filter(user => user.Email == login.Email).Execute()).FirstOrDefault();
         if (user == null)
         {
             return NotFound();
         }
+        
+        if (!authService.VerifyPassword(user, login.Password))
+        {
+            return Unauthorized();
+        }
 
-        return authService.Create(user);
+        return Ok(authService.Create(user));
     }
 }

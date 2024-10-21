@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using System.Text;
 using JuiceWorld.Entities;
+using JuiceWorld.Utils;
 using Microsoft.IdentityModel.Tokens;
 using WebApi.Constants;
 
@@ -48,4 +49,8 @@ public class AuthService
 
         return ci;
     }
+
+    public bool VerifyPassword(User user, string password) =>
+        AuthUtils.HashPassword(password, user.PasswordSalt, user.PasswordHashRounds) == user.PasswordHash;
+
 }
