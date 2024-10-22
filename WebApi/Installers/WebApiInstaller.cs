@@ -30,7 +30,7 @@ public static class WebApiInstaller
         services.AddTransient<IQueryObject<User>, QueryObject<User>>();
         services.AddTransient<IQueryObject<Product>, QueryObject<Product>>();
         services.AddAutoMapper(typeof(WebApiInstaller));
-        
+
         services.AddSwaggerGen(opt =>
         {
             opt.SwaggerDoc("v1", new OpenApiInfo { Title = "JuiceWorld WebApi", Version = "v1" });

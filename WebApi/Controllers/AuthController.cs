@@ -30,7 +30,7 @@ public class AuthController(IQueryObject<User> userQueryObject, AuthService auth
         {
             return NotFound();
         }
-        
+
         if (!authService.VerifyPassword(user, login.Password))
         {
             return Unauthorized();
