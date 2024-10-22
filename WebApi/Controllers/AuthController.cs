@@ -1,4 +1,5 @@
-﻿using Infrastructure.UnitOfWork;
+﻿using Infrastructure.QueryObjects;
+using Infrastructure.UnitOfWork;
 using JuiceWorld.Data;
 using JuiceWorld.Entities;
 using JuiceWorld.Enums;
@@ -15,7 +16,7 @@ namespace WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class AuthController(QueryObject<User> userQueryObject, AuthService authService) : ControllerBase
+public class AuthController(IQueryObject<User> userQueryObject, AuthService authService) : ControllerBase
 {
     private const string ApiBaseName = "CartItem";
 

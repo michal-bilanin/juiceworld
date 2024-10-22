@@ -80,7 +80,7 @@ migrations.
 Make sure to also set the correct project and startup project. The full command could look like this:
 
 ```bash
-DB_CONNECTION_STRING="Host=localhost;Port=5432;Database=juiceworld;Username=postgres;Password=postgres" dotnet ef migrations add <message> --project DataAccessLayer --startup-project WebApi
+DB_CONNECTION_STRING="Host=localhost;Port=5432;Database=juiceworld;Username=postgres;Password=postgres" JWT_SECRET='bAafd@A7d9#@F4*V!LHZs#ebKQrkE6pad2f3kj34c3dXy@' dotnet ef migrations add <message> --project DataAccessLayer.EF --startup-project WebApi
 ```
 
 Make sure to customise the connection string and the migration message to your needs.
@@ -90,5 +90,5 @@ Make sure to customise the connection string and the migration message to your n
 The database update follows the same principle as running the migrations. The full command could look like this:
 
 ```bash
-DB_CONNECTION_STRING="Host=localhost;Port=5432;Database=juiceworld;Username=postgres;Password=postgres" dotnet ef database update --project DataAccessLayer --startup-project WebApi
+DB_CONNECTION_STRING="Host=localhost;Port=5432;Database=juiceworld;Username=postgres;Password=postgres" JWT_SECRET='bAafd@A7d9#@F4*V!LHZs#ebKQrkE6pad2f3kj34c3dXy@' dotnet ef database update --project DataAccessLayer.EF --startup-project WebApi
 ```
