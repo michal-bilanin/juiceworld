@@ -9,7 +9,7 @@ namespace WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "user")]
+[Authorize(Roles = nameof(UserRole.Customer))]
 public class AddressController(IUnitOfWorkProvider<UnitOfWork> unitOfWorkProvider) : ControllerBase
 {
     private const string ApiBaseName = "Address";

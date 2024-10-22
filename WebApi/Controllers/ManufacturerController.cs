@@ -1,5 +1,6 @@
 using Infrastructure.UnitOfWork;
 using JuiceWorld.Entities;
+using JuiceWorld.Enums;
 using JuiceWorld.UnitOfWork;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +10,7 @@ namespace WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "admin")]
+[Authorize(Roles = nameof(UserRole.Customer))]
 public class ManufacturerController(IUnitOfWorkProvider<UnitOfWork> unitOfWorkProvider) : ControllerBase
 {
     private const string ApiBaseName = "Manufacturer";

@@ -13,7 +13,7 @@ namespace WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "customer")]
+[Authorize(Roles = nameof(UserRole.Customer))]
 public class ProductFilterController(IQueryObject<Product> queryObject) : ControllerBase
 {
     private const string ApiBaseName = "Product";
