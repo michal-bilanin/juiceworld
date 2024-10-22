@@ -57,14 +57,13 @@ public class ProductController(IUnitOfWorkProvider<UnitOfWork> unitOfWorkProvide
     public async Task<ActionResult<Product>> UpdateProduct(Product product)
     {
         using var unitOfWork = unitOfWorkProvider.Create();
-        var result = await unitOfWork.ProductRepository.Update(product);
-        if (result == null)
+        if (!await unitOfWork.ProductRepository.Update(product))
         {
-            return Problem();
+            return NotFound();
         }
 
         await unitOfWork.Commit();
-        return Ok(result);
+        return Ok(product);
     }
 
     [HttpDelete("{productId:int}")]

@@ -57,14 +57,13 @@ public class UserController(IUnitOfWorkProvider<UnitOfWork> unitOfWorkProvider) 
     public async Task<ActionResult<User>> UpdateUser(User user)
     {
         using var unitOfWork = unitOfWorkProvider.Create();
-        var result = await unitOfWork.UserRepository.Update(user);
-        if (result == null)
+        if (!await unitOfWork.UserRepository.Update(user))
         {
             return Problem();
         }
 
         await unitOfWork.Commit();
-        return Ok(result);
+        return Ok(user);
     }
 
     [HttpDelete("{userId:int}")]

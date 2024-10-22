@@ -57,14 +57,13 @@ public class ReviewController(IUnitOfWorkProvider<UnitOfWork> unitOfWorkProvider
     public async Task<ActionResult<Review>> UpdateReview(Review review)
     {
         using var unitOfWork = unitOfWorkProvider.Create();
-        var result = await unitOfWork.ReviewRepository.Update(review);
-        if (result == null)
+        if (!await unitOfWork.ReviewRepository.Update(review))
         {
-            return Problem();
+            return NotFound();
         }
 
         await unitOfWork.Commit();
-        return Ok(result);
+        return Ok(review);
     }
 
     [HttpDelete("{reviewId:int}")]

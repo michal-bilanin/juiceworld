@@ -5,22 +5,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace JuiceWorld.Repositories;
 
-public class Repository<TEntity> : IRepository<TEntity> where TEntity : BaseEntity
+public class Repository<TEntity>(JuiceWorldDbContext context) : IRepository<TEntity>
+    where TEntity : BaseEntity
 {
-    private readonly JuiceWorldDbContext _context;
-    private readonly DbSet<TEntity> _dbSet;
-
-    public Repository(JuiceWorldDbContext context)
-    {
-        _context = context;
-        _dbSet = _context.Set<TEntity>();
-    }
+    private readonly DbSet<TEntity> _dbSet = context.Set<TEntity>();
 
     public async Task<TEntity?> Create(TEntity entity)
     {
         var result = await _dbSet.AddAsync(entity);
-        int savedEntries = await _context.SaveChangesAsync();
-        return savedEntries == 1 ? result.Entity : null;
+        return result.Entity;
     }
 
     public async Task<TEntity?> GetById(object id)
@@ -33,12 +26,16 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : BaseEnti
         return await _dbSet.Where(e => e.DeletedAt == null).ToListAsync();
     }
 
-    public async Task<TEntity?> Update(TEntity entity)
+    public async Task<bool> Update(TEntity entity)
     {
-        _dbSet.Attach(entity);
-        _context.Entry(entity).State = EntityState.Modified;
-        var savedEntries = await _context.SaveChangesAsync();
-        return savedEntries == 1 ? entity : null;
+        var existingEntity = await _dbSet.FindAsync(entity.Id);
+        if (existingEntity is { DeletedAt: not null })
+        {
+            return false;
+        }
+
+        _dbSet.Update(entity);
+        return true;
     }
 
     public async Task<bool> Delete(object id)
@@ -50,7 +47,6 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : BaseEnti
         }
 
         _dbSet.Remove(entity);
-        await _context.SaveChangesAsync();
         return true;
     }
 }
