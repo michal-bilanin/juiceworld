@@ -39,7 +39,9 @@ here: [https://gitlab.fi.muni.cz/xbilanin/juiceworld/-/wikis/Entity-Relationship
 The system consists of the following modules:
 
 1. **WebApi** - responsible for handling HTTP requests and responses.
-2. **DataAccessLayer** - responsible for handling database operations.
+2. **DataAccessLayer.EF** - responsible for handling database operations, implemented using Entity Framework.
+3. **Commons** - contains shared classes and interfaces used across the system.
+4. **Infrastructure** - contains classes and interfaces used for applying patterns in an implementation-agnostic way.
 
 ## Setup For Development
 

@@ -59,14 +59,13 @@ public class CartItemController(IUnitOfWorkProvider<UnitOfWork> unitOfWorkProvid
     public async Task<ActionResult<CartItemDto>> UpdateCartItem(CartItemDto cartItem)
     {
         using var unitOfWork = unitOfWorkProvider.Create();
-        var result = await unitOfWork.CartItemRepository.Update(mapper.Map<CartItem>(cartItem));
-        if (result == null)
+        if (!await unitOfWork.CartItemRepository.Update(mapper.Map<CartItem>(cartItem)))
         {
-            return Problem();
+            return NotFound();
         }
 
         await unitOfWork.Commit();
-        return Ok(mapper.Map<CartItemDto>(result));
+        return Ok(cartItem);
     }
 
     [HttpDelete("{cartItemId:int}")]

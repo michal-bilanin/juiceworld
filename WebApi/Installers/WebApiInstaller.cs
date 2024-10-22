@@ -37,7 +37,7 @@ public static class WebApiInstaller
             opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
                 In = ParameterLocation.Header,
-                Description = "Please enter token",
+                Description = "Please enter the token returned from the auth endpoint (only the token, without the Bearer prefix)",
                 Name = "Authorization",
                 Type = SecuritySchemeType.Http,
                 BearerFormat = "JWT",
@@ -55,7 +55,7 @@ public static class WebApiInstaller
                             Id="Bearer"
                         }
                     },
-                    new string[]{}
+                    []
                 }
             });
         });

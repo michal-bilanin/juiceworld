@@ -59,14 +59,13 @@ public class WishListItemController(IUnitOfWorkProvider<UnitOfWork> unitOfWorkPr
     public async Task<ActionResult<WishListItemDto>> UpdateWishListItem(WishListItemDto wishListItem)
     {
         using var unitOfWork = unitOfWorkProvider.Create();
-        var result = await unitOfWork.WishListItemRepository.Update(mapper.Map<WishListItem>(wishListItem));
-        if (result == null)
+        if (!await unitOfWork.WishListItemRepository.Update(mapper.Map<WishListItem>(wishListItem)))
         {
             return Problem();
         }
 
         await unitOfWork.Commit();
-        return Ok(mapper.Map<WishListItemDto>(result));
+        return Ok(wishListItem);
     }
 
     [HttpDelete("{wishListItemId:int}")]

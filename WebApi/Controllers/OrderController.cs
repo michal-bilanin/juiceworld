@@ -59,14 +59,13 @@ public class OrderController(IUnitOfWorkProvider<UnitOfWork> unitOfWorkProvider,
     public async Task<ActionResult<OrderDto>> UpdateOrder(OrderDto order)
     {
         using var unitOfWork = unitOfWorkProvider.Create();
-        var result = await unitOfWork.OrderRepository.Update(mapper.Map<Order>(order));
-        if (result == null)
+        if (!await unitOfWork.OrderRepository.Update(mapper.Map<Order>(order)))
         {
-            return Problem();
+            return NotFound();
         }
 
         await unitOfWork.Commit();
-        return Ok(mapper.Map<OrderDto>(result));
+        return Ok(order);
     }
 
     [HttpDelete("{orderId:int}")]

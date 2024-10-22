@@ -59,14 +59,13 @@ public class AddressController(IUnitOfWorkProvider<UnitOfWork> unitOfWorkProvide
     public async Task<ActionResult<AddressDto>> UpdateAddress(AddressDto address)
     {
         using var unitOfWork = unitOfWorkProvider.Create();
-        var result = await unitOfWork.AddressRepository.Update(mapper.Map<Address>(address));
-        if (result == null)
+        if (!await unitOfWork.AddressRepository.Update(mapper.Map<Address>(address)))
         {
-            return Problem();
+            return NotFound();
         }
 
         await unitOfWork.Commit();
-        return Ok(mapper.Map<AddressDto>(result));
+        return Ok(address);
     }
 
     [HttpDelete("{addressId:int}")]
