@@ -23,7 +23,7 @@ public class AuthController(IQueryObject<User> userQueryObject, AuthService auth
     [HttpPost]
     [OpenApiOperation(ApiBaseName + nameof(Login))]
     [AllowAnonymous]
-    public async Task<ActionResult<string>> Login(LoginModel login)
+    public async Task<ActionResult<string>> Login(LoginDto login)
     {
         var user = (await userQueryObject.Filter(user => user.Email == login.Email).Execute()).FirstOrDefault();
         if (user == null)

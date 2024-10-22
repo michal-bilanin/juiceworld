@@ -1,3 +1,5 @@
+using AutoMapper;
+using Infrastructure.QueryObjects;
 using Infrastructure.UnitOfWork;
 using JuiceWorld.Entities;
 using JuiceWorld.Enums;
@@ -5,43 +7,47 @@ using JuiceWorld.UnitOfWork;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
+using WebApi.Models;
 
 namespace WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 [Authorize(Roles = nameof(UserRole.Customer))]
-public class ProductController(IUnitOfWorkProvider<UnitOfWork> unitOfWorkProvider) : ControllerBase
+public class ProductController(IUnitOfWorkProvider<UnitOfWork> unitOfWorkProvider, IMapper mapper, IQueryObject<Product> queryObject) : ControllerBase
 {
     private const string ApiBaseName = "Product";
 
     [HttpPost]
     [OpenApiOperation(ApiBaseName + nameof(CreateProduct))]
-    public async Task<ActionResult<Product>> CreateProduct(Product product)
+    public async Task<ActionResult<ProductDto>> CreateProduct(ProductDto product)
     {
         using var unitOfWork = unitOfWorkProvider.Create();
-        var result = await unitOfWork.ProductRepository.Create(product);
+        var result = await unitOfWork.ProductRepository.Create(mapper.Map<Product>(product));
         if (result == null)
         {
             return Problem();
         }
 
         await unitOfWork.Commit();
-        return Ok(result);
+        return Ok(mapper.Map<ProductDto>(result));
     }
 
     [HttpGet]
-    [OpenApiOperation(ApiBaseName + nameof(GetAllProducts))]
-    public async Task<ActionResult<List<Product>>> GetAllProducts()
+    [OpenApiOperation(ApiBaseName + nameof(GetProductByManufacturer))]
+    public async Task<ActionResult<IEnumerable<ProductDto>>> GetProductByManufacturer([FromQuery] ProductFilterDto productFilter)
     {
-        using var unitOfWork = unitOfWorkProvider.Create();
-        var result = await unitOfWork.ProductRepository.GetAll();
-        return Ok(result);
+        var result = await queryObject.Filter(p =>
+            (productFilter.MmanufacturerName == null || p.Manufacturer.Name == productFilter.MmanufacturerName) &&
+            (productFilter.Category == null || p.Category == productFilter.Category)
+        ).Execute();
+
+        return Ok(mapper.Map<ICollection<ProductDto>>(result).ToList());
     }
 
     [HttpGet("{productId:int}")]
     [OpenApiOperation(ApiBaseName + nameof(GetProduct))]
-    public async Task<ActionResult<Product>> GetProduct(int productId)
+    public async Task<ActionResult<ProductDto>> GetProduct(int productId)
     {
         using var unitOfWork = unitOfWorkProvider.Create();
         var result = await unitOfWork.ProductRepository.GetById(productId);
@@ -50,22 +56,22 @@ public class ProductController(IUnitOfWorkProvider<UnitOfWork> unitOfWorkProvide
             return NotFound();
         }
 
-        return Ok(result);
+        return Ok(mapper.Map<ProductDto>(result));
     }
 
     [HttpPut]
     [OpenApiOperation(ApiBaseName + nameof(UpdateProduct))]
-    public async Task<ActionResult<Product>> UpdateProduct(Product product)
+    public async Task<ActionResult<ProductDto>> UpdateProduct(ProductDto product)
     {
         using var unitOfWork = unitOfWorkProvider.Create();
-        var result = await unitOfWork.ProductRepository.Update(product);
+        var result = await unitOfWork.ProductRepository.Update(mapper.Map<Product>(product));
         if (result == null)
         {
             return Problem();
         }
 
         await unitOfWork.Commit();
-        return Ok(result);
+        return Ok(mapper.Map<ProductDto>(result));
     }
 
     [HttpDelete("{productId:int}")]

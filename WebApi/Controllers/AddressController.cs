@@ -1,5 +1,7 @@
+using AutoMapper;
 using Infrastructure.UnitOfWork;
 using JuiceWorld.Entities;
+using JuiceWorld.Enums;
 using JuiceWorld.UnitOfWork;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,37 +12,37 @@ namespace WebApi.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize(Roles = nameof(UserRole.Customer))]
-public class AddressController(IUnitOfWorkProvider<UnitOfWork> unitOfWorkProvider) : ControllerBase
+public class AddressController(IUnitOfWorkProvider<UnitOfWork> unitOfWorkProvider, IMapper mapper) : ControllerBase
 {
     private const string ApiBaseName = "Address";
 
     [HttpPost]
     [OpenApiOperation(ApiBaseName + nameof(CreateAddress))]
-    public async Task<ActionResult<Address>> CreateAddress(Address address)
+    public async Task<ActionResult<AddressDto>> CreateAddress(AddressDto address)
     {
         using var unitOfWork = unitOfWorkProvider.Create();
-        var result = await unitOfWork.AddressRepository.Create(address);
+        var result = await unitOfWork.AddressRepository.Create(mapper.Map<Address>(address));
         if (result == null)
         {
             return Problem();
         }
 
         await unitOfWork.Commit();
-        return Ok(result);
+        return Ok(mapper.Map<AddressDto>(result));
     }
 
     [HttpGet]
     [OpenApiOperation(ApiBaseName + nameof(GetAllAddresses))]
-    public async Task<ActionResult<List<Address>>> GetAllAddresses()
+    public async Task<ActionResult<List<AddressDto>>> GetAllAddresses()
     {
         using var unitOfWork = unitOfWorkProvider.Create();
         var result = await unitOfWork.AddressRepository.GetAll();
-        return Ok(result);
+        return Ok(mapper.Map<ICollection<AddressDto>>(result).ToList());
     }
 
     [HttpGet("{addressId:int}")]
     [OpenApiOperation(ApiBaseName + nameof(GetAddress))]
-    public async Task<ActionResult<Address>> GetAddress(int addressId)
+    public async Task<ActionResult<AddressDto>> GetAddress(int addressId)
     {
         using var unitOfWork = unitOfWorkProvider.Create();
         var result = await unitOfWork.AddressRepository.GetById(addressId);
@@ -49,22 +51,22 @@ public class AddressController(IUnitOfWorkProvider<UnitOfWork> unitOfWorkProvide
             return NotFound();
         }
 
-        return Ok(result);
+        return Ok(mapper.Map<AddressDto>(result));
     }
 
     [HttpPut]
     [OpenApiOperation(ApiBaseName + nameof(UpdateAddress))]
-    public async Task<ActionResult<Address>> UpdateAddress(Address address)
+    public async Task<ActionResult<AddressDto>> UpdateAddress(AddressDto address)
     {
         using var unitOfWork = unitOfWorkProvider.Create();
-        var result = await unitOfWork.AddressRepository.Update(address);
+        var result = await unitOfWork.AddressRepository.Update(mapper.Map<Address>(address));
         if (result == null)
         {
             return Problem();
         }
 
         await unitOfWork.Commit();
-        return Ok(result);
+        return Ok(mapper.Map<AddressDto>(result));
     }
 
     [HttpDelete("{addressId:int}")]

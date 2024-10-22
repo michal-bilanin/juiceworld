@@ -28,6 +28,8 @@ public static class WebApiInstaller
             return new UnitOfWorkProvider(() => services.GetRequiredService<JuiceWorldDbContext>());
         });
         services.AddTransient<IQueryObject<User>, QueryObject<User>>();
+        services.AddTransient<IQueryObject<Product>, QueryObject<Product>>();
+        services.AddAutoMapper(typeof(WebApiInstaller));
         
         services.AddSwaggerGen(opt =>
         {
