@@ -14,7 +14,10 @@ namespace WebApi.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize(Roles = nameof(UserRole.Customer))]
-public class ProductController(IUnitOfWorkProvider<UnitOfWork> unitOfWorkProvider, IMapper mapper, IQueryObject<Product> queryObject) : ControllerBase
+public class ProductController(
+    IUnitOfWorkProvider<UnitOfWork> unitOfWorkProvider,
+    IMapper mapper,
+    IQueryObject<Product> queryObject) : ControllerBase
 {
     private const string ApiBaseName = "Product";
 
@@ -35,17 +38,20 @@ public class ProductController(IUnitOfWorkProvider<UnitOfWork> unitOfWorkProvide
 
     [HttpGet]
     [OpenApiOperation(ApiBaseName + nameof(GetProductByManufacturer))]
-    public async Task<ActionResult<IEnumerable<ProductDto>>> GetProductByManufacturer([FromQuery] ProductFilterDto productFilter)
+    public async Task<ActionResult<IEnumerable<ProductDto>>> GetProductByManufacturer(
+        [FromQuery] ProductFilterDto productFilter)
     {
         Enum.TryParse<ProductCategory>(productFilter.Category, true, out var categoryEnum);
         var result = await queryObject.Filter(p =>
-            // productFilter.MmanufacturerName?.contains(...) ?? true;
-            (productFilter.MmanufacturerName == null || p.Manufacturer.Name.ToLower().Contains(productFilter.MmanufacturerName.ToLower())) &&
+            (productFilter.ManufacturerName == null || p.Manufacturer.Name.Contains(productFilter.ManufacturerName,
+                StringComparison.CurrentCultureIgnoreCase)) &&
             (productFilter.Category == null || p.Category == categoryEnum) &&
             (productFilter.PriceMax == null || p.Price <= productFilter.PriceMax) &&
             (productFilter.PriceMin == null || p.Price >= productFilter.PriceMin) &&
-            (productFilter.Name == null || p.Name.ToLower().Contains(productFilter.Name.ToLower())) &&
-            (productFilter.Description == null || p.Description.ToLower().Contains(productFilter.Description.ToLower()))
+            (productFilter.Name == null ||
+             p.Name.Contains(productFilter.Name, StringComparison.CurrentCultureIgnoreCase)) &&
+            (productFilter.Description == null ||
+             p.Description.Contains(productFilter.Description, StringComparison.CurrentCultureIgnoreCase))
         ).Execute();
 
         return Ok(mapper.Map<ICollection<ProductDto>>(result).ToList());
