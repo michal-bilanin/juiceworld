@@ -43,15 +43,12 @@ public class ProductController(
     {
         Enum.TryParse<ProductCategory>(productFilter.Category, true, out var categoryEnum);
         var result = await queryObject.Filter(p =>
-            (productFilter.ManufacturerName == null || p.Manufacturer.Name.Contains(productFilter.ManufacturerName,
-                StringComparison.CurrentCultureIgnoreCase)) &&
+            (productFilter.ManufacturerName == null || p.Manufacturer.Name.ToLower().Contains(productFilter.ManufacturerName.ToLower())) &&
             (productFilter.Category == null || p.Category == categoryEnum) &&
             (productFilter.PriceMax == null || p.Price <= productFilter.PriceMax) &&
             (productFilter.PriceMin == null || p.Price >= productFilter.PriceMin) &&
-            (productFilter.Name == null ||
-             p.Name.Contains(productFilter.Name, StringComparison.CurrentCultureIgnoreCase)) &&
-            (productFilter.Description == null ||
-             p.Description.Contains(productFilter.Description, StringComparison.CurrentCultureIgnoreCase))
+            (productFilter.Name == null || p.Name.ToLower().Contains(productFilter.Name.ToLower())) &&
+            (productFilter.Description == null || p.Description.ToLower().Contains(productFilter.Description.ToLower()))
         ).Execute();
 
         return Ok(mapper.Map<ICollection<ProductDto>>(result).ToList());
