@@ -1,6 +1,11 @@
 using System.Diagnostics;
 using System.Text;
+using Infrastructure.QueryObjects;
+using Infrastructure.UnitOfWork;
 using JuiceWorld.Data;
+using JuiceWorld.Entities;
+using JuiceWorld.QueryObjects;
+using JuiceWorld.UnitOfWork;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -18,6 +23,13 @@ public static class WebApiInstaller
         services.AddControllers();
         services.AddEndpointsApiExplorer();
         services.AddTransient<AuthService>();
+        services.AddScoped<IUnitOfWorkProvider<UnitOfWork>, UnitOfWorkProvider>((services) =>
+        {
+            return new UnitOfWorkProvider(() => services.GetRequiredService<JuiceWorldDbContext>());
+        });
+        services.AddTransient<IQueryObject<User>, QueryObject<User>>();
+        services.AddTransient<IQueryObject<Product>, QueryObject<Product>>();
+        services.AddAutoMapper(typeof(WebApiInstaller));
 
         services.AddSwaggerGen(opt =>
         {

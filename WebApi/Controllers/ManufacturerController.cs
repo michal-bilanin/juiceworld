@@ -1,5 +1,7 @@
+using AutoMapper;
 using Infrastructure.UnitOfWork;
 using JuiceWorld.Entities;
+using JuiceWorld.Enums;
 using JuiceWorld.UnitOfWork;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,38 +11,38 @@ namespace WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "admin")]
-public class ManufacturerController(IUnitOfWorkProvider<UnitOfWork> unitOfWorkProvider) : ControllerBase
+[Authorize(Roles = nameof(UserRole.Customer))]
+public class ManufacturerController(IUnitOfWorkProvider<UnitOfWork> unitOfWorkProvider, IMapper mapper) : ControllerBase
 {
     private const string ApiBaseName = "Manufacturer";
 
     [HttpPost]
     [OpenApiOperation(ApiBaseName + nameof(CreateManufacturer))]
-    public async Task<ActionResult<Manufacturer>> CreateManufacturer(Manufacturer manufacturer)
+    public async Task<ActionResult<ManufacturerDto>> CreateManufacturer(ManufacturerDto manufacturer)
     {
         using var unitOfWork = unitOfWorkProvider.Create();
-        var result = await unitOfWork.ManufacturerRepository.Create(manufacturer);
+        var result = await unitOfWork.ManufacturerRepository.Create(mapper.Map<Manufacturer>(manufacturer));
         if (result == null)
         {
             return Problem();
         }
 
         await unitOfWork.Commit();
-        return Ok(result);
+        return Ok(mapper.Map<ManufacturerDto>(result));
     }
 
     [HttpGet]
     [OpenApiOperation(ApiBaseName + nameof(GetAllManufacturers))]
-    public async Task<ActionResult<List<Manufacturer>>> GetAllManufacturers()
+    public async Task<ActionResult<List<ManufacturerDto>>> GetAllManufacturers()
     {
         using var unitOfWork = unitOfWorkProvider.Create();
         var result = await unitOfWork.ManufacturerRepository.GetAll();
-        return Ok(result);
+        return Ok(mapper.Map<ICollection<ManufacturerDto>>(result).ToList());
     }
 
     [HttpGet("{manufacturerId:int}")]
     [OpenApiOperation(ApiBaseName + nameof(GetManufacturer))]
-    public async Task<ActionResult<Manufacturer>> GetManufacturer(int manufacturerId)
+    public async Task<ActionResult<ManufacturerDto>> GetManufacturer(int manufacturerId)
     {
         using var unitOfWork = unitOfWorkProvider.Create();
         var result = await unitOfWork.ManufacturerRepository.GetById(manufacturerId);
@@ -49,15 +51,15 @@ public class ManufacturerController(IUnitOfWorkProvider<UnitOfWork> unitOfWorkPr
             return NotFound();
         }
 
-        return Ok(result);
+        return Ok(mapper.Map<ManufacturerDto>(result));
     }
 
     [HttpPut]
     [OpenApiOperation(ApiBaseName + nameof(UpdateManufacturer))]
-    public async Task<ActionResult<Manufacturer>> UpdateManufacturer(Manufacturer manufacturer)
+    public async Task<ActionResult<ManufacturerDto>> UpdateManufacturer(ManufacturerDto manufacturer)
     {
         using var unitOfWork = unitOfWorkProvider.Create();
-        if (!await unitOfWork.ManufacturerRepository.Update(manufacturer))
+        if (!await unitOfWork.ManufacturerRepository.Update(mapper.Map<Manufacturer>(manufacturer)))
         {
             return NotFound();
         }

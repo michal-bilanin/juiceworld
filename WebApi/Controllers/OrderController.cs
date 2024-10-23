@@ -1,5 +1,7 @@
+using AutoMapper;
 using Infrastructure.UnitOfWork;
 using JuiceWorld.Entities;
+using JuiceWorld.Enums;
 using JuiceWorld.UnitOfWork;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,38 +11,38 @@ namespace WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "user")]
-public class OrderController(IUnitOfWorkProvider<UnitOfWork> unitOfWorkProvider) : ControllerBase
+[Authorize(Roles = nameof(UserRole.Customer))]
+public class OrderController(IUnitOfWorkProvider<UnitOfWork> unitOfWorkProvider, IMapper mapper) : ControllerBase
 {
     private const string ApiBaseName = "Order";
 
     [HttpPost]
     [OpenApiOperation(ApiBaseName + nameof(CreateOrder))]
-    public async Task<ActionResult<Order>> CreateOrder(Order order)
+    public async Task<ActionResult<OrderDto>> CreateOrder(OrderDto order)
     {
         using var unitOfWork = unitOfWorkProvider.Create();
-        var result = await unitOfWork.OrderRepository.Create(order);
+        var result = await unitOfWork.OrderRepository.Create(mapper.Map<Order>(order));
         if (result == null)
         {
             return Problem();
         }
 
         await unitOfWork.Commit();
-        return Ok(result);
+        return Ok(mapper.Map<OrderDto>(result));
     }
 
     [HttpGet]
     [OpenApiOperation(ApiBaseName + nameof(GetAllOrders))]
-    public async Task<ActionResult<List<Order>>> GetAllOrders()
+    public async Task<ActionResult<List<OrderDto>>> GetAllOrders()
     {
         using var unitOfWork = unitOfWorkProvider.Create();
         var result = await unitOfWork.OrderRepository.GetAll();
-        return Ok(result);
+        return Ok(mapper.Map<ICollection<OrderDto>>(result).ToList());
     }
 
     [HttpGet("{orderId:int}")]
     [OpenApiOperation(ApiBaseName + nameof(GetOrder))]
-    public async Task<ActionResult<Order>> GetOrder(int orderId)
+    public async Task<ActionResult<OrderDto>> GetOrder(int orderId)
     {
         using var unitOfWork = unitOfWorkProvider.Create();
         var result = await unitOfWork.OrderRepository.GetById(orderId);
@@ -49,15 +51,15 @@ public class OrderController(IUnitOfWorkProvider<UnitOfWork> unitOfWorkProvider)
             return NotFound();
         }
 
-        return Ok(result);
+        return Ok(mapper.Map<OrderDto>(result));
     }
 
     [HttpPut]
     [OpenApiOperation(ApiBaseName + nameof(UpdateOrder))]
-    public async Task<ActionResult<Order>> UpdateOrder(Order order)
+    public async Task<ActionResult<OrderDto>> UpdateOrder(OrderDto order)
     {
         using var unitOfWork = unitOfWorkProvider.Create();
-        if (!await unitOfWork.OrderRepository.Update(order))
+        if (!await unitOfWork.OrderRepository.Update(mapper.Map<Order>(order)))
         {
             return NotFound();
         }

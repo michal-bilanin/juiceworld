@@ -1,5 +1,7 @@
+using AutoMapper;
 using Infrastructure.UnitOfWork;
 using JuiceWorld.Entities;
+using JuiceWorld.Enums;
 using JuiceWorld.UnitOfWork;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,38 +11,38 @@ namespace WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "user")]
-public class WishListItemController(IUnitOfWorkProvider<UnitOfWork> unitOfWorkProvider) : ControllerBase
+[Authorize(Roles = nameof(UserRole.Customer))]
+public class WishListItemController(IUnitOfWorkProvider<UnitOfWork> unitOfWorkProvider, IMapper mapper) : ControllerBase
 {
     private const string ApiBaseName = "WishListItem";
 
     [HttpPost]
     [OpenApiOperation(ApiBaseName + nameof(CreateWishListItem))]
-    public async Task<ActionResult<WishListItem>> CreateWishListItem(WishListItem wishListItem)
+    public async Task<ActionResult<WishListItemDto>> CreateWishListItem(WishListItemDto wishListItem)
     {
         using var unitOfWork = unitOfWorkProvider.Create();
-        var result = await unitOfWork.WishListItemRepository.Create(wishListItem);
+        var result = await unitOfWork.WishListItemRepository.Create(mapper.Map<WishListItem>(wishListItem));
         if (result == null)
         {
             return Problem();
         }
 
         await unitOfWork.Commit();
-        return Ok(result);
+        return Ok(mapper.Map<WishListItemDto>(result));
     }
 
     [HttpGet]
     [OpenApiOperation(ApiBaseName + nameof(GetAllWishListItems))]
-    public async Task<ActionResult<List<WishListItem>>> GetAllWishListItems()
+    public async Task<ActionResult<List<WishListItemDto>>> GetAllWishListItems()
     {
         using var unitOfWork = unitOfWorkProvider.Create();
         var result = await unitOfWork.WishListItemRepository.GetAll();
-        return Ok(result);
+        return Ok(mapper.Map<ICollection<WishListItemDto>>(result).ToList());
     }
 
     [HttpGet("{wishListItemId:int}")]
     [OpenApiOperation(ApiBaseName + nameof(GetWishListItem))]
-    public async Task<ActionResult<WishListItem>> GetWishListItem(int wishListItemId)
+    public async Task<ActionResult<WishListItemDto>> GetWishListItem(int wishListItemId)
     {
         using var unitOfWork = unitOfWorkProvider.Create();
         var result = await unitOfWork.WishListItemRepository.GetById(wishListItemId);
@@ -49,15 +51,15 @@ public class WishListItemController(IUnitOfWorkProvider<UnitOfWork> unitOfWorkPr
             return NotFound();
         }
 
-        return Ok(result);
+        return Ok(mapper.Map<WishListItemDto>(result));
     }
 
     [HttpPut]
     [OpenApiOperation(ApiBaseName + nameof(UpdateWishListItem))]
-    public async Task<ActionResult<WishListItem>> UpdateWishListItem(WishListItem wishListItem)
+    public async Task<ActionResult<WishListItemDto>> UpdateWishListItem(WishListItemDto wishListItem)
     {
         using var unitOfWork = unitOfWorkProvider.Create();
-        if (!await unitOfWork.WishListItemRepository.Update(wishListItem))
+        if (!await unitOfWork.WishListItemRepository.Update(mapper.Map<WishListItem>(wishListItem)))
         {
             return Problem();
         }

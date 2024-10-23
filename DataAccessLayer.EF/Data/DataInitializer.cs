@@ -145,7 +145,7 @@ public static class DataInitializer
             PasswordHashRounds = 10
         };
 
-        user.PasswordHash = AuthUtils.HashPassword(password, user.PasswordSalt);
+        user.PasswordHash = AuthUtils.HashPassword(password, user.PasswordSalt, user.PasswordHashRounds);
         return user;
     }
 
