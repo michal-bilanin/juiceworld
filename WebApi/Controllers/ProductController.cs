@@ -38,7 +38,7 @@ public class ProductController(IUnitOfWorkProvider<UnitOfWork> unitOfWorkProvide
     public async Task<ActionResult<IEnumerable<ProductDto>>> GetProductByManufacturer([FromQuery] ProductFilterDto productFilter)
     {
         var result = await queryObject.Filter(p =>
-                // productFilter.MmanufacturerName?.contains(...) ?? true;
+            // productFilter.MmanufacturerName?.contains(...) ?? true;
             (productFilter.MmanufacturerName == null || p.Manufacturer.Name.ToLower().Contains(productFilter.MmanufacturerName.ToLower())) &&
             (productFilter.Category == null || p.Category == productFilter.Category) &&
             (productFilter.PriceMax == null || p.Price <= productFilter.PriceMax) &&
