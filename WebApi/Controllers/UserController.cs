@@ -1,8 +1,7 @@
 using AutoMapper;
-using Infrastructure.UnitOfWork;
+using Infrastructure.Repositories;
 using JuiceWorld.Entities;
 using JuiceWorld.Enums;
-using JuiceWorld.UnitOfWork;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
@@ -12,7 +11,7 @@ namespace WebApi.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize(Roles = nameof(UserRole.Customer))]
-public class UserController(IUnitOfWorkProvider<UnitOfWork> unitOfWorkProvider, IMapper mapper) : ControllerBase
+public class UserController(IRepository<User> userRepository, IMapper mapper) : ControllerBase
 {
     private const string ApiBaseName = "User";
 
@@ -20,23 +19,15 @@ public class UserController(IUnitOfWorkProvider<UnitOfWork> unitOfWorkProvider, 
     [OpenApiOperation(ApiBaseName + nameof(CreateUser))]
     public async Task<ActionResult<UserDto>> CreateUser(UserDto user)
     {
-        using var unitOfWork = unitOfWorkProvider.Create();
-        var result = await unitOfWork.UserRepository.Create(mapper.Map<User>(user));
-        if (result == null)
-        {
-            return Problem();
-        }
-
-        await unitOfWork.Commit();
-        return Ok(mapper.Map<UserDto>(result));
+        var result = await userRepository.Create(mapper.Map<User>(user));
+        return result == null ? Problem() : Ok(mapper.Map<UserDto>(result));
     }
 
     [HttpGet]
     [OpenApiOperation(ApiBaseName + nameof(GetAllUsers))]
     public async Task<ActionResult<List<UserDto>>> GetAllUsers()
     {
-        using var unitOfWork = unitOfWorkProvider.Create();
-        var result = await unitOfWork.UserRepository.GetAll();
+        var result = await userRepository.GetAll();
         return Ok(mapper.Map<ICollection<UserDto>>(result).ToList());
     }
 
@@ -44,42 +35,23 @@ public class UserController(IUnitOfWorkProvider<UnitOfWork> unitOfWorkProvider, 
     [OpenApiOperation(ApiBaseName + nameof(GetUser))]
     public async Task<ActionResult<UserDto>> GetUser(int userId)
     {
-        using var unitOfWork = unitOfWorkProvider.Create();
-        var result = await unitOfWork.UserRepository.GetById(userId);
-        if (result == null)
-        {
-            return NotFound();
-        }
-
-        return Ok(mapper.Map<UserDto>(result));
+        var result = await userRepository.GetById(userId);
+        return result == null ? NotFound() : Ok(mapper.Map<UserDto>(result));
     }
 
     [HttpPut]
     [OpenApiOperation(ApiBaseName + nameof(UpdateUser))]
     public async Task<ActionResult<UserDto>> UpdateUser(UserDto user)
     {
-        using var unitOfWork = unitOfWorkProvider.Create();
-        if (!await unitOfWork.UserRepository.Update(mapper.Map<User>(user)))
-        {
-            return Problem();
-        }
-
-        await unitOfWork.Commit();
-        return Ok(user);
+        var result = await userRepository.Update(mapper.Map<User>(user));
+        return result == null ? Problem() : Ok(mapper.Map<UserDto>(result));
     }
 
     [HttpDelete("{userId:int}")]
     [OpenApiOperation(ApiBaseName + nameof(DeleteUser))]
     public async Task<ActionResult> DeleteUser(int userId)
     {
-        using var unitOfWork = unitOfWorkProvider.Create();
-        var result = await unitOfWork.UserRepository.Delete(userId);
-        if (!result)
-        {
-            return Problem();
-        }
-
-        await unitOfWork.Commit();
-        return Ok();
+        var result = await userRepository.Delete(userId);
+        return result ? Ok() : NotFound();
     }
 }

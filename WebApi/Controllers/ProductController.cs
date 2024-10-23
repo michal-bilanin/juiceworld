@@ -1,9 +1,8 @@
 using AutoMapper;
 using Infrastructure.QueryObjects;
-using Infrastructure.UnitOfWork;
+using Infrastructure.Repositories;
 using JuiceWorld.Entities;
 using JuiceWorld.Enums;
-using JuiceWorld.UnitOfWork;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
@@ -15,7 +14,7 @@ namespace WebApi.Controllers;
 [Route("api/[controller]")]
 [Authorize(Roles = nameof(UserRole.Customer))]
 public class ProductController(
-    IUnitOfWorkProvider<UnitOfWork> unitOfWorkProvider,
+    IRepository<Product> productRepository,
     IMapper mapper,
     IQueryObject<Product> queryObject) : ControllerBase
 {
@@ -25,15 +24,8 @@ public class ProductController(
     [OpenApiOperation(ApiBaseName + nameof(CreateProduct))]
     public async Task<ActionResult<ProductDto>> CreateProduct(ProductDto product)
     {
-        using var unitOfWork = unitOfWorkProvider.Create();
-        var result = await unitOfWork.ProductRepository.Create(mapper.Map<Product>(product));
-        if (result == null)
-        {
-            return Problem();
-        }
-
-        await unitOfWork.Commit();
-        return Ok(mapper.Map<ProductDto>(result));
+        var result = await productRepository.Create(mapper.Map<Product>(product));
+        return result == null ? Problem() : Ok(mapper.Map<ProductDto>(result));
     }
 
     [HttpGet]
@@ -43,7 +35,8 @@ public class ProductController(
     {
         Enum.TryParse<ProductCategory>(productFilter.Category, true, out var categoryEnum);
         var result = await queryObject.Filter(p =>
-            (productFilter.ManufacturerName == null || p.Manufacturer.Name.ToLower().Contains(productFilter.ManufacturerName.ToLower())) &&
+            (productFilter.ManufacturerName == null ||
+             p.Manufacturer.Name.ToLower().Contains(productFilter.ManufacturerName.ToLower())) &&
             (productFilter.Category == null || p.Category == categoryEnum) &&
             (productFilter.PriceMax == null || p.Price <= productFilter.PriceMax) &&
             (productFilter.PriceMin == null || p.Price >= productFilter.PriceMin) &&
@@ -58,42 +51,23 @@ public class ProductController(
     [OpenApiOperation(ApiBaseName + nameof(GetProduct))]
     public async Task<ActionResult<ProductDto>> GetProduct(int productId)
     {
-        using var unitOfWork = unitOfWorkProvider.Create();
-        var result = await unitOfWork.ProductRepository.GetById(productId);
-        if (result == null)
-        {
-            return NotFound();
-        }
-
-        return Ok(mapper.Map<ProductDto>(result));
+        var result = await productRepository.GetById(productId);
+        return result == null ? NotFound() : Ok(mapper.Map<ProductDto>(result));
     }
 
     [HttpPut]
     [OpenApiOperation(ApiBaseName + nameof(UpdateProduct))]
     public async Task<ActionResult<ProductDto>> UpdateProduct(ProductDto product)
     {
-        using var unitOfWork = unitOfWorkProvider.Create();
-        if (!await unitOfWork.ProductRepository.Update(mapper.Map<Product>(product)))
-        {
-            return NotFound();
-        }
-
-        await unitOfWork.Commit();
-        return Ok(product);
+        var result = await productRepository.Update(mapper.Map<Product>(product));
+        return result == null ? Problem() : Ok(mapper.Map<ProductDto>(result));
     }
 
     [HttpDelete("{productId:int}")]
     [OpenApiOperation(ApiBaseName + nameof(DeleteProduct))]
     public async Task<ActionResult<bool>> DeleteProduct(int productId)
     {
-        using var unitOfWork = unitOfWorkProvider.Create();
-        var result = await unitOfWork.ProductRepository.Delete(productId);
-        if (!result)
-        {
-            return NotFound();
-        }
-
-        await unitOfWork.Commit();
-        return Ok(result);
+        var result = await productRepository.Delete(productId);
+        return result ? Ok() : NotFound();
     }
 }

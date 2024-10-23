@@ -1,8 +1,7 @@
 using AutoMapper;
-using Infrastructure.UnitOfWork;
+using Infrastructure.Repositories;
 using JuiceWorld.Entities;
 using JuiceWorld.Enums;
-using JuiceWorld.UnitOfWork;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
@@ -12,7 +11,7 @@ namespace WebApi.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize(Roles = nameof(UserRole.Customer))]
-public class ReviewController(IUnitOfWorkProvider<UnitOfWork> unitOfWorkProvider, IMapper mapper) : ControllerBase
+public class ReviewController(IRepository<Review> reviewRepository, IMapper mapper) : ControllerBase
 {
     private const string ApiBaseName = "Review";
 
@@ -20,23 +19,15 @@ public class ReviewController(IUnitOfWorkProvider<UnitOfWork> unitOfWorkProvider
     [OpenApiOperation(ApiBaseName + nameof(CreateReview))]
     public async Task<ActionResult<ReviewDto>> CreateReview(ReviewDto review)
     {
-        using var unitOfWork = unitOfWorkProvider.Create();
-        var result = await unitOfWork.ReviewRepository.Create(mapper.Map<Review>(review));
-        if (result == null)
-        {
-            return Problem();
-        }
-
-        await unitOfWork.Commit();
-        return Ok(mapper.Map<ReviewDto>(result));
+        var result = await reviewRepository.Create(mapper.Map<Review>(review));
+        return result == null ? Problem() : Ok(mapper.Map<ReviewDto>(result));
     }
 
     [HttpGet]
     [OpenApiOperation(ApiBaseName + nameof(GetAllReviews))]
     public async Task<ActionResult<List<ReviewDto>>> GetAllReviews()
     {
-        using var unitOfWork = unitOfWorkProvider.Create();
-        var result = await unitOfWork.ReviewRepository.GetAll();
+        var result = await reviewRepository.GetAll();
         return Ok(mapper.Map<ICollection<ReviewDto>>(result).ToList());
     }
 
@@ -44,42 +35,23 @@ public class ReviewController(IUnitOfWorkProvider<UnitOfWork> unitOfWorkProvider
     [OpenApiOperation(ApiBaseName + nameof(GetReview))]
     public async Task<ActionResult<ReviewDto>> GetReview(int reviewId)
     {
-        using var unitOfWork = unitOfWorkProvider.Create();
-        var result = await unitOfWork.ReviewRepository.GetById(reviewId);
-        if (result == null)
-        {
-            return NotFound();
-        }
-
-        return Ok(mapper.Map<ReviewDto>(result));
+        var result = await reviewRepository.GetById(reviewId);
+        return result == null ? NotFound() : Ok(mapper.Map<ReviewDto>(result));
     }
 
     [HttpPut]
     [OpenApiOperation(ApiBaseName + nameof(UpdateReview))]
     public async Task<ActionResult<ReviewDto>> UpdateReview(ReviewDto review)
     {
-        using var unitOfWork = unitOfWorkProvider.Create();
-        if (!await unitOfWork.ReviewRepository.Update(mapper.Map<Review>(review)))
-        {
-            return NotFound();
-        }
-
-        await unitOfWork.Commit();
-        return Ok(review);
+        var result = await reviewRepository.Update(mapper.Map<Review>(review));
+        return result == null ? Problem() : Ok(mapper.Map<ReviewDto>(result));
     }
 
     [HttpDelete("{reviewId:int}")]
     [OpenApiOperation(ApiBaseName + nameof(DeleteReview))]
     public async Task<ActionResult<bool>> DeleteReview(int reviewId)
     {
-        using var unitOfWork = unitOfWorkProvider.Create();
-        var result = await unitOfWork.ReviewRepository.Delete(reviewId);
-        if (!result)
-        {
-            return NotFound();
-        }
-
-        await unitOfWork.Commit();
-        return Ok(result);
+        var result = await reviewRepository.Delete(reviewId);
+        return result ? Ok() : NotFound();
     }
 }

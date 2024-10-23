@@ -1,11 +1,11 @@
 using System.Diagnostics;
 using System.Text;
 using Infrastructure.QueryObjects;
-using Infrastructure.UnitOfWork;
+using Infrastructure.Repositories;
 using JuiceWorld.Data;
 using JuiceWorld.Entities;
 using JuiceWorld.QueryObjects;
-using JuiceWorld.UnitOfWork;
+using JuiceWorld.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -22,13 +22,22 @@ public static class WebApiInstaller
         services.AddLogging();
         services.AddControllers();
         services.AddEndpointsApiExplorer();
+
         services.AddTransient<AuthService>();
-        services.AddScoped<IUnitOfWorkProvider<UnitOfWork>, UnitOfWorkProvider>((services) =>
-        {
-            return new UnitOfWorkProvider(() => services.GetRequiredService<JuiceWorldDbContext>());
-        });
+
         services.AddTransient<IQueryObject<User>, QueryObject<User>>();
         services.AddTransient<IQueryObject<Product>, QueryObject<Product>>();
+
+        services.AddTransient<IRepository<User>, Repository<User>>();
+        services.AddTransient<IRepository<Address>, Repository<Address>>();
+        services.AddTransient<IRepository<CartItem>, Repository<CartItem>>();
+        services.AddTransient<IRepository<Manufacturer>, Repository<Manufacturer>>();
+        services.AddTransient<IRepository<Order>, Repository<Order>>();
+        services.AddTransient<IRepository<OrderProduct>, Repository<OrderProduct>>();
+        services.AddTransient<IRepository<Product>, Repository<Product>>();
+        services.AddTransient<IRepository<Review>, Repository<Review>>();
+        services.AddTransient<IRepository<WishListItem>, Repository<WishListItem>>();
+
         services.AddAutoMapper(typeof(WebApiInstaller));
 
         services.AddSwaggerGen(opt =>
@@ -37,7 +46,8 @@ public static class WebApiInstaller
             opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
                 In = ParameterLocation.Header,
-                Description = "Please enter the token returned from the auth endpoint (only the token, without the Bearer prefix)",
+                Description =
+                    "Please enter the token returned from the auth endpoint (only the token, without the Bearer prefix)",
                 Name = "Authorization",
                 Type = SecuritySchemeType.Http,
                 BearerFormat = "JWT",
@@ -51,8 +61,8 @@ public static class WebApiInstaller
                     {
                         Reference = new OpenApiReference
                         {
-                            Type=ReferenceType.SecurityScheme,
-                            Id="Bearer"
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
                         }
                     },
                     []
@@ -62,10 +72,8 @@ public static class WebApiInstaller
 
         var secret = Environment.GetEnvironmentVariable(EnvironmentConstants.JwtSecret);
         if (secret == null)
-        {
             throw new Exception($"JWT secret is null, make sure it is specified " +
                                 $"in the environment variable: JWT_SECRET");
-        }
 
         services.AddAuthentication(x =>
         {
@@ -75,7 +83,6 @@ public static class WebApiInstaller
         {
             x.TokenValidationParameters = new TokenValidationParameters
             {
-
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret)),
                 ValidateIssuer = false,
                 ValidateAudience = false
@@ -87,11 +94,9 @@ public static class WebApiInstaller
             var connectionString = Environment.GetEnvironmentVariable(EnvironmentConstants.DbConnectionString);
 
             if (connectionString == null)
-            {
                 throw new Exception(
                     $"Connection string is null, make sure it is specified " +
                     $"in the environment variable: {EnvironmentConstants.DbConnectionString}");
-            }
 
             options
                 .UseNpgsql(connectionString)

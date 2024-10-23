@@ -6,6 +6,6 @@ public interface IRepository<TEntity>
     Task<TEntity?> Create(TEntity entity);
     Task<TEntity?> GetById(object id);
     Task<IEnumerable<TEntity>> GetAll();
-    Task<bool> Update(TEntity entity);
+    Task<TEntity?> Update(TEntity entity);
     Task<bool> Delete(object id);
 }

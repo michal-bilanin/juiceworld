@@ -13,6 +13,7 @@ public class Repository<TEntity>(JuiceWorldDbContext context) : IRepository<TEnt
     public async Task<TEntity?> Create(TEntity entity)
     {
         var result = await _dbSet.AddAsync(entity);
+        await context.SaveChangesAsync();
         return result.Entity;
     }
 
@@ -26,16 +27,17 @@ public class Repository<TEntity>(JuiceWorldDbContext context) : IRepository<TEnt
         return await _dbSet.Where(e => e.DeletedAt == null).ToListAsync();
     }
 
-    public async Task<bool> Update(TEntity entity)
+    public async Task<TEntity?> Update(TEntity entity)
     {
         var existingEntity = await _dbSet.FindAsync(entity.Id);
-        if (existingEntity is { DeletedAt: not null })
+        if (existingEntity is null || existingEntity.DeletedAt != null)
         {
-            return false;
+            return null;
         }
 
         _dbSet.Update(entity);
-        return true;
+        await context.SaveChangesAsync();
+        return entity;
     }
 
     public async Task<bool> Delete(object id)
@@ -47,6 +49,7 @@ public class Repository<TEntity>(JuiceWorldDbContext context) : IRepository<TEnt
         }
 
         _dbSet.Remove(entity);
+        await context.SaveChangesAsync();
         return true;
     }
 }
