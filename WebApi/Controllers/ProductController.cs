@@ -37,13 +37,14 @@ public class ProductController(IUnitOfWorkProvider<UnitOfWork> unitOfWorkProvide
     [OpenApiOperation(ApiBaseName + nameof(GetProductByManufacturer))]
     public async Task<ActionResult<IEnumerable<ProductDto>>> GetProductByManufacturer([FromQuery] ProductFilterDto productFilter)
     {
+        Enum.TryParse<ProductCategory>(productFilter.Category, true, out var categoryEnum);
         var result = await queryObject.Filter(p =>
             // productFilter.MmanufacturerName?.contains(...) ?? true;
             (productFilter.MmanufacturerName == null || p.Manufacturer.Name.ToLower().Contains(productFilter.MmanufacturerName.ToLower())) &&
-            (productFilter.Category == null || p.Category == productFilter.Category) &&
+            (productFilter.Category == null || p.Category == categoryEnum) &&
             (productFilter.PriceMax == null || p.Price <= productFilter.PriceMax) &&
             (productFilter.PriceMin == null || p.Price >= productFilter.PriceMin) &&
-            (productFilter.Name == null || p.Name.ToLower() == productFilter.Name.ToLower()) &&
+            (productFilter.Name == null || p.Name.ToLower().Contains(productFilter.Name.ToLower())) &&
             (productFilter.Description == null || p.Description.ToLower().Contains(productFilter.Description.ToLower()))
         ).Execute();
 
