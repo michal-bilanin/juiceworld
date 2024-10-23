@@ -39,7 +39,11 @@ public class ProductController(IUnitOfWorkProvider<UnitOfWork> unitOfWorkProvide
     {
         var result = await queryObject.Filter(p =>
             (productFilter.MmanufacturerName == null || p.Manufacturer.Name == productFilter.MmanufacturerName) &&
-            (productFilter.Category == null || p.Category == productFilter.Category)
+            (productFilter.Category == null || p.Category == productFilter.Category) &&
+            (productFilter.PriceMax == null || p.Price <= productFilter.PriceMax) &&
+            (productFilter.PriceMin == null || p.Price >= productFilter.PriceMin) &&
+            (productFilter.Name == null || p.Name.ToLower() == productFilter.Name.ToLower()) &&
+            (productFilter.Description == null || p.Description.ToLower().Contains(productFilter.Description.ToLower()))
         ).Execute();
 
         return Ok(mapper.Map<ICollection<ProductDto>>(result).ToList());
