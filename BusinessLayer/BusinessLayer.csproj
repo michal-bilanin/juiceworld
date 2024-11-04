@@ -8,6 +8,11 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Commons\Commons.csproj" />
+      <ProjectReference Include="..\DataAccessLayer.EF\DataAccessLayer.EF.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="AutoMapper" Version="13.0.1" />
     </ItemGroup>
 
 </Project>
