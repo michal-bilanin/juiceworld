@@ -1,4 +1,5 @@
-﻿using JuiceWorld.Entities;
+﻿using System.Linq.Expressions;
+using JuiceWorld.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace JuiceWorld.Data;
@@ -166,6 +167,25 @@ public class JuiceWorldDbContext(DbContextOptions<JuiceWorldDbContext> options)
         modelBuilder.Entity<User>()
             .Property(u => u.UserRole)
             .HasConversion<string>();
+
+        // Global query filter for soft-deleted entities
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            if (!typeof(BaseEntity).IsAssignableFrom(entityType.ClrType))
+            {
+                continue;
+            }
+
+            var parameter = Expression.Parameter(entityType.ClrType, "e");
+            var filter = Expression.Lambda(
+                Expression.Equal(
+                    Expression.Property(parameter, nameof(BaseEntity.DeletedAt)),
+                    Expression.Constant(null)
+                ),
+                parameter
+            );
+            modelBuilder.Entity(entityType.ClrType).HasQueryFilter(filter);
+        }
 
         base.OnModelCreating(modelBuilder);
 
