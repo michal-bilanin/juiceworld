@@ -1,9 +1,9 @@
-﻿using Infrastructure.QueryObjects;
+﻿using BusinessLayer.DTOs;
+using Infrastructure.QueryObjects;
 using JuiceWorld.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
-using WebApi.Models;
 using WebApi.Services;
 
 namespace WebApi.Controllers;

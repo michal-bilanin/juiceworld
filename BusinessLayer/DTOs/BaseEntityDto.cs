@@ -1,6 +1,4 @@
-using System.ComponentModel.DataAnnotations;
-
-namespace JuiceWorld.Entities;
+namespace BusinessLayer.DTOs;
 
 /**
  * Base entity for all entities in the database.

@@ -1,4 +1,4 @@
-﻿namespace JuiceWorld.Entities;
+﻿namespace BusinessLayer.DTOs;
 
 public class WishListItemDto : BaseEntityDto
 {

@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-namespace JuiceWorld.Entities;
+﻿namespace BusinessLayer.DTOs;
 
 public class CartItemDto : BaseEntityDto
 {

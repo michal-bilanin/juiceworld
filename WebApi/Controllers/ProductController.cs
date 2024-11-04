@@ -1,4 +1,5 @@
 using AutoMapper;
+using BusinessLayer.DTOs;
 using Infrastructure.QueryObjects;
 using Infrastructure.Repositories;
 using JuiceWorld.Entities;
@@ -6,7 +7,6 @@ using JuiceWorld.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
-using WebApi.Models;
 
 namespace WebApi.Controllers;
 
