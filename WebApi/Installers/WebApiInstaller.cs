@@ -72,8 +72,10 @@ public static class WebApiInstaller
 
         var secret = Environment.GetEnvironmentVariable(EnvironmentConstants.JwtSecret);
         if (secret == null)
+        {
             throw new Exception($"JWT secret is null, make sure it is specified " +
                                 $"in the environment variable: JWT_SECRET");
+        }
 
         services.AddAuthentication(x =>
         {
