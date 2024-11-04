@@ -24,7 +24,7 @@ public class ProductController(
     [OpenApiOperation(ApiBaseName + nameof(CreateProduct))]
     public async Task<ActionResult<ProductDto>> CreateProduct(ProductDto product)
     {
-        var result = await productRepository.Create(mapper.Map<Product>(product));
+        var result = await productRepository.CreateAsync(mapper.Map<Product>(product));
         return result == null ? Problem() : Ok(mapper.Map<ProductDto>(result));
     }
 
@@ -51,7 +51,7 @@ public class ProductController(
     [OpenApiOperation(ApiBaseName + nameof(GetProduct))]
     public async Task<ActionResult<ProductDto>> GetProduct(int productId)
     {
-        var result = await productRepository.GetById(productId);
+        var result = await productRepository.GetByIdAsync(productId);
         return result == null ? NotFound() : Ok(mapper.Map<ProductDto>(result));
     }
 
@@ -59,7 +59,7 @@ public class ProductController(
     [OpenApiOperation(ApiBaseName + nameof(UpdateProduct))]
     public async Task<ActionResult<ProductDto>> UpdateProduct(ProductDto product)
     {
-        var result = await productRepository.Update(mapper.Map<Product>(product));
+        var result = await productRepository.UpdateAsync(mapper.Map<Product>(product));
         return result == null ? Problem() : Ok(mapper.Map<ProductDto>(result));
     }
 
@@ -67,7 +67,7 @@ public class ProductController(
     [OpenApiOperation(ApiBaseName + nameof(DeleteProduct))]
     public async Task<ActionResult<bool>> DeleteProduct(int productId)
     {
-        var result = await productRepository.Delete(productId);
+        var result = await productRepository.DeleteAsync(productId);
         return result ? Ok() : NotFound();
     }
 }

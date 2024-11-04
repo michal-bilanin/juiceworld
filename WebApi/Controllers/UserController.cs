@@ -19,7 +19,7 @@ public class UserController(IRepository<User> userRepository, IMapper mapper) : 
     [OpenApiOperation(ApiBaseName + nameof(CreateUser))]
     public async Task<ActionResult<UserDto>> CreateUser(UserDto user)
     {
-        var result = await userRepository.Create(mapper.Map<User>(user));
+        var result = await userRepository.CreateAsync(mapper.Map<User>(user));
         return result == null ? Problem() : Ok(mapper.Map<UserDto>(result));
     }
 
@@ -27,7 +27,7 @@ public class UserController(IRepository<User> userRepository, IMapper mapper) : 
     [OpenApiOperation(ApiBaseName + nameof(GetAllUsers))]
     public async Task<ActionResult<List<UserDto>>> GetAllUsers()
     {
-        var result = await userRepository.GetAll();
+        var result = await userRepository.GetAllAsync();
         return Ok(mapper.Map<ICollection<UserDto>>(result).ToList());
     }
 
@@ -35,7 +35,7 @@ public class UserController(IRepository<User> userRepository, IMapper mapper) : 
     [OpenApiOperation(ApiBaseName + nameof(GetUser))]
     public async Task<ActionResult<UserDto>> GetUser(int userId)
     {
-        var result = await userRepository.GetById(userId);
+        var result = await userRepository.GetByIdAsync(userId);
         return result == null ? NotFound() : Ok(mapper.Map<UserDto>(result));
     }
 
@@ -43,7 +43,7 @@ public class UserController(IRepository<User> userRepository, IMapper mapper) : 
     [OpenApiOperation(ApiBaseName + nameof(UpdateUser))]
     public async Task<ActionResult<UserDto>> UpdateUser(UserDto user)
     {
-        var result = await userRepository.Update(mapper.Map<User>(user));
+        var result = await userRepository.UpdateAsync(mapper.Map<User>(user));
         return result == null ? Problem() : Ok(mapper.Map<UserDto>(result));
     }
 
@@ -51,7 +51,7 @@ public class UserController(IRepository<User> userRepository, IMapper mapper) : 
     [OpenApiOperation(ApiBaseName + nameof(DeleteUser))]
     public async Task<ActionResult> DeleteUser(int userId)
     {
-        var result = await userRepository.Delete(userId);
+        var result = await userRepository.DeleteAsync(userId);
         return result ? Ok() : NotFound();
     }
 }

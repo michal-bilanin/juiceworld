@@ -3,9 +3,9 @@ namespace Infrastructure.Repositories;
 public interface IRepository<TEntity>
     where TEntity : class
 {
-    Task<TEntity?> Create(TEntity entity);
-    Task<TEntity?> GetById(object id);
-    Task<IEnumerable<TEntity>> GetAll();
-    Task<TEntity?> Update(TEntity entity);
-    Task<bool> Delete(object id);
+    Task<TEntity?> CreateAsync(TEntity entity);
+    Task<TEntity?> GetByIdAsync(object id);
+    Task<IEnumerable<TEntity>> GetAllAsync();
+    Task<TEntity?> UpdateAsync(TEntity entity);
+    Task<bool> DeleteAsync(object id);
 }

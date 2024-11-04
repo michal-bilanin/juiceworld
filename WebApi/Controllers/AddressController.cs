@@ -19,7 +19,7 @@ public class AddressController(IRepository<Address> addressRepository, IMapper m
     [OpenApiOperation(ApiBaseName + nameof(CreateAddress))]
     public async Task<ActionResult<AddressDto>> CreateAddress(AddressDto address)
     {
-        var result = await addressRepository.Create(mapper.Map<Address>(address));
+        var result = await addressRepository.CreateAsync(mapper.Map<Address>(address));
         return result == null ? Problem() : Ok(mapper.Map<AddressDto>(result));
     }
 
@@ -27,7 +27,7 @@ public class AddressController(IRepository<Address> addressRepository, IMapper m
     [OpenApiOperation(ApiBaseName + nameof(GetAllAddresses))]
     public async Task<ActionResult<List<AddressDto>>> GetAllAddresses()
     {
-        var result = await addressRepository.GetAll();
+        var result = await addressRepository.GetAllAsync();
         return Ok(mapper.Map<ICollection<AddressDto>>(result).ToList());
     }
 
@@ -35,7 +35,7 @@ public class AddressController(IRepository<Address> addressRepository, IMapper m
     [OpenApiOperation(ApiBaseName + nameof(GetAddress))]
     public async Task<ActionResult<AddressDto>> GetAddress(int addressId)
     {
-        var result = await addressRepository.GetById(addressId);
+        var result = await addressRepository.GetByIdAsync(addressId);
         return result == null ? NotFound() : Ok(mapper.Map<AddressDto>(result));
     }
 
@@ -43,7 +43,7 @@ public class AddressController(IRepository<Address> addressRepository, IMapper m
     [OpenApiOperation(ApiBaseName + nameof(UpdateAddress))]
     public async Task<ActionResult<AddressDto>> UpdateAddress(AddressDto address)
     {
-        var result = await addressRepository.Update(mapper.Map<Address>(address));
+        var result = await addressRepository.UpdateAsync(mapper.Map<Address>(address));
         return result == null ? Problem() : Ok(mapper.Map<AddressDto>(result));
     }
 
@@ -51,7 +51,7 @@ public class AddressController(IRepository<Address> addressRepository, IMapper m
     [OpenApiOperation(ApiBaseName + nameof(DeleteAddress))]
     public async Task<ActionResult<bool>> DeleteAddress(int addressId)
     {
-        var result = await addressRepository.Delete(addressId);
+        var result = await addressRepository.DeleteAsync(addressId);
         return result ? Ok() : NotFound();
     }
 }

@@ -19,7 +19,7 @@ public class WishListItemController(IRepository<WishListItem> wishListItemReposi
     [OpenApiOperation(ApiBaseName + nameof(CreateWishListItem))]
     public async Task<ActionResult<WishListItemDto>> CreateWishListItem(WishListItemDto wishListItem)
     {
-        var result = await wishListItemRepository.Create(mapper.Map<WishListItem>(wishListItem));
+        var result = await wishListItemRepository.CreateAsync(mapper.Map<WishListItem>(wishListItem));
         return result == null ? Problem() : Ok(mapper.Map<WishListItemDto>(result));
     }
 
@@ -27,7 +27,7 @@ public class WishListItemController(IRepository<WishListItem> wishListItemReposi
     [OpenApiOperation(ApiBaseName + nameof(GetAllWishListItems))]
     public async Task<ActionResult<List<WishListItemDto>>> GetAllWishListItems()
     {
-        var result = await wishListItemRepository.GetAll();
+        var result = await wishListItemRepository.GetAllAsync();
         return Ok(mapper.Map<ICollection<WishListItemDto>>(result).ToList());
     }
 
@@ -35,7 +35,7 @@ public class WishListItemController(IRepository<WishListItem> wishListItemReposi
     [OpenApiOperation(ApiBaseName + nameof(GetWishListItem))]
     public async Task<ActionResult<WishListItemDto>> GetWishListItem(int wishListItemId)
     {
-        var result = await wishListItemRepository.GetById(wishListItemId);
+        var result = await wishListItemRepository.GetByIdAsync(wishListItemId);
         return result == null ? NotFound() : Ok(mapper.Map<WishListItemDto>(result));
     }
 
@@ -43,7 +43,7 @@ public class WishListItemController(IRepository<WishListItem> wishListItemReposi
     [OpenApiOperation(ApiBaseName + nameof(UpdateWishListItem))]
     public async Task<ActionResult<WishListItemDto>> UpdateWishListItem(WishListItemDto wishListItem)
     {
-        var result = await wishListItemRepository.Update(mapper.Map<WishListItem>(wishListItem));
+        var result = await wishListItemRepository.UpdateAsync(mapper.Map<WishListItem>(wishListItem));
         return result == null ? Problem() : Ok(mapper.Map<WishListItemDto>(result));
     }
 
@@ -51,7 +51,7 @@ public class WishListItemController(IRepository<WishListItem> wishListItemReposi
     [OpenApiOperation(ApiBaseName + nameof(DeleteWishListItem))]
     public async Task<ActionResult<bool>> DeleteWishListItem(int wishListItemId)
     {
-        var result = await wishListItemRepository.Delete(wishListItemId);
+        var result = await wishListItemRepository.DeleteAsync(wishListItemId);
         return result ? Ok() : NotFound();
     }
 }

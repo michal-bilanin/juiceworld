@@ -19,7 +19,7 @@ public class ReviewController(IRepository<Review> reviewRepository, IMapper mapp
     [OpenApiOperation(ApiBaseName + nameof(CreateReview))]
     public async Task<ActionResult<ReviewDto>> CreateReview(ReviewDto review)
     {
-        var result = await reviewRepository.Create(mapper.Map<Review>(review));
+        var result = await reviewRepository.CreateAsync(mapper.Map<Review>(review));
         return result == null ? Problem() : Ok(mapper.Map<ReviewDto>(result));
     }
 
@@ -27,7 +27,7 @@ public class ReviewController(IRepository<Review> reviewRepository, IMapper mapp
     [OpenApiOperation(ApiBaseName + nameof(GetAllReviews))]
     public async Task<ActionResult<List<ReviewDto>>> GetAllReviews()
     {
-        var result = await reviewRepository.GetAll();
+        var result = await reviewRepository.GetAllAsync();
         return Ok(mapper.Map<ICollection<ReviewDto>>(result).ToList());
     }
 
@@ -35,7 +35,7 @@ public class ReviewController(IRepository<Review> reviewRepository, IMapper mapp
     [OpenApiOperation(ApiBaseName + nameof(GetReview))]
     public async Task<ActionResult<ReviewDto>> GetReview(int reviewId)
     {
-        var result = await reviewRepository.GetById(reviewId);
+        var result = await reviewRepository.GetByIdAsync(reviewId);
         return result == null ? NotFound() : Ok(mapper.Map<ReviewDto>(result));
     }
 
@@ -43,7 +43,7 @@ public class ReviewController(IRepository<Review> reviewRepository, IMapper mapp
     [OpenApiOperation(ApiBaseName + nameof(UpdateReview))]
     public async Task<ActionResult<ReviewDto>> UpdateReview(ReviewDto review)
     {
-        var result = await reviewRepository.Update(mapper.Map<Review>(review));
+        var result = await reviewRepository.UpdateAsync(mapper.Map<Review>(review));
         return result == null ? Problem() : Ok(mapper.Map<ReviewDto>(result));
     }
 
@@ -51,7 +51,7 @@ public class ReviewController(IRepository<Review> reviewRepository, IMapper mapp
     [OpenApiOperation(ApiBaseName + nameof(DeleteReview))]
     public async Task<ActionResult<bool>> DeleteReview(int reviewId)
     {
-        var result = await reviewRepository.Delete(reviewId);
+        var result = await reviewRepository.DeleteAsync(reviewId);
         return result ? Ok() : NotFound();
     }
 }

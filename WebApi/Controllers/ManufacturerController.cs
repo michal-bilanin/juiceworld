@@ -19,7 +19,7 @@ public class ManufacturerController(IRepository<Manufacturer> manufacturerReposi
     [OpenApiOperation(ApiBaseName + nameof(CreateManufacturer))]
     public async Task<ActionResult<ManufacturerDto>> CreateManufacturer(ManufacturerDto manufacturer)
     {
-        var result = await manufacturerRepository.Create(mapper.Map<Manufacturer>(manufacturer));
+        var result = await manufacturerRepository.CreateAsync(mapper.Map<Manufacturer>(manufacturer));
         return result == null ? Problem() : Ok(mapper.Map<ManufacturerDto>(result));
     }
 
@@ -27,7 +27,7 @@ public class ManufacturerController(IRepository<Manufacturer> manufacturerReposi
     [OpenApiOperation(ApiBaseName + nameof(GetAllManufacturers))]
     public async Task<ActionResult<List<ManufacturerDto>>> GetAllManufacturers()
     {
-        var result = await manufacturerRepository.GetAll();
+        var result = await manufacturerRepository.GetAllAsync();
         return Ok(mapper.Map<ICollection<ManufacturerDto>>(result).ToList());
     }
 
@@ -35,7 +35,7 @@ public class ManufacturerController(IRepository<Manufacturer> manufacturerReposi
     [OpenApiOperation(ApiBaseName + nameof(GetManufacturer))]
     public async Task<ActionResult<ManufacturerDto>> GetManufacturer(int manufacturerId)
     {
-        var result = await manufacturerRepository.GetById(manufacturerId);
+        var result = await manufacturerRepository.GetByIdAsync(manufacturerId);
         return result == null ? NotFound() : Ok(mapper.Map<ManufacturerDto>(result));
     }
 
@@ -43,7 +43,7 @@ public class ManufacturerController(IRepository<Manufacturer> manufacturerReposi
     [OpenApiOperation(ApiBaseName + nameof(UpdateManufacturer))]
     public async Task<ActionResult<ManufacturerDto>> UpdateManufacturer(ManufacturerDto manufacturer)
     {
-        var result = await manufacturerRepository.Update(mapper.Map<Manufacturer>(manufacturer));
+        var result = await manufacturerRepository.UpdateAsync(mapper.Map<Manufacturer>(manufacturer));
         return result == null ? Problem() : Ok(mapper.Map<ManufacturerDto>(result));
     }
 
@@ -51,7 +51,7 @@ public class ManufacturerController(IRepository<Manufacturer> manufacturerReposi
     [OpenApiOperation(ApiBaseName + nameof(DeleteManufacturer))]
     public async Task<ActionResult<bool>> DeleteManufacturer(int manufacturerId)
     {
-        var result = await manufacturerRepository.Delete(manufacturerId);
+        var result = await manufacturerRepository.DeleteAsync(manufacturerId);
         return result ? Ok() : NotFound();
     }
 }

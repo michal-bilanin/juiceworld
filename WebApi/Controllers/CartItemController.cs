@@ -19,7 +19,7 @@ public class CartItemController(IRepository<CartItem> cartItemRepository, IMappe
     [OpenApiOperation(ApiBaseName + nameof(CreateCartItem))]
     public async Task<ActionResult<CartItemDto>> CreateCartItem(CartItemDto cartItem)
     {
-        var result = await cartItemRepository.Create(mapper.Map<CartItem>(cartItem));
+        var result = await cartItemRepository.CreateAsync(mapper.Map<CartItem>(cartItem));
         return result == null ? Problem() : Ok(mapper.Map<CartItemDto>(result));
     }
 
@@ -27,7 +27,7 @@ public class CartItemController(IRepository<CartItem> cartItemRepository, IMappe
     [OpenApiOperation(ApiBaseName + nameof(GetAllCartItems))]
     public async Task<ActionResult<List<CartItemDto>>> GetAllCartItems()
     {
-        var result = await cartItemRepository.GetAll();
+        var result = await cartItemRepository.GetAllAsync();
         return Ok(mapper.Map<ICollection<CartItemDto>>(result).ToList());
     }
 
@@ -35,7 +35,7 @@ public class CartItemController(IRepository<CartItem> cartItemRepository, IMappe
     [OpenApiOperation(ApiBaseName + nameof(GetCartItem))]
     public async Task<ActionResult<CartItemDto>> GetCartItem(int cartItemId)
     {
-        var result = await cartItemRepository.GetById(cartItemId);
+        var result = await cartItemRepository.GetByIdAsync(cartItemId);
         return result == null ? NotFound() : Ok(mapper.Map<CartItemDto>(result));
     }
 
@@ -43,7 +43,7 @@ public class CartItemController(IRepository<CartItem> cartItemRepository, IMappe
     [OpenApiOperation(ApiBaseName + nameof(UpdateCartItem))]
     public async Task<ActionResult<CartItemDto>> UpdateCartItem(CartItemDto cartItem)
     {
-        var result = await cartItemRepository.Update(mapper.Map<CartItem>(cartItem));
+        var result = await cartItemRepository.UpdateAsync(mapper.Map<CartItem>(cartItem));
         return result == null ? Problem() : Ok(mapper.Map<CartItemDto>(result));
     }
 
@@ -51,7 +51,7 @@ public class CartItemController(IRepository<CartItem> cartItemRepository, IMappe
     [OpenApiOperation(ApiBaseName + nameof(DeleteCartItem))]
     public async Task<ActionResult<bool>> DeleteCartItem(int cartItemId)
     {
-        var result = await cartItemRepository.Delete(cartItemId);
+        var result = await cartItemRepository.DeleteAsync(cartItemId);
         return result ? Ok() : NotFound();
     }
 }

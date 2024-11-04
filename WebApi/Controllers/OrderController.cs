@@ -19,7 +19,7 @@ public class OrderController(IRepository<Order> orderRepository, IMapper mapper)
     [OpenApiOperation(ApiBaseName + nameof(CreateOrder))]
     public async Task<ActionResult<OrderDto>> CreateOrder(OrderDto order)
     {
-        var result = await orderRepository.Create(mapper.Map<Order>(order));
+        var result = await orderRepository.CreateAsync(mapper.Map<Order>(order));
         return result == null ? Problem() : Ok(mapper.Map<OrderDto>(result));
     }
 
@@ -27,7 +27,7 @@ public class OrderController(IRepository<Order> orderRepository, IMapper mapper)
     [OpenApiOperation(ApiBaseName + nameof(GetAllOrders))]
     public async Task<ActionResult<List<OrderDto>>> GetAllOrders()
     {
-        var result = await orderRepository.GetAll();
+        var result = await orderRepository.GetAllAsync();
         return Ok(mapper.Map<ICollection<OrderDto>>(result).ToList());
     }
 
@@ -35,7 +35,7 @@ public class OrderController(IRepository<Order> orderRepository, IMapper mapper)
     [OpenApiOperation(ApiBaseName + nameof(GetOrder))]
     public async Task<ActionResult<OrderDto>> GetOrder(int orderId)
     {
-        var result = await orderRepository.GetById(orderId);
+        var result = await orderRepository.GetByIdAsync(orderId);
         return result == null ? NotFound() : Ok(mapper.Map<OrderDto>(result));
     }
 
@@ -43,7 +43,7 @@ public class OrderController(IRepository<Order> orderRepository, IMapper mapper)
     [OpenApiOperation(ApiBaseName + nameof(UpdateOrder))]
     public async Task<ActionResult<OrderDto>> UpdateOrder(OrderDto order)
     {
-        var result = await orderRepository.Update(mapper.Map<Order>(order));
+        var result = await orderRepository.UpdateAsync(mapper.Map<Order>(order));
         return result == null ? Problem() : Ok(mapper.Map<OrderDto>(result));
     }
 
@@ -51,7 +51,7 @@ public class OrderController(IRepository<Order> orderRepository, IMapper mapper)
     [OpenApiOperation(ApiBaseName + nameof(DeleteOrder))]
     public async Task<ActionResult<bool>> DeleteOrder(int orderId)
     {
-        var result = await orderRepository.Delete(orderId);
+        var result = await orderRepository.DeleteAsync(orderId);
         return result ? Ok() : NotFound();
     }
 }
