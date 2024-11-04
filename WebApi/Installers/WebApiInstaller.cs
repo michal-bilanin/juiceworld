@@ -25,18 +25,18 @@ public static class WebApiInstaller
 
         services.AddTransient<AuthService>();
 
-        services.AddTransient<IQueryObject<User>, QueryObject<User>>();
-        services.AddTransient<IQueryObject<Product>, QueryObject<Product>>();
+        services.AddScoped<IQueryObject<User>, QueryObject<User>>();
+        services.AddScoped<IQueryObject<Product>, QueryObject<Product>>();
 
-        services.AddTransient<IRepository<User>, Repository<User>>();
-        services.AddTransient<IRepository<Address>, Repository<Address>>();
-        services.AddTransient<IRepository<CartItem>, Repository<CartItem>>();
-        services.AddTransient<IRepository<Manufacturer>, Repository<Manufacturer>>();
-        services.AddTransient<IRepository<Order>, Repository<Order>>();
-        services.AddTransient<IRepository<OrderProduct>, Repository<OrderProduct>>();
-        services.AddTransient<IRepository<Product>, Repository<Product>>();
-        services.AddTransient<IRepository<Review>, Repository<Review>>();
-        services.AddTransient<IRepository<WishListItem>, Repository<WishListItem>>();
+        services.AddScoped<IRepository<User>, Repository<User>>();
+        services.AddScoped<IRepository<Address>, Repository<Address>>();
+        services.AddScoped<IRepository<CartItem>, Repository<CartItem>>();
+        services.AddScoped<IRepository<Manufacturer>, Repository<Manufacturer>>();
+        services.AddScoped<IRepository<Order>, Repository<Order>>();
+        services.AddScoped<IRepository<OrderProduct>, Repository<OrderProduct>>();
+        services.AddScoped<IRepository<Product>, Repository<Product>>();
+        services.AddScoped<IRepository<Review>, Repository<Review>>();
+        services.AddScoped<IRepository<WishListItem>, Repository<WishListItem>>();
 
         services.AddAutoMapper(typeof(WebApiInstaller));
 
