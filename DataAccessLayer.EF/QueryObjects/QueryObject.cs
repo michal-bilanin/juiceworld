@@ -9,7 +9,7 @@ namespace JuiceWorld.QueryObjects;
 public class QueryObject<TEntity>(JuiceWorldDbContext context) : IQueryObject<TEntity>
     where TEntity : BaseEntity
 {
-    private IQueryable<TEntity> _query = context.Set<TEntity>().Where(e => e.DeletedAt == null);
+    private IQueryable<TEntity> _query = context.Set<TEntity>();
 
     public IQueryObject<TEntity> Filter(Expression<Func<TEntity, bool>> filter)
     {

@@ -48,7 +48,7 @@ public class JuiceWorldDbContext(DbContextOptions<JuiceWorldDbContext> options)
 
             // Change the state from Deleted to Modified, and set the DeletedAt time
             entry.State = EntityState.Modified;
-            entry.CurrentValues["DeletedAt"] = DateTime.Now;
+            entry.CurrentValues[nameof(BaseEntity.DeletedAt)] = DateTime.Now;
         }
 
         return await base.SaveChangesAsync(cancellationToken);
@@ -176,7 +176,7 @@ public class JuiceWorldDbContext(DbContextOptions<JuiceWorldDbContext> options)
                 continue;
             }
 
-            var parameter = Expression.Parameter(entityType.ClrType, "e");
+            var parameter = Expression.Parameter(entityType.ClrType);
             var filter = Expression.Lambda(
                 Expression.Equal(
                     Expression.Property(parameter, nameof(BaseEntity.DeletedAt)),

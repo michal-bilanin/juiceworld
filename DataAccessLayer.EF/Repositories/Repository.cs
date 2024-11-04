@@ -35,6 +35,7 @@ public class Repository<TEntity>(JuiceWorldDbContext context) : IRepository<TEnt
             return null;
         }
 
+        entity.UpdatedAt = DateTime.Now;
         _dbSet.Update(entity);
         await context.SaveChangesAsync();
         return entity;
