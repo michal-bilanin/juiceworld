@@ -42,7 +42,7 @@ public static class DataInstaller
                 .LogTo(s => Debug.WriteLine(s))
                 .UseLazyLoadingProxies();
         });
-        
+
         return services;
     }
 }
