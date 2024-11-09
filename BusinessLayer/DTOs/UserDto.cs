@@ -1,14 +1,14 @@
-﻿using JuiceWorld.Enums;
+﻿using Commons.Enums;
 
 namespace BusinessLayer.DTOs;
 
 public class UserDto : BaseEntityDto
 {
-    public string UserName { get; set; }
-    public string Email { get; set; }
-    public string PasswordHash { get; set; }
+    public string UserName { get; set; } = null!;
+    public string Email { get; set; } = null!;
+    public string PasswordHash { get; set; } = null!;
     public int PasswordHashRounds { get; set; }
-    public string PasswordSalt { get; set; }
+    public string PasswordSalt { get; set; } = null!;
     public UserRole UserRole { get; set; } = UserRole.Customer;
-    public string Bio { get; set; }
+    public string Bio { get; set; } = null!;
 }

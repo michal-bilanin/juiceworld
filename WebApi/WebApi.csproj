@@ -25,4 +25,8 @@
         <ProjectReference Include="..\DataAccessLayer.EF\DataAccessLayer.EF.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Services\" />
+    </ItemGroup>
+
 </Project>

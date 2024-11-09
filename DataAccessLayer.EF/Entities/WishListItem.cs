@@ -8,8 +8,8 @@ public class WishListItem : BaseEntity
     public int UserId { get; set; }
 
     [ForeignKey(nameof(ProductId))]
-    public virtual Product Product { get; set; }
+    public virtual Product Product { get; set; } = null!;
 
     [ForeignKey(nameof(UserId))]
-    public virtual User User { get; set; }
+    public virtual User User { get; set; } = null!;
 }

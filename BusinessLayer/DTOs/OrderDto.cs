@@ -1,4 +1,4 @@
-﻿using JuiceWorld.Enums;
+﻿using Commons.Enums;
 
 namespace BusinessLayer.DTOs;
 

@@ -1,4 +1,4 @@
-namespace JuiceWorld.Enums;
+namespace Commons.Enums;
 
 public enum OrderStatus
 {

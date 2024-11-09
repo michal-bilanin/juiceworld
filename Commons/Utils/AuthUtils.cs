@@ -1,7 +1,7 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace JuiceWorld.Utils;
+namespace Commons.Utils;
 
 public static class AuthUtils
 {

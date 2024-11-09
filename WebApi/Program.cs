@@ -1,12 +1,14 @@
 using System.Diagnostics;
 using System.Text.Json;
 using BusinessLayer.Installers;
+using JuiceWorld.Installers;
 using Microsoft.AspNetCore.Diagnostics;
 using WebApi.Installers;
 using WebApi.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.DalInstall();
 builder.Services.BusinessLayerInstall();
 builder.Services.WebApiInstall();
 

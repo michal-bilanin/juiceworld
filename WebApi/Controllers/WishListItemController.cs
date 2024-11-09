@@ -1,8 +1,6 @@
-using AutoMapper;
 using BusinessLayer.DTOs;
-using Infrastructure.Repositories;
-using JuiceWorld.Entities;
-using JuiceWorld.Enums;
+using BusinessLayer.Services.Interfaces;
+using Commons.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
@@ -12,7 +10,7 @@ namespace WebApi.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize(Roles = nameof(UserRole.Customer))]
-public class WishListItemController(IRepository<WishListItem> wishListItemRepository, IMapper mapper) : ControllerBase
+public class WishListItemController(IWishListItemService wishListItemService) : ControllerBase
 {
     private const string ApiBaseName = "WishListItem";
 
@@ -20,39 +18,39 @@ public class WishListItemController(IRepository<WishListItem> wishListItemReposi
     [OpenApiOperation(ApiBaseName + nameof(CreateWishListItem))]
     public async Task<ActionResult<WishListItemDto>> CreateWishListItem(WishListItemDto wishListItem)
     {
-        var result = await wishListItemRepository.CreateAsync(mapper.Map<WishListItem>(wishListItem));
-        return result == null ? Problem() : Ok(mapper.Map<WishListItemDto>(result));
+        var result = await wishListItemService.CreateWishListItemAsync(wishListItem);
+        return result == null ? Problem() : Ok(result);
     }
 
     [HttpGet]
     [OpenApiOperation(ApiBaseName + nameof(GetAllWishListItems))]
-    public async Task<ActionResult<List<WishListItemDto>>> GetAllWishListItems()
+    public async Task<ActionResult<IEnumerable<WishListItemDto>>> GetAllWishListItems()
     {
-        var result = await wishListItemRepository.GetAllAsync();
-        return Ok(mapper.Map<ICollection<WishListItemDto>>(result).ToList());
+        var result = await wishListItemService.GetAllWishListItemsAsync();
+        return Ok(result);
     }
 
     [HttpGet("{wishListItemId:int}")]
     [OpenApiOperation(ApiBaseName + nameof(GetWishListItem))]
     public async Task<ActionResult<WishListItemDto>> GetWishListItem(int wishListItemId)
     {
-        var result = await wishListItemRepository.GetByIdAsync(wishListItemId);
-        return result == null ? NotFound() : Ok(mapper.Map<WishListItemDto>(result));
+        var result = await wishListItemService.GetWishListItemByIdAsync(wishListItemId);
+        return result == null ? NotFound() : Ok(result);
     }
 
     [HttpPut]
     [OpenApiOperation(ApiBaseName + nameof(UpdateWishListItem))]
     public async Task<ActionResult<WishListItemDto>> UpdateWishListItem(WishListItemDto wishListItem)
     {
-        var result = await wishListItemRepository.UpdateAsync(mapper.Map<WishListItem>(wishListItem));
-        return result == null ? Problem() : Ok(mapper.Map<WishListItemDto>(result));
+        var result = await wishListItemService.UpdateWishListItemAsync(wishListItem);
+        return result == null ? NotFound() : Ok(result);
     }
 
     [HttpDelete("{wishListItemId:int}")]
     [OpenApiOperation(ApiBaseName + nameof(DeleteWishListItem))]
     public async Task<ActionResult<bool>> DeleteWishListItem(int wishListItemId)
     {
-        var result = await wishListItemRepository.DeleteAsync(wishListItemId);
+        var result = await wishListItemService.DeleteWishListItemByIdAsync(wishListItemId);
         return result ? Ok() : NotFound();
     }
 }

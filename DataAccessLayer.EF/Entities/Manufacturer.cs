@@ -2,6 +2,6 @@
 
 public class Manufacturer : BaseEntity
 {
-    public string Name { get; set; }
-    public virtual IEnumerable<Product> Products { get; set; }
+    public string Name { get; set; } = null!;
+    public virtual IEnumerable<Product> Products { get; set; } = null!;
 }
