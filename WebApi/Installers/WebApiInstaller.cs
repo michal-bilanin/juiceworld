@@ -1,17 +1,8 @@
-using System.Diagnostics;
 using System.Text;
-using Infrastructure.QueryObjects;
-using Infrastructure.Repositories;
-using JuiceWorld.Data;
-using JuiceWorld.Entities;
-using JuiceWorld.QueryObjects;
-using JuiceWorld.Repositories;
+using Commons.Constants;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using WebApi.Constants;
-using WebApi.Services;
 
 namespace WebApi.Installers;
 
@@ -22,23 +13,6 @@ public static class WebApiInstaller
         services.AddLogging();
         services.AddControllers();
         services.AddEndpointsApiExplorer();
-
-        services.AddTransient<AuthService>();
-
-        services.AddScoped<IQueryObject<User>, QueryObject<User>>();
-        services.AddScoped<IQueryObject<Product>, QueryObject<Product>>();
-
-        services.AddScoped<IRepository<User>, Repository<User>>();
-        services.AddScoped<IRepository<Address>, Repository<Address>>();
-        services.AddScoped<IRepository<CartItem>, Repository<CartItem>>();
-        services.AddScoped<IRepository<Manufacturer>, Repository<Manufacturer>>();
-        services.AddScoped<IRepository<Order>, Repository<Order>>();
-        services.AddScoped<IRepository<OrderProduct>, Repository<OrderProduct>>();
-        services.AddScoped<IRepository<Product>, Repository<Product>>();
-        services.AddScoped<IRepository<Review>, Repository<Review>>();
-        services.AddScoped<IRepository<WishListItem>, Repository<WishListItem>>();
-
-        services.AddAutoMapper(typeof(WebApiInstaller));
 
         services.AddSwaggerGen(opt =>
         {
@@ -89,21 +63,6 @@ public static class WebApiInstaller
                 ValidateIssuer = false,
                 ValidateAudience = false
             };
-        });
-
-        services.AddDbContextFactory<JuiceWorldDbContext>(options =>
-        {
-            var connectionString = Environment.GetEnvironmentVariable(EnvironmentConstants.DbConnectionString);
-
-            if (connectionString == null)
-                throw new Exception(
-                    $"Connection string is null, make sure it is specified " +
-                    $"in the environment variable: {EnvironmentConstants.DbConnectionString}");
-
-            options
-                .UseNpgsql(connectionString)
-                .LogTo(s => Debug.WriteLine(s))
-                .UseLazyLoadingProxies();
         });
 
         return services;

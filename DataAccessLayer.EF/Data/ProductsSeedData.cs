@@ -1,5 +1,5 @@
+using Commons.Enums;
 using JuiceWorld.Entities;
-using JuiceWorld.Enums;
 
 namespace JuiceWorld.Data;
 

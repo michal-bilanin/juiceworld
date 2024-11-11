@@ -1,9 +1,0 @@
-﻿namespace JuiceWorld.Entities;
-
-public class ReviewDto : BaseEntityDto
-{
-    public int Rating { get; set; }
-    public string Body { get; set; }
-    public int ProductId { get; set; }
-    public int UserId { get; set; }
-}

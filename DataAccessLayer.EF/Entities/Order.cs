@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
-using JuiceWorld.Enums;
+using Commons.Enums;
 
 namespace JuiceWorld.Entities;
 
@@ -13,13 +13,13 @@ public class Order : BaseEntity
     public int UserId { get; set; }
 
     [ForeignKey(nameof(UserId))]
-    public virtual User User { get; set; }
+    public virtual User User { get; set; } = null!;
 
     public int AddressId { get; set; }
 
     [ForeignKey(nameof(AddressId))]
-    public virtual Address Address { get; set; }
+    public virtual Address Address { get; set; } = null!;
 
-    public virtual IEnumerable<CartItem> CartItems { get; set; }
-    public virtual IEnumerable<OrderProduct> OrderProducts { get; set; }
+    public virtual IEnumerable<CartItem> CartItems { get; set; } = null!;
+    public virtual IEnumerable<OrderProduct> OrderProducts { get; set; } = null!;
 }
