@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Text.Json;
 using BusinessLayer.Installers;
+using Commons.Constants;
 using JuiceWorld.Installers;
 using Microsoft.AspNetCore.Diagnostics;
 using WebApi.Installers;
@@ -14,13 +15,12 @@ builder.Services.WebApiInstall();
 
 var app = builder.Build();
 
-const string apiPortKey = "API_PORT";
-var apiPort = Environment.GetEnvironmentVariable(apiPortKey);
+var apiPort = Environment.GetEnvironmentVariable(EnvironmentConstants.ApiPort);
 if (apiPort == null)
 {
     Debug.Fail(
         $"API port is null, make sure it is specified " +
-        $"in the environment variable: {apiPortKey}");
+        $"in the environment variable: {EnvironmentConstants.ApiPort}");
     return;
 }
 
@@ -56,6 +56,7 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseMiddleware<ResponseFormatMiddleware>();
 app.UseMiddleware<RequestLoggingMiddleware>();
 
 app.MapControllers();
