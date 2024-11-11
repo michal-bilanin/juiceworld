@@ -4,6 +4,7 @@ using BusinessLayer.Installers;
 using Commons.Constants;
 using JuiceWorld.Installers;
 using Microsoft.AspNetCore.Diagnostics;
+using Serilog;
 using WebApi.Installers;
 using WebApi.Middleware;
 
@@ -12,6 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.DalInstall();
 builder.Services.BusinessLayerInstall();
 builder.Services.WebApiInstall();
+builder.Host.UseSerilog();
 
 var app = builder.Build();
 
