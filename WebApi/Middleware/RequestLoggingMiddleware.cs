@@ -36,7 +36,7 @@ public class RequestLoggingMiddleware
         var client = new MongoClient(connectionString);
         var database = client.GetDatabase(databaseName);
 
-        _logger  = new LoggerConfiguration()
+        _logger = new LoggerConfiguration()
             .WriteTo.MongoDBCapped(database, collectionName: collectionName)
             .WriteTo.Console(LogEventLevel.Information)
             .CreateLogger();
