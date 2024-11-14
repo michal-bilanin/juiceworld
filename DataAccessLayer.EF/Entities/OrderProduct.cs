@@ -1,10 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace JuiceWorld.Entities;
 
 public class OrderProduct : BaseEntity
 {
+    [Range(1, int.MaxValue)]
     public int Quantity { get; set; }
+
     public int OrderId { get; set; }
     public int ProductId { get; set; }
 

@@ -4,7 +4,6 @@ using BusinessLayer.Installers;
 using Commons.Constants;
 using JuiceWorld.Installers;
 using Microsoft.AspNetCore.Diagnostics;
-using Serilog;
 using WebApi.Installers;
 using WebApi.Middleware;
 

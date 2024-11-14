@@ -35,11 +35,13 @@ namespace JuiceWorld.Migrations
 
                     b.Property<string>("City")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("Country")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -49,15 +51,18 @@ namespace JuiceWorld.Migrations
 
                     b.Property<string>("HouseNumber")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("Street")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("Type")
                         .IsRequired()
@@ -71,7 +76,8 @@ namespace JuiceWorld.Migrations
 
                     b.Property<string>("ZipCode")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
 
                     b.HasKey("Id");
 
@@ -203,7 +209,8 @@ namespace JuiceWorld.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -476,7 +483,8 @@ namespace JuiceWorld.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
 
                     b.Property<string>("ImageUrl")
                         .HasColumnType("text");
@@ -486,7 +494,8 @@ namespace JuiceWorld.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("numeric");
@@ -1034,7 +1043,8 @@ namespace JuiceWorld.Migrations
 
                     b.Property<string>("Body")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -1102,7 +1112,8 @@ namespace JuiceWorld.Migrations
 
                     b.Property<string>("Bio")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -1130,13 +1141,17 @@ namespace JuiceWorld.Migrations
 
                     b.Property<string>("UserName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("UserRole")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
 
                     b.ToTable("Users");
 
@@ -1147,9 +1162,9 @@ namespace JuiceWorld.Migrations
                             Bio = "I am a steroid user!",
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "user@example.com",
-                            PasswordHash = "yzilxAAz88HDPdYEgsbhL6xmQdgaBflAEed49iMxlNo=",
+                            PasswordHash = "3kZuTtXkjickE0avDH7Mjk5QYGr7/eolRuPvNma2lNw=",
                             PasswordHashRounds = 10,
-                            PasswordSalt = "GRI7kQSiuEwYfctvvtxLjA==",
+                            PasswordSalt = "GaMBNcbrL8SE6dxHBhxXEg==",
                             UserName = "user",
                             UserRole = "Customer"
                         },
@@ -1159,9 +1174,9 @@ namespace JuiceWorld.Migrations
                             Bio = "I am a steroid Admin!",
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "admin@example.com",
-                            PasswordHash = "BhDXzRRljN8yxkqEcMq6D4V97qI5GK3VMijCHCAFrOk=",
+                            PasswordHash = "Q+pb/18jbToLiDLiLXrzJxuFFhvP4dQ7WdkCakaiF0Y=",
                             PasswordHashRounds = 10,
-                            PasswordSalt = "JZUQbmOPJZvvHsmHqLYLyA==",
+                            PasswordSalt = "9incZz5G8PbYuTK1+7lIqw==",
                             UserName = "admin",
                             UserRole = "Admin"
                         });
