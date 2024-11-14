@@ -13,7 +13,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.DalInstall();
 builder.Services.BusinessLayerInstall();
 builder.Services.WebApiInstall();
-builder.Host.UseSerilog();
 
 var app = builder.Build();
 
@@ -60,6 +59,9 @@ app.UseAuthorization();
 
 app.UseMiddleware<ResponseFormatMiddleware>();
 app.UseMiddleware<RequestLoggingMiddleware>();
+
+// use this instead of RequestLoggingMiddleware, if compliant with the course policy
+// app.UseSerilogRequestLogging();
 
 app.MapControllers();
 app.Run();
