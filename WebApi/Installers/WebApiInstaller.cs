@@ -1,8 +1,12 @@
+using System.Diagnostics;
 using System.Text;
 using Commons.Constants;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using MongoDB.Driver;
+using Serilog;
+using Serilog.Events;
 
 namespace WebApi.Installers;
 
@@ -14,6 +18,38 @@ public static class WebApiInstaller
         services.AddControllers();
         services.AddEndpointsApiExplorer();
 
+        // Configure Logging
+        var connectionString = Environment.GetEnvironmentVariable(EnvironmentConstants.LoggingDbConnectionString);
+        var collectionName = Environment.GetEnvironmentVariable(EnvironmentConstants.LoggingDbCollectionName);
+        var databaseName = Environment.GetEnvironmentVariable(EnvironmentConstants.LoggingDbDatabaseName);
+
+        if (connectionString is null || collectionName is null || databaseName is null)
+        {
+            Debug.Fail(
+                $"Logging database connection string, collection name or database name is null, make sure they are specified " +
+                $"in the environment variables: " +
+                $"{EnvironmentConstants.LoggingDbConnectionString} ({connectionString}), " +
+                $"{EnvironmentConstants.LoggingDbCollectionName} ({collectionName}), " +
+                $"{EnvironmentConstants.LoggingDbDatabaseName} ({databaseName})");
+        }
+        else
+        {
+            var client = new MongoClient(connectionString);
+            var database = client.GetDatabase(databaseName);
+
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo.MongoDBCapped(database, collectionName: collectionName)
+                .WriteTo.Console(LogEventLevel.Information)
+                .CreateLogger();
+
+            services.AddLogging(builder =>
+            {
+                builder.ClearProviders();
+                builder.AddSerilog();
+            });
+        }
+
+        // Configure Swagger
         services.AddSwaggerGen(opt =>
         {
             opt.SwaggerDoc("v1", new OpenApiInfo { Title = "JuiceWorld WebApi", Version = "v1" });
@@ -44,6 +80,7 @@ public static class WebApiInstaller
             });
         });
 
+        // Configure JWT
         var secret = Environment.GetEnvironmentVariable(EnvironmentConstants.JwtSecret);
         if (secret == null)
         {
