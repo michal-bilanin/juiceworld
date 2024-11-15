@@ -26,4 +26,5 @@ public class User : BaseEntity
     public virtual IEnumerable<Review> Reviews { get; set; } = null!;
     public virtual IEnumerable<Order> Orders { get; set; } = null!;
     public virtual IEnumerable<Address> Addresses { get; set; } = null!;
+    public virtual IEnumerable<AuditTrail> AuditTrails { get; set; } = null!;
 }

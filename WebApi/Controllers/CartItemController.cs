@@ -9,7 +9,7 @@ namespace WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = nameof(UserRole.Customer))]
+[Authorize(Roles = nameof(UserRole.Admin) + "," + nameof(UserRole.Customer))]
 public class CartItemController(ICartItemService cartItemService) : ControllerBase
 {
     private const string ApiBaseName = "CartItem";

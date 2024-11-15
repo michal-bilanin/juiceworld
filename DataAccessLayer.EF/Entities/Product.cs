@@ -1,10 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Commons.Enums;
+using JuiceWorld.Entities.Interfaces;
 
 namespace JuiceWorld.Entities;
 
-public class Product : BaseEntity
+public class Product : BaseEntity, IAuditableEntity
 {
     [MaxLength(100)]
     public string Name { get; set; } = null!;
