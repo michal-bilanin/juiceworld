@@ -1,4 +1,4 @@
-namespace WebApplication1.Models;
+namespace PresentationLayer.Mvc.Models;
 
 public class ErrorViewModel
 {

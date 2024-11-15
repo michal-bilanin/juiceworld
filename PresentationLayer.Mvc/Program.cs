@@ -1,7 +1,16 @@
+using BusinessLayer.Installers;
+using JuiceWorld.Installers;
+using Microsoft.Extensions.Logging.Console;
+using PresentationLayer.Mvc.Installers;
+using Serilog;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.BusinessLayerInstall();
+builder.Services.DalInstall();
+builder.Services.MvcInstall();
 
 var app = builder.Build();
 
@@ -17,7 +26,9 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+// app.UseMiddleware<JwtCookieExtractorMiddleware>();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
