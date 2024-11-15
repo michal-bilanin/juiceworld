@@ -4,6 +4,6 @@ public enum TrailType
 {
     None,
     Create,
-    Update, 
+    Update,
     Delete
 }
