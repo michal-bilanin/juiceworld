@@ -22,7 +22,7 @@ public class UserRegisterViewModel
     [Display(Name = "Confirm Password")]
     [Compare("Password", ErrorMessage = "Passwords do not match.")]
     public string ConfirmPassword { get; set; }
-    
+
     [MaxLength(500, ErrorMessage = "Bio cannot exceed 500 characters.")]
     [Display(Name = "Bio")]
     public string Bio { get; set; }

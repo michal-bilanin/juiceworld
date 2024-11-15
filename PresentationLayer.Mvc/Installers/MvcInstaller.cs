@@ -51,9 +51,9 @@ public static class MvcInstaller
                     }
                 };
             });
-        
-        Log.Logger = new LoggerConfiguration()                       
-            .WriteTo.File("./logs/log-.txt", rollingInterval: RollingInterval.Day)       
+
+        Log.Logger = new LoggerConfiguration()
+            .WriteTo.File("./logs/log-.txt", rollingInterval: RollingInterval.Day)
             .WriteTo.Console()
             .MinimumLevel.Information()
             .CreateLogger();

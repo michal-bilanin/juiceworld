@@ -44,17 +44,17 @@ public class UserController(IUserService userService, IAuthService authService, 
             PasswordHashRounds = 10,
             Bio = model.Bio,
         };
-        
+
         await userService.CreateUserAsync(userDto);
         var token = authService.CreateToken(userDto);
-        
+
         Response.Cookies.Append("jwt", token, new CookieOptions
         {
             HttpOnly = true,
             Secure = true,
             Expires = DateTimeOffset.UtcNow.AddMinutes(30) // or set expiration based on token expiry
         });
-        
+
         return RedirectToAction("Index", "Home");
     }
     //GET: /User/Login
@@ -63,7 +63,7 @@ public class UserController(IUserService userService, IAuthService authService, 
     {
         return View();
     }
-    
+
     // POST: /User/Login
     [HttpPost]
     public async Task<ActionResult> Login(UserLoginViewModel model)
@@ -79,24 +79,24 @@ public class UserController(IUserService userService, IAuthService authService, 
             Email = model.Email,
             Password = model.Password,
         });
-        
+
         if (token is null)
         {
             ModelState.AddModelError("InvalidCredentials", "Invalid username or password.");
             return View(model);
         }
-        
+
         Response.Cookies.Append("AuthToken", token, new CookieOptions
         {
             HttpOnly = true,
             Secure = true,
             Expires = DateTimeOffset.UtcNow.AddMinutes(30) // or set expiration based on token expiry
         });
-        
-        
+
+
         return RedirectToAction("Index", "Home");
     }
-    
+
     // GET: /User/Logout
     [HttpGet]
     public ActionResult Logout()
@@ -109,7 +109,7 @@ public class UserController(IUserService userService, IAuthService authService, 
         });
         return RedirectToAction("Login", "User");
     }
-    
+
     // GET: /User/Profile
     [HttpGet]
     public async Task<ActionResult> Profile()
@@ -122,7 +122,7 @@ public class UserController(IUserService userService, IAuthService authService, 
             Bio = user.Bio,
             ProfileImageUrl = "",
         };
-        
+
         return View(model);
     }
 }
