@@ -2,5 +2,5 @@
 
 public static class Constants
 {
-    public static string JWT_TOKEN = "JWT_TOKEN";
+    public static string JwtToken = "JWT_TOKEN";
 }

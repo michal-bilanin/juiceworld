@@ -36,7 +36,7 @@ public static class MvcInstaller
             })
             .AddCookie(options =>
             {
-                options.Cookie.Name = Constants.JWT_TOKEN; // the cookie that stores the JWT
+                options.Cookie.Name = Constants.JwtToken; // the cookie that stores the JWT
             })
             .AddJwtBearer(x =>
             {
@@ -52,7 +52,7 @@ public static class MvcInstaller
                 {
                     OnMessageReceived = context =>
                     {
-                        context.Token = context.Request.Cookies[Constants.JWT_TOKEN];
+                        context.Token = context.Request.Cookies[Constants.JwtToken];
                         return Task.CompletedTask;
                     }
                 };

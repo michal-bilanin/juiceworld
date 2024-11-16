@@ -36,7 +36,7 @@ public class UserController(IUserService userService, IAuthService authService, 
             return View(model);
         }
 
-        Response.Cookies.Append(Constants.JWT_TOKEN, token, new CookieOptions
+        Response.Cookies.Append(Constants.JwtToken, token, new CookieOptions
         {
             HttpOnly = true,
             Secure = true,
@@ -74,7 +74,7 @@ public class UserController(IUserService userService, IAuthService authService, 
             return View(model);
         }
 
-        Response.Cookies.Append(Constants.JWT_TOKEN, token, new CookieOptions
+        Response.Cookies.Append(Constants.JwtToken, token, new CookieOptions
         {
             HttpOnly = true,
             Secure = true,
@@ -89,7 +89,7 @@ public class UserController(IUserService userService, IAuthService authService, 
     [HttpGet]
     public ActionResult Logout()
     {
-        Response.Cookies.Append(Constants.JWT_TOKEN, "", new CookieOptions
+        Response.Cookies.Append(Constants.JwtToken, "", new CookieOptions
         {
             HttpOnly = true,
             Secure = true,

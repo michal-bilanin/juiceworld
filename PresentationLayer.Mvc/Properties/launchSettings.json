@@ -17,6 +17,9 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "DB_CONNECTION_STRING": "Host=localhost;Port=5432;Database=juiceworld;Username=postgres;Password=postgres",
+        "LOGGING_DB_DATABASE_NAME" : "juiceworld",
+        "LOGGING_DB_COLLECTION_NAME" : "logs",
+        "LOGGING_DB_CONNECTION_STRING": "mongodb://root:root@localhost:27017",
         "JWT_SECRET": "bAafd@A7d9#@F4*V!LHZs#ebKQrkE6pad2f3kj34c3dXy@"
       }
     },
@@ -28,6 +31,9 @@
       "environmentVariables": {
           "ASPNETCORE_ENVIRONMENT": "Development",
           "DB_CONNECTION_STRING": "Host=localhost;Port=5432;Database=juiceworld;Username=postgres;Password=postgres",
+          "LOGGING_DB_DATABASE_NAME" : "juiceworld",
+          "LOGGING_DB_COLLECTION_NAME" : "logs",
+          "LOGGING_DB_CONNECTION_STRING": "mongodb://root:root@localhost:27017",
           "JWT_SECRET": "bAafd@A7d9#@F4*V!LHZs#ebKQrkE6pad2f3kj34c3dXy@"
       }
     },
