@@ -12,15 +12,6 @@
                     <h3>User Profile</h3>
                 </div>
                 <div class="card-body">
-                    @if (!string.IsNullOrEmpty(Model.ProfileImageUrl))
-                    {
-                        <img src="@Model.ProfileImageUrl" class="img-fluid rounded-circle mb-3" alt="Profile Image" style="width: 150px; height: 150px;">
-                    }
-                    else
-                    {
-                        <img src="https://via.placeholder.com/150" class="img-fluid rounded-circle mb-3" alt="Default Profile Image">
-                    }
-
                     <!-- Display User Information -->
                     <div class="mb-3">
                         <strong>Username:</strong> @Model.Username

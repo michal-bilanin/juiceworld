@@ -1,12 +1,18 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿using System.Diagnostics;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using AutoMapper;
 using Commons.Constants;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
+using AutoMapper;
+using MongoDB.Driver;
+using Serilog.Events;
 
 namespace PresentationLayer.Mvc.Installers;
 
@@ -20,7 +26,7 @@ public static class MvcInstaller
         if (secret == null)
         {
             throw new Exception($"JWT secret is null, make sure it is specified " +
-                                $"in the environment variable: JWT_SECRET");
+                                $"in the environment variable: {EnvironmentConstants.JwtSecret}");
         }
 
         services.AddAuthentication(x =>
@@ -30,7 +36,7 @@ public static class MvcInstaller
             })
             .AddCookie(options =>
             {
-                options.Cookie.Name = "AuthToken"; // the cookie that stores the JWT
+                options.Cookie.Name = Constants.JWT_TOKEN; // the cookie that stores the JWT
             })
             .AddJwtBearer(x =>
             {
@@ -46,20 +52,43 @@ public static class MvcInstaller
                 {
                     OnMessageReceived = context =>
                     {
-                        context.Token = context.Request.Cookies["AuthToken"];
+                        context.Token = context.Request.Cookies[Constants.JWT_TOKEN];
                         return Task.CompletedTask;
                     }
                 };
             });
 
-        Log.Logger = new LoggerConfiguration()
-            .WriteTo.File("./logs/log-.txt", rollingInterval: RollingInterval.Day)
-            .WriteTo.Console()
-            .MinimumLevel.Information()
-            .CreateLogger();
+        // Configure Logging
+        var connectionString = Environment.GetEnvironmentVariable(EnvironmentConstants.LoggingDbConnectionString);
+        var collectionName = Environment.GetEnvironmentVariable(EnvironmentConstants.LoggingDbCollectionName);
+        var databaseName = Environment.GetEnvironmentVariable(EnvironmentConstants.LoggingDbDatabaseName);
 
-        services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true));
+        if (connectionString is null || collectionName is null || databaseName is null)
+        {
+            Debug.Fail(
+                $"Logging database connection string, collection name or database name is null, make sure they are specified " +
+                $"in the environment variables: " +
+                $"{EnvironmentConstants.LoggingDbConnectionString} ({connectionString}), " +
+                $"{EnvironmentConstants.LoggingDbCollectionName} ({collectionName}), " +
+                $"{EnvironmentConstants.LoggingDbDatabaseName} ({databaseName})");
+        }
+        else
+        {
+            var client = new MongoClient(connectionString);
+            var database = client.GetDatabase(databaseName);
 
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo.MongoDBCapped(database, collectionName: collectionName)
+                .WriteTo.Console(LogEventLevel.Information)
+                .CreateLogger();
+
+            services.AddLogging(builder =>
+            {
+                builder.ClearProviders();
+                builder.AddSerilog();
+            });
+        }
+        
         return services;
     }
 }

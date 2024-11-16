@@ -1,5 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using AutoMapper;
 using BusinessLayer.DTOs;
 using BusinessLayer.Facades.Interfaces;
 using BusinessLayer.Services.Interfaces;
@@ -9,7 +10,7 @@ using PresentationLayer.Mvc.Models;
 
 namespace PresentationLayer.Mvc.Controllers;
 
-public class UserController(IUserService userService, IAuthService authService, IAuthFacade authFacade) : Controller
+public class UserController(IUserService userService, IAuthService authService, IAuthFacade authFacade, IMapper mapper) : Controller
 {
     // GET: /User/Register
     [HttpGet]
@@ -28,27 +29,14 @@ public class UserController(IUserService userService, IAuthService authService, 
             return View(model);
         }
 
-        if (await userService.GetUserByEmailAsync(model.Email) is not null)
+        var token = await authFacade.RegisterAsync(mapper.Map<UserRegisterViewModel, UserRegisterDto>(model));
+        if (token is null)
         {
             ModelState.AddModelError("Email", "A user with this username or email already exists.");
             return View(model);
         }
 
-        var salt = AuthUtils.GenerateSalt();
-        var userDto = new UserDto
-        {
-            UserName = model.Username,
-            Email = model.Email,
-            PasswordSalt = salt,
-            PasswordHash = AuthUtils.HashPassword(model.Password, salt, 10),
-            PasswordHashRounds = 10,
-            Bio = model.Bio,
-        };
-
-        await userService.CreateUserAsync(userDto);
-        var token = authService.CreateToken(userDto);
-
-        Response.Cookies.Append("jwt", token, new CookieOptions
+        Response.Cookies.Append(Constants.JWT_TOKEN, token, new CookieOptions
         {
             HttpOnly = true,
             Secure = true,
@@ -86,7 +74,7 @@ public class UserController(IUserService userService, IAuthService authService, 
             return View(model);
         }
 
-        Response.Cookies.Append("AuthToken", token, new CookieOptions
+        Response.Cookies.Append(Constants.JWT_TOKEN, token, new CookieOptions
         {
             HttpOnly = true,
             Secure = true,
@@ -94,14 +82,14 @@ public class UserController(IUserService userService, IAuthService authService, 
         });
 
 
-        return RedirectToAction("Index", "Home");
+        return RedirectToAction(nameof(Index), "Home");
     }
 
     // GET: /User/Logout
     [HttpGet]
     public ActionResult Logout()
     {
-        Response.Cookies.Append("AuthToken", "", new CookieOptions
+        Response.Cookies.Append(Constants.JWT_TOKEN, "", new CookieOptions
         {
             HttpOnly = true,
             Secure = true,
@@ -120,7 +108,6 @@ public class UserController(IUserService userService, IAuthService authService, 
             Username = user.UserName,
             Email = user.Email,
             Bio = user.Bio,
-            ProfileImageUrl = "",
         };
 
         return View(model);

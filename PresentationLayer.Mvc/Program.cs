@@ -3,6 +3,7 @@ using JuiceWorld.Installers;
 using Microsoft.Extensions.Logging.Console;
 using PresentationLayer.Mvc.Installers;
 using Serilog;
+using WebApi.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,10 +27,11 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-// app.UseMiddleware<JwtCookieExtractorMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseMiddleware<RequestLoggingMiddleware>();
 
 app.MapControllerRoute(
     name: "default",
