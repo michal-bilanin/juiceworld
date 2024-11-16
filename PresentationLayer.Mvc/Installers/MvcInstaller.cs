@@ -91,7 +91,7 @@ public static class MvcInstaller
                 builder.AddSerilog();
             });
         }
-        
+
         return services;
     }
 }

@@ -16,7 +16,7 @@ public class AuthFacade(IUserService userService, IAuthService authService) : IA
 
         return !authService.VerifyPassword(user, login.Password) ? null : authService.CreateToken(user);
     }
-    
+
     public async Task<string?> RegisterAsync(UserRegisterDto userRegisterDto)
     {
         var user = await userService.RegisterUserAsync(userRegisterDto);

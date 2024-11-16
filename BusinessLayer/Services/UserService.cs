@@ -15,10 +15,10 @@ public class UserService(IRepository<User> userRepository, IQueryObject<User> us
         var newUser = await userRepository.CreateAsync(mapper.Map<User>(userDto));
         return newUser is null ? null : mapper.Map<UserDto>(newUser);
     }
-    
+
     public async Task<UserDto?> RegisterUserAsync(UserRegisterDto userRegisterDto)
     {
-        
+
         if (await GetUserByEmailAsync(userRegisterDto.Email) is not null)
         {
             return null;
@@ -34,7 +34,7 @@ public class UserService(IRepository<User> userRepository, IQueryObject<User> us
             PasswordHashRounds = 10,
             Bio = userRegisterDto.Bio,
         };
-        
+
         return await CreateUserAsync(userDto);
     }
 
