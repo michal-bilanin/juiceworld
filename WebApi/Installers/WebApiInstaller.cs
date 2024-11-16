@@ -25,12 +25,12 @@ public static class WebApiInstaller
 
         if (connectionString is null || collectionName is null || databaseName is null)
         {
-            Debug.Fail(
+            Log.Warning(
                 $"Logging database connection string, collection name or database name is null, make sure they are specified " +
                 $"in the environment variables: " +
                 $"{EnvironmentConstants.LoggingDbConnectionString} ({connectionString}), " +
                 $"{EnvironmentConstants.LoggingDbCollectionName} ({collectionName}), " +
-                $"{EnvironmentConstants.LoggingDbDatabaseName} ({databaseName})");
+                $"{EnvironmentConstants.LoggingDbDatabaseName} ({databaseName}). Using the default logger.");
         }
         else
         {

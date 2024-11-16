@@ -9,4 +9,6 @@ public interface IAuthFacade
     /// </summary>
     /// <returns>Auth token if successful, otherwise null.</returns>
     Task<string?> LoginAsync(LoginDto login);
+
+    Task<string?> RegisterAsync(UserRegisterDto userRegisterDto);
 }

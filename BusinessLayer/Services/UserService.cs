@@ -1,6 +1,7 @@
 using AutoMapper;
 using BusinessLayer.DTOs;
 using BusinessLayer.Services.Interfaces;
+using Commons.Utils;
 using Infrastructure.QueryObjects;
 using Infrastructure.Repositories;
 using JuiceWorld.Entities;
@@ -13,6 +14,28 @@ public class UserService(IRepository<User> userRepository, IQueryObject<User> us
     {
         var newUser = await userRepository.CreateAsync(mapper.Map<User>(userDto));
         return newUser is null ? null : mapper.Map<UserDto>(newUser);
+    }
+
+    public async Task<UserDto?> RegisterUserAsync(UserRegisterDto userRegisterDto)
+    {
+
+        if (await GetUserByEmailAsync(userRegisterDto.Email) is not null)
+        {
+            return null;
+        }
+
+        var salt = AuthUtils.GenerateSalt();
+        var userDto = new UserDto
+        {
+            UserName = userRegisterDto.UserName,
+            Email = userRegisterDto.Email,
+            PasswordSalt = salt,
+            PasswordHash = AuthUtils.HashPassword(userRegisterDto.Password, salt, 10),
+            PasswordHashRounds = 10,
+            Bio = userRegisterDto.Bio,
+        };
+
+        return await CreateUserAsync(userDto);
     }
 
     public async Task<IEnumerable<UserDto>> GetAllUsersAsync()

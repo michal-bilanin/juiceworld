@@ -17,6 +17,7 @@ public static class DataInstaller
     {
         services.AddScoped<IQueryObject<User>, QueryObject<User>>();
         services.AddScoped<IQueryObject<Product>, QueryObject<Product>>();
+        services.AddScoped<IQueryObject<AuditTrail>, QueryObject<AuditTrail>>();
 
         services.AddScoped<IRepository<User>, Repository<User>>();
         services.AddScoped<IRepository<Address>, Repository<Address>>();
@@ -27,6 +28,7 @@ public static class DataInstaller
         services.AddScoped<IRepository<Product>, Repository<Product>>();
         services.AddScoped<IRepository<Review>, Repository<Review>>();
         services.AddScoped<IRepository<WishListItem>, Repository<WishListItem>>();
+        services.AddScoped<IRepository<AuditTrail>, Repository<AuditTrail>>();
 
         services.AddDbContextFactory<JuiceWorldDbContext>(options =>
         {

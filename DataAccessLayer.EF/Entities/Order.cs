@@ -1,9 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using Commons.Enums;
+using JuiceWorld.Entities.Interfaces;
 
 namespace JuiceWorld.Entities;
 
-public class Order : BaseEntity
+public class Order : BaseEntity, IAuditableEntity
 {
     public DeliveryType DeliveryType { get; set; } = DeliveryType.Standard;
     public OrderStatus Status { get; set; } = OrderStatus.Pending;

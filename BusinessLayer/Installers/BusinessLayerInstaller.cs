@@ -21,6 +21,7 @@ public static class BusinessLayerInstaller
         services.AddScoped<IReviewService, ReviewService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IWishListItemService, WishListItemService>();
+        services.AddScoped<IAuditTrailService, AuditTrailService>();
 
         services.AddScoped<IAuthFacade, AuthFacade>();
 

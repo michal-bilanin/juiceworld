@@ -10,10 +10,19 @@ public class Repository<TEntity>(JuiceWorldDbContext context) : IRepository<TEnt
 {
     private readonly DbSet<TEntity> _dbSet = context.Set<TEntity>();
 
-    public async Task<TEntity?> CreateAsync(TEntity entity)
+    public async Task<TEntity?> CreateAsync(TEntity entity, object? userId = null)
     {
         var result = await _dbSet.AddAsync(entity);
-        await context.SaveChangesAsync();
+
+        if (userId is null)
+        {
+            await context.SaveChangesAsync();
+        }
+        else
+        {
+            await context.SaveChangesAsync((int)userId);
+        }
+
         return result.Entity;
     }
 
@@ -27,21 +36,23 @@ public class Repository<TEntity>(JuiceWorldDbContext context) : IRepository<TEnt
         return await _dbSet.ToListAsync();
     }
 
-    public async Task<TEntity?> UpdateAsync(TEntity entity)
+    public async Task<TEntity?> UpdateAsync(TEntity entity, object? userId = null)
     {
-        var existingEntity = await _dbSet.FindAsync(entity.Id);
-        if (existingEntity is null)
+        _dbSet.Update(entity);
+
+        if (userId is null)
         {
-            return null;
+            await context.SaveChangesAsync();
+        }
+        else
+        {
+            await context.SaveChangesAsync((int)userId);
         }
 
-        entity.UpdatedAt = DateTime.Now;
-        _dbSet.Update(entity);
-        await context.SaveChangesAsync();
         return entity;
     }
 
-    public async Task<bool> DeleteAsync(object id)
+    public async Task<bool> DeleteAsync(object id, object? userId = null)
     {
         var entity = await _dbSet.FindAsync(id);
         if (entity is null)
@@ -50,7 +61,16 @@ public class Repository<TEntity>(JuiceWorldDbContext context) : IRepository<TEnt
         }
 
         _dbSet.Remove(entity);
-        await context.SaveChangesAsync();
+
+        if (userId is null)
+        {
+            await context.SaveChangesAsync();
+        }
+        else
+        {
+            await context.SaveChangesAsync((int)userId);
+        }
+
         return true;
     }
 }
