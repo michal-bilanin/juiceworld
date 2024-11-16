@@ -16,7 +16,6 @@
       "applicationUrl": "http://localhost:5035",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "API_PORT": "6969",
         "DB_CONNECTION_STRING": "Host=localhost;Port=5432;Database=juiceworld;Username=postgres;Password=postgres",
         "JWT_SECRET": "bAafd@A7d9#@F4*V!LHZs#ebKQrkE6pad2f3kj34c3dXy@"
       }
@@ -28,7 +27,6 @@
       "applicationUrl": "https://localhost:7137;http://localhost:5035",
       "environmentVariables": {
           "ASPNETCORE_ENVIRONMENT": "Development",
-          "API_PORT": "6969",
           "DB_CONNECTION_STRING": "Host=localhost;Port=5432;Database=juiceworld;Username=postgres;Password=postgres",
           "JWT_SECRET": "bAafd@A7d9#@F4*V!LHZs#ebKQrkE6pad2f3kj34c3dXy@"
       }
