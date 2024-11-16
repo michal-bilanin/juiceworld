@@ -3,7 +3,6 @@ using System.ComponentModel.DataAnnotations;
 
 public class UserRegisterViewModel
 {
-    private static string SpecialCharacters = """!@#$%^&*()_+\-=\[\]{};:\\|,.<>\/?`~""";
 
     [Required]
     [Display(Name = "Username")]
@@ -18,7 +17,7 @@ public class UserRegisterViewModel
     [StringLength(100, MinimumLength = 8, ErrorMessage = "Password must be between 8 and 100 characters.")]
     [DataType(DataType.Password)]
     [Display(Name = "Password")]
-    [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$",
+    [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\p{L}\p{N}\p{P}\p{S}])[^\s]{8,}$",
         ErrorMessage = "Passwords must have at least one uppercase letter, one lowercase letter, one number, and one special character.")]
     public string Password { get; set; }
 

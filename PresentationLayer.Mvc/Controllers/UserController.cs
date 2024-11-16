@@ -1,16 +1,14 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using AutoMapper;
 using BusinessLayer.DTOs;
 using BusinessLayer.Facades.Interfaces;
 using BusinessLayer.Services.Interfaces;
-using Commons.Utils;
 using Microsoft.AspNetCore.Mvc;
 using PresentationLayer.Mvc.Models;
 
 namespace PresentationLayer.Mvc.Controllers;
 
-public class UserController(IUserService userService, IAuthService authService, IAuthFacade authFacade, IMapper mapper) : Controller
+public class UserController(IUserService userService, IAuthFacade authFacade, IMapper mapper) : Controller
 {
     // GET: /User/Register
     [HttpGet]
