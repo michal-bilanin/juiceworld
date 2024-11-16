@@ -8,7 +8,8 @@ using JuiceWorld.Entities;
 
 namespace BusinessLayer.Services;
 
-public class ProductService(IRepository<Product> productRepository,
+public class ProductService(
+    IRepository<Product> productRepository,
     IMapper mapper,
     IQueryObject<Product> queryObject) : IProductService
 {
@@ -37,7 +38,7 @@ public class ProductService(IRepository<Product> productRepository,
             (productFilter.Description == null || p.Description.ToLower().Contains(productFilter.Description.ToLower()))
         ).Execute();
 
-        return mapper.Map<ICollection<ProductDto>>(result).ToList();
+        return mapper.Map<ICollection<ProductDto>>(result);
     }
 
     public async Task<ProductDto?> GetProductByIdAsync(int id)

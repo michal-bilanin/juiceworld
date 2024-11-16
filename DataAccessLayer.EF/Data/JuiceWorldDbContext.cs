@@ -1,6 +1,9 @@
 ﻿using System.Linq.Expressions;
+using Commons.Enums;
 using JuiceWorld.Entities;
+using JuiceWorld.Entities.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace JuiceWorld.Data;
 
@@ -20,38 +23,82 @@ public class JuiceWorldDbContext(DbContextOptions<JuiceWorldDbContext> options)
     public DbSet<Order> Orders { get; set; }
     public DbSet<OrderProduct> OrderProducts { get; set; }
 
-    public override int SaveChanges()
+    private void SetAuditableProperties()
     {
-        foreach (var entry in ChangeTracker.Entries())
-        {
-            if (entry.State != EntityState.Deleted)
+        foreach (var entry in ChangeTracker.Entries<BaseEntity>())
+            switch (entry.State)
             {
-                continue;
+                case EntityState.Added:
+                    entry.Entity.CreatedAt = DateTime.UtcNow;
+                    break;
+                case EntityState.Modified:
+                    entry.Entity.UpdatedAt = DateTime.UtcNow;
+                    break;
+                case EntityState.Deleted:
+                    entry.Entity.DeletedAt = DateTime.UtcNow;
+                    break;
             }
+    }
 
-            // Change the state from Deleted to Modified, and set the DeletedAt time
-            entry.State = EntityState.Modified;
-            entry.CurrentValues[nameof(BaseEntity.DeletedAt)] = DateTime.Now;
+    private List<AuditTrail> GenerateAuditTrails(int userId, CancellationToken cancellationToken = default)
+    {
+        var auditableEntries = ChangeTracker.Entries<IAuditableEntity>()
+            .Where(x => x.State is EntityState.Added or EntityState.Deleted or EntityState.Modified)
+            .Select(x => CreateAuditTrail(userId, x))
+            .ToList();
+
+        return auditableEntries;
+    }
+
+    private static AuditTrail CreateAuditTrail(int userId, EntityEntry<IAuditableEntity> entry)
+    {
+        List<string> properties = [];
+        var auditTrail = new AuditTrail
+        {
+            EntityName = entry.Entity.GetType().Name,
+            UserId = userId,
+            TrailType = entry.State switch
+            {
+                EntityState.Added => TrailType.Create,
+                EntityState.Modified => TrailType.Update,
+                EntityState.Deleted => TrailType.Delete,
+                _ => TrailType.None
+            }
+        };
+
+        foreach (var property in entry.Properties.Where(prop => !prop.IsTemporary))
+        {
+            if (property.Metadata.IsPrimaryKey()) auditTrail.PrimaryKey = (int)(property.OriginalValue ?? -1);
+
+            if (property.IsModified) properties.Add(property.Metadata.Name);
         }
 
+        auditTrail.ChangedColumns = properties;
+        return auditTrail;
+    }
+
+    public override int SaveChanges()
+    {
+        SetAuditableProperties();
         return base.SaveChanges();
+    }
+
+    public int SaveChanges(int userId)
+    {
+        AddRange(GenerateAuditTrails(userId));
+        return SaveChanges();
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        foreach (var entry in ChangeTracker.Entries())
-        {
-            if (entry.State != EntityState.Deleted)
-            {
-                continue;
-            }
-
-            // Change the state from Deleted to Modified, and set the DeletedAt time
-            entry.State = EntityState.Modified;
-            entry.CurrentValues[nameof(BaseEntity.DeletedAt)] = DateTime.Now;
-        }
-
+        SetAuditableProperties();
         return await base.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task<int> SaveChangesAsync(int userId, CancellationToken cancellationToken = default)
+    {
+        await AddRangeAsync(GenerateAuditTrails(userId, cancellationToken), cancellationToken);
+        return await SaveChangesAsync(cancellationToken);
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -168,13 +215,21 @@ public class JuiceWorldDbContext(DbContextOptions<JuiceWorldDbContext> options)
             .Property(u => u.UserRole)
             .HasConversion<string>();
 
+        // AuditTrail -> User
+        modelBuilder.Entity<AuditTrail>()
+            .HasOne(at => at.User)
+            .WithMany(user => user.AuditTrails)
+            .HasForeignKey(at => at.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<AuditTrail>()
+            .Property(at => at.TrailType)
+            .HasConversion<string>();
+
         // Global query filter for soft-deleted entities
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
         {
-            if (!typeof(BaseEntity).IsAssignableFrom(entityType.ClrType))
-            {
-                continue;
-            }
+            if (!typeof(BaseEntity).IsAssignableFrom(entityType.ClrType)) continue;
 
             var parameter = Expression.Parameter(entityType.ClrType);
             var filter = Expression.Lambda(
