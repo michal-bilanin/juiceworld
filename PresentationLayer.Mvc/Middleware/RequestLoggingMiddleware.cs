@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace WebApi.Middleware;
+namespace PresentationLayer.Mvc.Middleware;
 
 public class RequestLoggingMiddleware(RequestDelegate next, ILogger<RequestLoggingMiddleware> logger)
 {

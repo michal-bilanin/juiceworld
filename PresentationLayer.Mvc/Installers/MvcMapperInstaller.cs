@@ -1,9 +1,8 @@
 ﻿using AutoMapper;
 using BusinessLayer.DTOs;
-using JuiceWorld.Entities;
 using PresentationLayer.Mvc.Models;
 
-namespace BusinessLayer.Installers;
+namespace PresentationLayer.Mvc.Installers;
 
 public class MvcMapperInstaller : Profile
 {

@@ -2,8 +2,8 @@ using BusinessLayer.Installers;
 using JuiceWorld.Installers;
 using Microsoft.Extensions.Logging.Console;
 using PresentationLayer.Mvc.Installers;
+using PresentationLayer.Mvc.Middleware;
 using Serilog;
-using WebApi.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
