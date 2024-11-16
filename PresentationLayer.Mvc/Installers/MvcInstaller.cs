@@ -11,6 +11,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using AutoMapper;
+using BusinessLayer.Installers;
 using MongoDB.Driver;
 using Serilog.Events;
 
@@ -21,6 +22,8 @@ public static class MvcInstaller
     public static IServiceCollection MvcInstall(this IServiceCollection services)
     {
         services.AddControllers();
+        services.AddAutoMapper(typeof(MvcMapperInstaller));
+
 
         var secret = Environment.GetEnvironmentVariable(EnvironmentConstants.JwtSecret);
         if (secret == null)
