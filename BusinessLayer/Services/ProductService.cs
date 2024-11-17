@@ -28,16 +28,22 @@ public class ProductService(
     public async Task<IEnumerable<ProductDto>> GetProductsFilteredAsync(ProductFilterDto productFilter)
     {
         Enum.TryParse<ProductCategory>(productFilter.Category, true, out var categoryEnum);
-        var result = await queryObject.Filter(p =>
+        var query = queryObject.Filter(p =>
             (productFilter.ManufacturerName == null ||
              p.Manufacturer.Name.ToLower().Contains(productFilter.ManufacturerName.ToLower())) &&
             (productFilter.Category == null || p.Category == categoryEnum) &&
             (productFilter.PriceMax == null || p.Price <= productFilter.PriceMax) &&
             (productFilter.PriceMin == null || p.Price >= productFilter.PriceMin) &&
             (productFilter.Name == null || p.Name.ToLower().Contains(productFilter.Name.ToLower())) &&
-            (productFilter.Description == null || p.Description.ToLower().Contains(productFilter.Description.ToLower()))
-        ).Execute();
+            (productFilter.Description == null ||
+             p.Description.ToLower().Contains(productFilter.Description.ToLower())));
 
+        if (productFilter is { PageIndex: not null, PageSize: not null })
+        {
+            query = query.Paginate(productFilter.PageIndex.Value, productFilter.PageSize.Value);
+        }
+
+        var result = await query.ExecuteAsync();
         return mapper.Map<ICollection<ProductDto>>(result);
     }
 
@@ -45,6 +51,13 @@ public class ProductService(
     {
         var product = await productRepository.GetByIdAsync(id);
         return product is null ? null : mapper.Map<ProductDto>(product);
+    }
+
+    public async Task<ProductDetailDto?> GetProductDetailByIdAsync(int id)
+    {
+        var product = await productRepository.GetByIdAsync(id, nameof(Product.Manufacturer),
+            nameof(Product.Reviews));
+        return product is null ? null : mapper.Map<ProductDetailDto>(product);
     }
 
     public async Task<ProductDto?> UpdateProductAsync(ProductDto productDto)

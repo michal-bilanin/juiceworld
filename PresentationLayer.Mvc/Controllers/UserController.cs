@@ -1,14 +1,13 @@
 ﻿using System.Security.Claims;
 using AutoMapper;
 using BusinessLayer.DTOs;
-using BusinessLayer.Facades.Interfaces;
 using BusinessLayer.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using PresentationLayer.Mvc.Models;
 
 namespace PresentationLayer.Mvc.Controllers;
 
-public class UserController(IUserService userService, IAuthFacade authFacade, IMapper mapper) : Controller
+public class UserController(IUserService userService, IMapper mapper) : Controller
 {
     // GET: /User/Register
     [HttpGet]
@@ -27,7 +26,7 @@ public class UserController(IUserService userService, IAuthFacade authFacade, IM
             return View(model);
         }
 
-        var token = await authFacade.RegisterAsync(mapper.Map<UserRegisterViewModel, UserRegisterDto>(model));
+        var token = await userService.RegisterUserAsync(mapper.Map<UserRegisterViewModel, UserRegisterDto>(model));
         if (token is null)
         {
             ModelState.AddModelError("Email", "A user with this username or email already exists.");
@@ -60,7 +59,7 @@ public class UserController(IUserService userService, IAuthFacade authFacade, IM
             return View(model);
         }
 
-        var token = await authFacade.LoginAsync(new LoginDto
+        var token = await userService.LoginAsync(new LoginDto
         {
             Email = model.Email,
             Password = model.Password,
@@ -101,6 +100,11 @@ public class UserController(IUserService userService, IAuthFacade authFacade, IM
     public async Task<ActionResult> Profile()
     {
         var user = await userService.GetUserByEmailAsync(User.FindFirst(ClaimTypes.Email)?.Value ?? "");
+        if (user is null)
+        {
+            return NotFound();
+        }
+
         var model = new UserProfileViewModel
         {
             Username = user.UserName,

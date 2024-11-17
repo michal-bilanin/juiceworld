@@ -14,9 +14,11 @@ public class MapperProfileInstaller : Profile
         CreateMap<OrderDto, Order>().ReverseMap();
         CreateMap<OrderProductDto, OrderProduct>().ReverseMap();
         CreateMap<ProductDto, Product>().ReverseMap();
+        CreateMap<ProductDetailDto, Product>().ReverseMap();
         CreateMap<ReviewDto, Review>().ReverseMap();
         CreateMap<UserDto, User>().ReverseMap();
         CreateMap<WishListItemDto, WishListItem>().ReverseMap();
+        CreateMap<WishListItemDetailDto, WishListItem>().ReverseMap();
         CreateMap<AuditTrailDto, AuditTrail>().ReverseMap();
     }
 }

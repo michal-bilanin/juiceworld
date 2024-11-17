@@ -29,7 +29,7 @@ public class QueryObject<TEntity>(JuiceWorldDbContext context) : IQueryObject<TE
         return this;
     }
 
-    public async Task<IEnumerable<TEntity>> Execute()
+    public async Task<IEnumerable<TEntity>> ExecuteAsync()
     {
         return await _query.ToListAsync();
     }
