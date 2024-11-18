@@ -40,7 +40,13 @@ public class Repository<TEntity>(JuiceWorldDbContext context) : IRepository<TEnt
 
     public async Task<TEntity?> UpdateAsync(TEntity entity, object? userId = null)
     {
-        _dbSet.Update(entity);
+        var existingEntity = await _dbSet.FindAsync(entity.Id);
+        if (existingEntity != null)
+        {
+            context.Entry(existingEntity).State = EntityState.Detached;
+        }
+
+        var result = _dbSet.Update(entity);
 
         if (userId is null)
         {
@@ -51,7 +57,7 @@ public class Repository<TEntity>(JuiceWorldDbContext context) : IRepository<TEnt
             await context.SaveChangesAsync((int)userId);
         }
 
-        return entity;
+        return result.Entity;
     }
 
     public async Task<bool> DeleteAsync(object id, object? userId = null)
