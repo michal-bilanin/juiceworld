@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Infrastructure.Repositories;
 using JuiceWorld.Data;
 using JuiceWorld.Entities;
@@ -80,5 +81,22 @@ public class Repository<TEntity>(JuiceWorldDbContext context) : IRepository<TEnt
         }
 
         return true;
+    }
+
+    public async Task<int> RemoveAllByConditionAsync(Expression<Func<TEntity, bool>> predicate, object? userId = null)
+    {
+        var entities = await _dbSet.Where(predicate).ToListAsync();
+        _dbSet.RemoveRange(entities);
+
+        if (userId is null)
+        {
+            await context.SaveChangesAsync();
+        }
+        else
+        {
+            await context.SaveChangesAsync((int)userId);
+        }
+
+        return entities.Count;
     }
 }

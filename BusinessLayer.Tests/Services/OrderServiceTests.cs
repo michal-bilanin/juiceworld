@@ -6,6 +6,7 @@ using BusinessLayer.Services.Interfaces;
 using Commons.Enums;
 using JuiceWorld.Entities;
 using JuiceWorld.Repositories;
+using JuiceWorld.UnitOfWork;
 using TestUtilities.MockedObjects;
 using Xunit;
 using Assert = Xunit.Assert;
@@ -23,7 +24,8 @@ public class OrderServiceTests
         var orderRepository = new Repository<Order>(dbContext);
         var config = new MapperConfiguration(cfg => cfg.AddProfile<MapperProfileInstaller>());
         var mapper = config.CreateMapper();
-        _orderService = new OrderService(orderRepository, mapper);
+        var unitOfWorkProvider = new OrderUnitOfWorkProvider(() => MockedDbContext.CreateFromOptions(dbContextOptions));
+        _orderService = new OrderService(orderRepository, unitOfWorkProvider, mapper);
     }
 
     [Fact]
@@ -59,11 +61,10 @@ public class OrderServiceTests
     public async Task CreateOrderAsync_Simple()
     {
         // Arrange
-        var order = new OrderDto
+        var order = new CreateOrderDto
         {
             UserId = 1,
             AddressId = 4,
-            Status = OrderStatus.Pending,
             DeliveryType = DeliveryType.Express,
             PaymentMethodType = PaymentMethodType.Monero
         };
@@ -74,7 +75,7 @@ public class OrderServiceTests
         // Assert
         Assert.NotNull(result);
         Assert.True(order.UserId == result.UserId && order.AddressId == result.AddressId &&
-                    order.Status == result.Status && order.DeliveryType == result.DeliveryType &&
+                    order.DeliveryType == result.DeliveryType &&
                     order.PaymentMethodType == result.PaymentMethodType);
     }
 

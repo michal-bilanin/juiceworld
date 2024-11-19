@@ -2,13 +2,36 @@ using AutoMapper;
 using BusinessLayer.DTOs;
 using BusinessLayer.Services.Interfaces;
 using Infrastructure.Repositories;
+using Infrastructure.UnitOfWork;
 using JuiceWorld.Entities;
+using JuiceWorld.UnitOfWork;
 
 namespace BusinessLayer.Services;
 
-public class OrderService(IRepository<Order> orderRepository, IMapper mapper) : IOrderService
+public class OrderService(
+    IRepository<Order> orderRepository,
+    IUnitOfWorkProvider<OrderUnitOfWork> orderUnitOfWorkProvider,
+    IMapper mapper) : IOrderService
 {
-    public async Task<OrderDto?> CreateOrderAsync(OrderDto orderDto)
+    public async Task<OrderDto?> ExecuteOrderAsync(CreateOrderDto orderDto)
+    {
+        using var unitOfWork = orderUnitOfWorkProvider.Create();
+        var order = mapper.Map<Order>(orderDto);
+        var newOrder = await unitOfWork.OrderRepository.CreateAsync(order, order.UserId);
+
+        if (newOrder is null)
+        {
+            return null;
+        }
+
+        // remove cart items
+        await unitOfWork.CartItemRepository.RemoveAllByConditionAsync(ci => ci.UserId == order.UserId, order.UserId);
+        await unitOfWork.Commit();
+
+        return mapper.Map<OrderDto>(newOrder);
+    }
+
+    public async Task<OrderDto?> CreateOrderAsync(CreateOrderDto orderDto)
     {
         var newOrder = await orderRepository.CreateAsync(mapper.Map<Order>(orderDto));
         return newOrder is null ? null : mapper.Map<OrderDto>(newOrder);

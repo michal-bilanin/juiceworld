@@ -1,3 +1,5 @@
+using System.Linq.Expressions;
+
 namespace Infrastructure.Repositories;
 
 public interface IRepository<TEntity>
@@ -8,4 +10,5 @@ public interface IRepository<TEntity>
     Task<IEnumerable<TEntity>> GetAllAsync(params string[] includes);
     Task<TEntity?> UpdateAsync(TEntity entity, object? userId = null);
     Task<bool> DeleteAsync(object id, object? userId = null);
+    Task<int> RemoveAllByConditionAsync(Expression<Func<TEntity, bool>> predicate, object? userId = null);
 }
