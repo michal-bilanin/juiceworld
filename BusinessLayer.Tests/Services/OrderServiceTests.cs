@@ -1,4 +1,3 @@
-<<<<<<< Updated upstream
 using AutoMapper;
 using BusinessLayer.DTOs;
 using BusinessLayer.Installers;
