@@ -26,6 +26,12 @@ public class WishListItemService(IRepository<WishListItem> wishListItemRepositor
         return wishListItem is null ? null : mapper.Map<WishListItemDto>(wishListItem);
     }
 
+    public async Task<WishListItemDetailDto?> GetWishListItemDetailByIdAsync(int id)
+    {
+        var wishListItem = await wishListItemRepository.GetByIdAsync(id, nameof(WishListItem.Product), nameof(WishListItem.User));
+        return wishListItem is null ? null : mapper.Map<WishListItemDetailDto>(wishListItem);
+    }
+
     public async Task<WishListItemDto?> UpdateWishListItemAsync(WishListItemDto wishListItemDto)
     {
         var updatedWishListItem = await wishListItemRepository.UpdateAsync(mapper.Map<WishListItem>(wishListItemDto));

@@ -1,5 +1,5 @@
 ﻿using BusinessLayer.DTOs;
-using BusinessLayer.Facades.Interfaces;
+using BusinessLayer.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
@@ -8,7 +8,7 @@ namespace WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class AuthController(IAuthFacade authFacade) : ControllerBase
+public class AuthController(IUserService userService) : ControllerBase
 {
     private const string ApiBaseName = "CartItem";
 
@@ -17,7 +17,7 @@ public class AuthController(IAuthFacade authFacade) : ControllerBase
     [AllowAnonymous]
     public async Task<ActionResult<string>> Login(LoginDto login)
     {
-        var token = await authFacade.LoginAsync(login);
+        var token = await userService.LoginAsync(login);
         return token == null ? Unauthorized() : Ok(token);
     }
 }

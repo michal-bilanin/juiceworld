@@ -5,7 +5,8 @@ namespace BusinessLayer.Services.Interfaces;
 
 public interface IOrderService
 {
-    Task<OrderDto?> CreateOrderAsync(OrderDto orderDto);
+    Task<OrderDto?> ExecuteOrderAsync(CreateOrderDto orderDto);
+    Task<OrderDto?> CreateOrderAsync(CreateOrderDto orderDto);
     Task<IEnumerable<OrderDto>> GetAllOrdersAsync();
     Task<OrderDto?> GetOrderByIdAsync(int id);
     Task<OrderDto?> UpdateOrderAsync(OrderDto orderDto);

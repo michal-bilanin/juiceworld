@@ -36,7 +36,7 @@ public static class DataInitializer
         CreateUser(2, "admin@example.com", "admin", "password", "I am a steroid Admin!", UserRole.Admin)
     ];
 
-    private static User CreateUser(int id, string email, string userName, string password, string bio, UserRole role)
+    public static User CreateUser(int id, string email, string userName, string password, string bio, UserRole role)
     {
         var user = new User
         {

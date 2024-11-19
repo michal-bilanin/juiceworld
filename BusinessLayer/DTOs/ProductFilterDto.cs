@@ -8,4 +8,6 @@ public class ProductFilterDto
     public string? Description { get; set; }
     public decimal? PriceMax { get; set; }
     public decimal? PriceMin { get; set; }
+    public int? PageIndex { get; set; }
+    public int? PageSize { get; set; }
 }

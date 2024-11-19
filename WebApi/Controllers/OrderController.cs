@@ -16,7 +16,7 @@ public class OrderController(IOrderService orderService) : ControllerBase
 
     [HttpPost]
     [OpenApiOperation(ApiBaseName + nameof(CreateOrder))]
-    public async Task<ActionResult<OrderDto>> CreateOrder(OrderDto order)
+    public async Task<ActionResult<OrderDto>> CreateOrder(CreateOrderDto order)
     {
         var result = await orderService.CreateOrderAsync(order);
         return result == null ? Problem() : Ok(result);
