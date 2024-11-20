@@ -1,4 +1,4 @@
-using System.Buffers.Text;
+using System.Reflection.Metadata.Ecma335;
 using AutoMapper;
 using BusinessLayer.DTOs;
 using BusinessLayer.Services.Interfaces;
@@ -6,12 +6,14 @@ using Commons.Enums;
 using Infrastructure.QueryObjects;
 using Infrastructure.Repositories;
 using JuiceWorld.Entities;
+using Microsoft.Extensions.Logging;
 
 namespace BusinessLayer.Services;
 
 public class ProductService(
     IRepository<Product> productRepository,
     IMapper mapper,
+    ILogger logger,
     IQueryObject<Product> queryObject) : IProductService
 {
     private const string ImgFolderPath = "Images";
@@ -25,15 +27,25 @@ public class ProductService(
         { "R0lGODdh", ".gif" }
     };
 
-    private async Task  SaveImage(string base64Image, string imageName)
+    private async Task<bool> SaveImageAsync(string base64Image, string imageName)
     {
         Directory.CreateDirectory(ImgFolderPath);
         var imageBytes = Convert.FromBase64String(base64Image);
         var filePath = Path.Combine(ImgFolderPath, imageName);
-        await File.WriteAllBytesAsync(filePath, imageBytes);
+        try
+        {
+            await File.WriteAllBytesAsync(filePath, imageBytes);
+        }
+        catch (Exception e)
+        {
+            logger.LogError($"ERROR - unable to write to file {filePath} \n ERROR-MESSAGE: {e.Message}");
+            return false;
+        }
+
+        return true;
     }
 
-    public static string GetImageExtension(string base64Image)
+    private static string GetImageExtension(string base64Image)
     {
         foreach (var mimeType in MimeTypes)
         {
@@ -51,7 +63,10 @@ public class ProductService(
         {
             var extension = GetImageExtension(productDto.Image);
             var imageName = $"{Guid.NewGuid()}{extension}";
-            await SaveImage(productDto.Image, imageName);
+            if (!await SaveImageAsync(productDto.Image, imageName))
+            {
+                return null;
+            }
             productDto.Image = imageName;
         }
 
@@ -101,8 +116,11 @@ public class ProductService(
         if (product is null)
             return null;
 
-        var imagePath = Path.Combine(ImgFolderPath, product.Image);
         var ret = mapper.Map<ProductDetailDto>(product);
+        if (product.Image is null)
+            return ret;
+        
+        var imagePath = Path.Combine(ImgFolderPath, product.Image);
 
         if (!File.Exists(imagePath))
             return ret;
@@ -134,7 +152,10 @@ public class ProductService(
 
             var extension = GetImageExtension(productDto.Image);
             var imageName = $"{Guid.NewGuid()}{extension}";
-            await SaveImage(productDto.Image, imageName);
+            
+            if (!await SaveImageAsync(productDto.Image, imageName))
+                return null;
+            
             productDto.Image = imageName;
         }
 
