@@ -43,7 +43,7 @@ public class ProductService(
         }
         return string.Empty;
     }
-    
+
     public async Task<ProductDto?> CreateProductAsync(ProductDto productDto)
     {
         if (!string.IsNullOrEmpty(productDto.Image))
@@ -53,7 +53,7 @@ public class ProductService(
             SaveImage(productDto.Image, imageName);
             productDto.Image = imageName;
         }
-        
+
         var newProduct = await productRepository.CreateAsync(mapper.Map<Product>(productDto));
         return newProduct is null ? null : mapper.Map<ProductDto>(newProduct);
     }
@@ -96,19 +96,19 @@ public class ProductService(
     {
         var product = await productRepository.GetByIdAsync(id, nameof(Product.Manufacturer),
             nameof(Product.Reviews));
-        
+
         if (product is null)
             return null;
-        
+
         var imagePath = Path.Combine(ImgFolderPath, product.Image);
         var ret = mapper.Map<ProductDetailDto>(product);
-        
+
         if (!File.Exists(imagePath))
             return ret;
-        
+
         var image = await File.ReadAllBytesAsync(imagePath);
         ret.Image = Convert.ToBase64String(image);
-        
+
         return ret;
     }
 
@@ -130,13 +130,13 @@ public class ProductService(
                     File.Delete(oldImagePath);
                 }
             }
-            
+
             var extension = GetImageExtension(productDto.Image);
             var imageName = $"{Guid.NewGuid()}{extension}";
             SaveImage(productDto.Image, imageName);
             productDto.Image = imageName;
         }
-        
+
         var updatedProduct = await productRepository.UpdateAsync(mapper.Map<Product>(productDto));
         return updatedProduct is null ? null : mapper.Map<ProductDto>(updatedProduct);
     }
