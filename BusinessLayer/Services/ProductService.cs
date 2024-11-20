@@ -25,12 +25,12 @@ public class ProductService(
         { "R0lGODdh", ".gif" }
     };
 
-    private void SaveImage(string base64Image, string imageName)
+    private async Task  SaveImage(string base64Image, string imageName)
     {
         Directory.CreateDirectory(ImgFolderPath);
         var imageBytes = Convert.FromBase64String(base64Image);
         var filePath = Path.Combine(ImgFolderPath, imageName);
-        File.WriteAllBytes(filePath, imageBytes);
+        await File.WriteAllBytesAsync(filePath, imageBytes);
     }
 
     public static string GetImageExtension(string base64Image)
@@ -51,7 +51,7 @@ public class ProductService(
         {
             var extension = GetImageExtension(productDto.Image);
             var imageName = $"{Guid.NewGuid()}{extension}";
-            SaveImage(productDto.Image, imageName);
+            await SaveImage(productDto.Image, imageName);
             productDto.Image = imageName;
         }
 
@@ -134,7 +134,7 @@ public class ProductService(
 
             var extension = GetImageExtension(productDto.Image);
             var imageName = $"{Guid.NewGuid()}{extension}";
-            SaveImage(productDto.Image, imageName);
+            await SaveImage(productDto.Image, imageName);
             productDto.Image = imageName;
         }
 
