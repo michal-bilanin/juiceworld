@@ -39,6 +39,14 @@ public class ProductController(IProductService productService) : ControllerBase
         return result == null ? NotFound() : Ok(result);
     }
 
+    [HttpGet("{productId:int}/detail")]
+    [OpenApiOperation(ApiBaseName + nameof(GetProductDetail))]
+    public async Task<ActionResult<ProductDetailDto>> GetProductDetail(int productId)
+    {
+        var result = await productService.GetProductDetailByIdAsync(productId);
+        return result == null ? NotFound() : Ok(result);
+    }
+
     [HttpPut]
     [OpenApiOperation(ApiBaseName + nameof(UpdateProduct))]
     public async Task<ActionResult<ProductDto>> UpdateProduct(ProductDto product)
