@@ -113,16 +113,23 @@ public class ProductService(
             nameof(Product.Reviews));
 
         if (product is null)
+        {
             return null;
+        }
 
         var ret = mapper.Map<ProductDetailDto>(product);
         if (product.Image is null)
+        {
             return ret;
-        
+        }
+
         var imagePath = Path.Combine(ImgFolderPath, product.Image);
+        Console.WriteLine(Path.GetFullPath(imagePath));
 
         if (!File.Exists(imagePath))
+        {
             return ret;
+        }
 
         var image = await File.ReadAllBytesAsync(imagePath);
         ret.Image = Convert.ToBase64String(image);
@@ -151,10 +158,12 @@ public class ProductService(
 
             var extension = GetImageExtension(productDto.Image);
             var imageName = $"{Guid.NewGuid()}{extension}";
-            
+
             if (!await SaveImageAsync(productDto.Image, imageName))
+            {
                 return null;
-            
+            }
+
             productDto.Image = imageName;
         }
 
