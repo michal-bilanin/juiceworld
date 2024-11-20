@@ -18,6 +18,7 @@ public class ProductService(
     private static readonly Dictionary<string, string> MimeTypes = new()
     {
         // enough to determine the image type
+        // source https://stackoverflow.com/questions/57976898/how-to-get-mime-type-from-base-64-string
         { "/9j/", ".jpg" },
         { "iVBORw0KGgo", ".png" },
         { "R0lGODlh", ".gif" },
