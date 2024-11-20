@@ -13,8 +13,7 @@ public class Product : BaseEntity, IAuditableEntity
     [Range(0, int.MaxValue)]
     public decimal Price { get; set; }
 
-    [Url]
-    public string? ImageUrl { get; set; }
+    public string? Image { get; set; }
 
     [MaxLength(1000)]
     public string Description { get; set; } = null!;
