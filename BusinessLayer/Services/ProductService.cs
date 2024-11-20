@@ -1,4 +1,3 @@
-using System.Reflection.Metadata.Ecma335;
 using AutoMapper;
 using BusinessLayer.DTOs;
 using BusinessLayer.Services.Interfaces;
@@ -13,7 +12,7 @@ namespace BusinessLayer.Services;
 public class ProductService(
     IRepository<Product> productRepository,
     IMapper mapper,
-    ILogger logger,
+    ILogger<ProductService> logger,
     IQueryObject<Product> queryObject) : IProductService
 {
     private const string ImgFolderPath = "Images";
