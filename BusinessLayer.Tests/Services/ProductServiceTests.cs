@@ -117,7 +117,7 @@ public class ProductServiceTests
         // Arrange
         var product = new ProductDto
         {
-            Id = 9,
+            Id = 2,
             Category = ProductCategory.Dihydrotestosterone,
             Description = "Test2 description",
             ManufacturerId = 1,

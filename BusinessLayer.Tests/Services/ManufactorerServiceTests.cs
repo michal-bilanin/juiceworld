@@ -30,7 +30,7 @@ public class ManufacturerServiceTests
     public async Task GetAllManufacturersAsync_ExactMatch()
     {
         // Arrange
-        var manufacturerIdsToRetrieve = new[] { 1, 2, 3, 4 };
+        var manufacturerIdsToRetrieve = new[] { 1, 2, 3, 4, 5 };
 
         // Act
         var result = await _manufacturerService.GetAllManufacturersAsync();

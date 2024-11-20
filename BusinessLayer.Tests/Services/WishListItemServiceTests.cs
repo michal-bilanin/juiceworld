@@ -30,7 +30,7 @@ public class WishListItemServiceTests
     public async Task GetAllWishListItemsAsync_ExactMatch()
     {
         // Arrange
-        var wishListItemIdsToRetrieve = new[] { 1, 2, 3, 4 };
+        var wishListItemIdsToRetrieve = new[] { 1, 2, 3, 4, 5 };
 
         // Act
         var result = await _wishListItemService.GetAllWishListItemsAsync();

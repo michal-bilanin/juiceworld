@@ -30,7 +30,7 @@ public class CartItemServiceTests
     public async Task GetAllCartItemsAsync_ExactMatch()
     {
         // Arrange
-        var crtItemIdsToRetrieve = new[] { 1, 2, 3, 4 };
+        var crtItemIdsToRetrieve = new[] { 1, 2, 3, 4, 5 };
 
         // Act
         var result = await _crtItemService.GetAllCartItemsAsync();
