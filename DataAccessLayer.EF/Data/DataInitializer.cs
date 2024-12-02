@@ -65,13 +65,16 @@ public static class DataInitializer
         return user;
     }
 
-    private static void AddTagsToProducts(List<Product> products)
+    private static List<object> GenerateProductTags(List<Product> products, List<Tag> tags)
     {
+        var productTags = new List<object>();
         foreach (var product in products)
         {
-            var tags = Tags.OrderBy(_ => Guid.NewGuid()).Take(new Random().Next(3)).ToList();
-            product.Tags = tags;
+            var tag = tags[new Random().Next(3)];
+            productTags.Add(new { ProductsId = product.Id, TagsId = tag.Id });
         }
+
+        return productTags;
     }
 
     private static List<User> GenerateUsers()
@@ -178,13 +181,17 @@ public static class DataInitializer
         var orderProducts = GenerateOrderProducts(orders);
         var reviews = GenerateReviews(users);
         var wishListItems = GenerateWishListItems(users);
+        var productTags = GenerateProductTags(ProductsSeedData.Products, Tags);
 
         // Not generated (authentic) tags, manufacturer and product data
         modelBuilder.Entity<Tag>().HasData(Tags);
         modelBuilder.Entity<Manufacturer>().HasData(Manufacturers);
-
-        AddTagsToProducts(ProductsSeedData.Products);
         modelBuilder.Entity<Product>().HasData(ProductsSeedData.Products);
+
+        modelBuilder.Entity<Product>()
+            .HasMany(p => p.Tags)
+            .WithMany(t => t.Products)
+            .UsingEntity(j => j.HasData(productTags));
 
         // Fixed users for testing
         modelBuilder.Entity<User>().HasData(Users);
