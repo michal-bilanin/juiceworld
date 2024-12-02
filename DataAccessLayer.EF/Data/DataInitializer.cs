@@ -11,6 +11,18 @@ namespace JuiceWorld.Data;
  */
 public static class DataInitializer
 {
+    private static readonly List<Tag> Tags =
+    [
+        new() { Id = 1, Name = "Sale" },
+        new() { Id = 2, Name = "New" },
+        new() { Id = 3, Name = "Bestseller" },
+        new() { Id = 4, Name = "Top Rated" },
+        new() { Id = 5, Name = "Recommended" },
+        new() { Id = 6, Name = "Popular" },
+        new() { Id = 7, Name = "Trending" },
+        new() { Id = 8, Name = "Hot" }
+    ];
+
     private static readonly List<Manufacturer> Manufacturers =
     [
         new() { Id = 1, Name = "MediPharma" },
@@ -53,6 +65,14 @@ public static class DataInitializer
         return user;
     }
 
+    private static void AddTagsToProducts(List<Product> products)
+    {
+        foreach (var product in products)
+        {
+            var tags = Tags.OrderBy(_ => Guid.NewGuid()).Take(new Random().Next(3)).ToList();
+            product.Tags = tags;
+        }
+    }
 
     private static List<User> GenerateUsers()
     {
@@ -159,8 +179,11 @@ public static class DataInitializer
         var reviews = GenerateReviews(users);
         var wishListItems = GenerateWishListItems(users);
 
-        // Not generated (authentic) manufacturer and product data
+        // Not generated (authentic) tags, manufacturer and product data
+        modelBuilder.Entity<Tag>().HasData(Tags);
         modelBuilder.Entity<Manufacturer>().HasData(Manufacturers);
+
+        AddTagsToProducts(ProductsSeedData.Products);
         modelBuilder.Entity<Product>().HasData(ProductsSeedData.Products);
 
         // Fixed users for testing

@@ -29,4 +29,5 @@ public class Product : BaseEntity, IAuditableEntity
     public virtual IEnumerable<CartItem> CartItems { get; set; } = null!;
     public virtual IEnumerable<WishListItem> WishListItems { get; set; } = null!;
     public virtual IEnumerable<OrderProduct> OrdersProducts { get; set; } = null!;
+    public virtual IEnumerable<Tag> Tags { get; set; } = null!;
 }
