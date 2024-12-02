@@ -13,14 +13,14 @@ public static class DataInitializer
 {
     private static readonly List<Tag> Tags =
     [
-        new() { Id = 1, Name = "Sale" },
-        new() { Id = 2, Name = "New" },
-        new() { Id = 3, Name = "Bestseller" },
-        new() { Id = 4, Name = "Top Rated" },
-        new() { Id = 5, Name = "Recommended" },
-        new() { Id = 6, Name = "Popular" },
-        new() { Id = 7, Name = "Trending" },
-        new() { Id = 8, Name = "Hot" }
+        new() { Id = 1, Name = "Sale", ColorHex = "#ff0000" },
+        new() { Id = 2, Name = "New", ColorHex = "#00ff00" },
+        new() { Id = 3, Name = "Bestseller", ColorHex = "#0000ff" },
+        new() { Id = 4, Name = "Top Rated", ColorHex = "#ffff00" },
+        new() { Id = 5, Name = "Recommended", ColorHex = "#00ffff" },
+        new() { Id = 6, Name = "Popular", ColorHex = "#ff00ff" },
+        new() { Id = 7, Name = "Trending", ColorHex = "#000000" },
+        new() { Id = 8, Name = "Hot", ColorHex = "#ffffff" }
     ];
 
     private static readonly List<Manufacturer> Manufacturers =
