@@ -14,4 +14,5 @@ public class ProductDetailDto
 
     public ManufacturerDto Manufacturer { get; set; } = null!;
     public IEnumerable<ReviewDto> Reviews { get; set; } = null!;
+    public IEnumerable<TagDto> Tags { get; set; } = null!;
 }

@@ -31,6 +31,7 @@ public static class DataInstaller
         services.AddScoped<IRepository<Review>, Repository<Review>>();
         services.AddScoped<IRepository<WishListItem>, Repository<WishListItem>>();
         services.AddScoped<IRepository<AuditTrail>, Repository<AuditTrail>>();
+        services.AddScoped<IRepository<Tag>, Repository<Tag>>();
 
         services.AddScoped<IUnitOfWorkProvider<OrderUnitOfWork>, OrderUnitOfWorkProvider>(serviceProvider =>
             new OrderUnitOfWorkProvider(serviceProvider.GetRequiredService<JuiceWorldDbContext>));
