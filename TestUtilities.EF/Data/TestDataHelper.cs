@@ -50,8 +50,7 @@ public static class TestDataHelper
                 ManufacturerId = 1,
                 Price = 4199,
                 Description = "100 tablets, each 50mg",
-                UsageType = ProductUsageType.Oral,
-                Tags = [tags[0], tags[1]]
+                UsageType = ProductUsageType.Oral
             },
             new Product
             {
@@ -60,8 +59,7 @@ public static class TestDataHelper
                 ManufacturerId = 1,
                 Price = 2399,
                 Description = "30 tablets, each 1mg",
-                UsageType = ProductUsageType.Oral,
-                Tags = [tags[2], tags[3]]
+                UsageType = ProductUsageType.Oral
             },
             new Product
             {
@@ -70,8 +68,7 @@ public static class TestDataHelper
                 ManufacturerId = 2,
                 Price = 1899,
                 Description = "30 tablets, each 1mg",
-                UsageType = ProductUsageType.Oral,
-                Tags = []
+                UsageType = ProductUsageType.Oral
             },
             new Product
             {
@@ -80,8 +77,7 @@ public static class TestDataHelper
                 ManufacturerId = 4,
                 Price = 2399,
                 Description = "100 tablets, each 10mg",
-                UsageType = ProductUsageType.Oral,
-                Tags = [tags[4]]
+                UsageType = ProductUsageType.Oral
             },
             new Product
             {
@@ -90,8 +86,7 @@ public static class TestDataHelper
                 ManufacturerId = 3,
                 Price = 2099,
                 Description = "250mg/ml - 10ml",
-                UsageType = ProductUsageType.Injectable,
-                Tags = [tags[0], tags[1], tags[2]]
+                UsageType = ProductUsageType.Injectable
             }
         ];
     }
