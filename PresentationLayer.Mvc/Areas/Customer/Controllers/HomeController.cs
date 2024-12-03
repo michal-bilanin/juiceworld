@@ -2,16 +2,12 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using PresentationLayer.Mvc.Models;
 
-namespace PresentationLayer.Mvc.Controllers;
+namespace PresentationLayer.Mvc.Areas.Customer.Controllers;
 
-public class HomeController : Controller
+[Area(Constants.Areas.Customer)]
+public class HomeController(ILogger<HomeController> logger) : Controller
 {
-    private readonly ILogger<HomeController> _logger;
-
-    public HomeController(ILogger<HomeController> logger)
-    {
-        _logger = logger;
-    }
+    private readonly ILogger<HomeController> _logger = logger;
 
     public IActionResult Index()
     {

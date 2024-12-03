@@ -34,7 +34,7 @@ app.UseAuthorization();
 app.UseMiddleware<RequestLoggingMiddleware>();
 
 app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    name: "areas",
+    pattern: "{area:exists=Customer}/{controller=Home}/{action=Index}/{id?}");
 
 app.Run();

@@ -5,8 +5,9 @@ using BusinessLayer.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using PresentationLayer.Mvc.Models;
 
-namespace PresentationLayer.Mvc.Controllers;
+namespace PresentationLayer.Mvc.Areas.Customer.Controllers;
 
+[Area(Constants.Areas.Customer)]
 public class UserController(IUserService userService, IMapper mapper) : Controller
 {
     // GET: /User/Register
