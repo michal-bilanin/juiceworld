@@ -1,9 +1,7 @@
 using BusinessLayer.Installers;
+using Commons.Middleware;
 using JuiceWorld.Installers;
-using Microsoft.Extensions.Logging.Console;
 using PresentationLayer.Mvc.Installers;
-using PresentationLayer.Mvc.Middleware;
-using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,7 +29,7 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseMiddleware<RequestLoggingMiddleware>();
+app.UseMiddleware<RequestLoggingMiddleware>("MVC");
 
 app.MapControllerRoute(
     name: "areas",

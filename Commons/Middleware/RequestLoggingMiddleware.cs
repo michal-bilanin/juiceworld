@@ -1,8 +1,10 @@
 using System.Diagnostics;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 
-namespace PresentationLayer.Mvc.Middleware;
+namespace Commons.Middleware;
 
-public class RequestLoggingMiddleware(RequestDelegate next, ILogger<RequestLoggingMiddleware> logger)
+public class RequestLoggingMiddleware(RequestDelegate next, ILogger<RequestLoggingMiddleware> logger, string source)
 {
     public async Task Invoke(HttpContext context)
     {
@@ -11,7 +13,8 @@ public class RequestLoggingMiddleware(RequestDelegate next, ILogger<RequestLoggi
 
         // Log incoming request
         logger.LogInformation(
-            "INCOMING_REQUEST - TRACE_ID: {TraceId}, METHOD: {Method}, URL: {Url}, IP: {IP}",
+            "INCOMING_REQUEST - SOURCE: {Source}, TRACE_ID: {TraceId}, METHOD: {Method}, URL: {Url}, IP: {IP}",
+            source,
             traceIdentifier,
             context.Request.Method,
             context.Request.Path,
@@ -23,7 +26,8 @@ public class RequestLoggingMiddleware(RequestDelegate next, ILogger<RequestLoggi
 
         // Log outgoing response
         logger.LogInformation(
-            "OUTGOING_RESPONSE - TRACE_ID: {TraceId}, METHOD: {Method}, URL: {Url}, IP: {IP}, STATUS: {Status}, DOWNTIME: {Downtime}ms",
+            "OUTGOING_RESPONSE - SOURCE: {Source}, TRACE_ID: {TraceId}, METHOD: {Method}, URL: {Url}, IP: {IP}, STATUS: {Status}, DOWNTIME: {Downtime}ms",
+            source,
             traceIdentifier,
             context.Request.Method,
             context.Request.Path,
