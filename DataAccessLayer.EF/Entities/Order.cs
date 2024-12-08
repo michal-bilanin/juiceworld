@@ -14,13 +14,13 @@ public class Order : BaseEntity, IAuditableEntity
     public int UserId { get; set; }
 
     [ForeignKey(nameof(UserId))]
-    public virtual User User { get; set; } = null!;
+    public virtual User? User { get; set; }
 
     public int AddressId { get; set; }
 
     [ForeignKey(nameof(AddressId))]
-    public virtual Address Address { get; set; } = null!;
+    public virtual Address? Address { get; set; }
 
-    public virtual IEnumerable<CartItem> CartItems { get; set; } = null!;
-    public virtual IEnumerable<OrderProduct> OrderProducts { get; set; } = null!;
+    public virtual IEnumerable<CartItem> CartItems { get; set; } = [];
+    public virtual IEnumerable<OrderProduct> OrderProducts { get; set; } = [];
 }

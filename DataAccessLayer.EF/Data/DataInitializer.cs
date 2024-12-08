@@ -46,7 +46,8 @@ public static class DataInitializer
             Bio = bio,
             UserRole = role,
             PasswordSalt = AuthUtils.GenerateSalt(),
-            PasswordHashRounds = 10
+            PasswordHashRounds = 10,
+            PasswordHash = ""
         };
 
         user.PasswordHash = AuthUtils.HashPassword(password, user.PasswordSalt, user.PasswordHashRounds);
