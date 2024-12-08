@@ -2,7 +2,6 @@ using System.Diagnostics;
 using Commons.Constants;
 using Infrastructure.QueryObjects;
 using Infrastructure.Repositories;
-using Infrastructure.UnitOfWork;
 using JuiceWorld.Data;
 using JuiceWorld.Entities;
 using JuiceWorld.QueryObjects;
@@ -32,8 +31,8 @@ public static class DataInstaller
         services.AddScoped<IRepository<WishListItem>, Repository<WishListItem>>();
         services.AddScoped<IRepository<AuditTrail>, Repository<AuditTrail>>();
 
-        services.AddScoped<IUnitOfWorkProvider<OrderUnitOfWork>, OrderUnitOfWorkProvider>(serviceProvider =>
-            new OrderUnitOfWorkProvider(serviceProvider.GetRequiredService<JuiceWorldDbContext>));
+        services.AddScoped<OrderUnitOfWork, OrderUnitOfWork>(serviceProvider =>
+            new OrderUnitOfWork(serviceProvider.GetRequiredService<JuiceWorldDbContext>()));
 
         services.AddDbContextFactory<JuiceWorldDbContext>(options =>
         {

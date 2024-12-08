@@ -71,7 +71,7 @@ public static class DataInitializer
             .RuleFor(u => u.PasswordHashRounds, _ => 10)
             .RuleFor(u => u.PasswordHash,
                 (_, u) => AuthUtils.HashPassword("password", u.PasswordSalt, u.PasswordHashRounds));
-        
+
         return faker.Generate(100);
     }
 

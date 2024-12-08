@@ -30,5 +30,5 @@ public class Address : BaseEntity
     [ForeignKey(nameof(UserId))]
     public virtual User? User { get; set; }
 
-    public virtual IEnumerable<Order> Orders { get; set; } = [];
+    public virtual List<Order> Orders { get; set; } = [];
 }

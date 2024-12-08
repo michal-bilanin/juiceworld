@@ -8,5 +8,5 @@ public class Manufacturer : BaseEntity, IAuditableEntity
     [MaxLength(100)]
     public required string Name { get; set; }
 
-    public virtual IEnumerable<Product> Products { get; set; } = [];
+    public virtual List<Product> Products { get; set; } = [];
 }

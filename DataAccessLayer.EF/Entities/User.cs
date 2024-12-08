@@ -21,10 +21,10 @@ public class User : BaseEntity
     [MaxLength(300)]
     public required string Bio { get; set; }
 
-    public virtual IEnumerable<CartItem> CartItems { get; set; } = [];
-    public virtual IEnumerable<WishListItem> WishListItems { get; set; } = [];
-    public virtual IEnumerable<Review> Reviews { get; set; } = [];
-    public virtual IEnumerable<Order> Orders { get; set; } = [];
-    public virtual IEnumerable<Address> Addresses { get; set; } = [];
-    public virtual IEnumerable<AuditTrail> AuditTrails { get; set; } = [];
+    public virtual List<CartItem> CartItems { get; set; } = [];
+    public virtual List<WishListItem> WishListItems { get; set; } = [];
+    public virtual List<Review> Reviews { get; set; } = [];
+    public virtual List<Order> Orders { get; set; } = [];
+    public virtual List<Address> Addresses { get; set; } = [];
+    public virtual List<AuditTrail> AuditTrails { get; set; } = [];
 }

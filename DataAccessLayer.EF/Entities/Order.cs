@@ -21,6 +21,6 @@ public class Order : BaseEntity, IAuditableEntity
     [ForeignKey(nameof(AddressId))]
     public virtual Address? Address { get; set; }
 
-    public virtual IEnumerable<CartItem> CartItems { get; set; } = [];
-    public virtual IEnumerable<OrderProduct> OrderProducts { get; set; } = [];
+    public virtual List<CartItem> CartItems { get; set; } = [];
+    public virtual List<OrderProduct> OrderProducts { get; set; } = [];
 }

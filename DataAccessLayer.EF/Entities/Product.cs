@@ -25,8 +25,8 @@ public class Product : BaseEntity, IAuditableEntity
     [ForeignKey(nameof(ManufacturerId))]
     public virtual Manufacturer? Manufacturer { get; set; }
 
-    public virtual IEnumerable<Review> Reviews { get; set; } = [];
-    public virtual IEnumerable<CartItem> CartItems { get; set; } = [];
-    public virtual IEnumerable<WishListItem> WishListItems { get; set; } = [];
-    public virtual IEnumerable<OrderProduct> OrdersProducts { get; set; } = [];
+    public virtual List<Review> Reviews { get; set; } = [];
+    public virtual List<CartItem> CartItems { get; set; } = [];
+    public virtual List<WishListItem> WishListItems { get; set; } = [];
+    public virtual List<OrderProduct> OrdersProducts { get; set; } = [];
 }
