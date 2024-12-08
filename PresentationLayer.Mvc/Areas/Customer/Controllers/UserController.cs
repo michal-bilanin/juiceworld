@@ -79,7 +79,6 @@ public class UserController(IUserService userService, IMapper mapper) : Controll
             Expires = DateTimeOffset.UtcNow.AddMinutes(30) // or set expiration based on token expiry
         });
 
-
         return RedirectToAction(nameof(Index), "Home");
     }
 
@@ -106,13 +105,6 @@ public class UserController(IUserService userService, IMapper mapper) : Controll
             return NotFound();
         }
 
-        var model = new UserProfileViewModel
-        {
-            Username = user.UserName,
-            Email = user.Email,
-            Bio = user.Bio,
-        };
-
-        return View(model);
+        return View(mapper.Map<UserDto, UserProfileViewModel>(user));
     }
 }
