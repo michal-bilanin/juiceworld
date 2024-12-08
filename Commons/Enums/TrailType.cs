@@ -2,7 +2,7 @@ namespace Commons.Enums;
 
 public enum TrailType
 {
-    None,
+    None = 0,
     Create,
     Update,
     Delete

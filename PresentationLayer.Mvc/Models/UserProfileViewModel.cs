@@ -2,8 +2,7 @@
 
 public class UserProfileViewModel
 {
-    public string UserName { get; set; }
-    public string Email { get; set; }
-    public string Bio { get; set; }
-    public string ProfileImageUrl { get; set; }
+    public required string UserName { get; set; }
+    public required string Email { get; set; }
+    public required string Bio { get; set; }
 }

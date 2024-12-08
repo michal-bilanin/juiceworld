@@ -11,6 +11,8 @@ namespace JuiceWorld.Data;
  */
 public static class DataInitializer
 {
+    private const int SeedNumber = 69420;
+
     private static readonly List<Tag> Tags =
     [
         new() { Id = 1, Name = "Sale", ColorHex = "#ff0000" },
@@ -58,7 +60,8 @@ public static class DataInitializer
             Bio = bio,
             UserRole = role,
             PasswordSalt = AuthUtils.GenerateSalt(),
-            PasswordHashRounds = 10
+            PasswordHashRounds = 10,
+            PasswordHash = ""
         };
 
         user.PasswordHash = AuthUtils.HashPassword(password, user.PasswordSalt, user.PasswordHashRounds);
@@ -81,6 +84,7 @@ public static class DataInitializer
     {
         var userIds = Users.Count + 1;
         var faker = new Faker<User>()
+            .UseSeed(SeedNumber)
             .RuleFor(u => u.Id, _ => userIds++)
             .RuleFor(u => u.Email, f => f.Internet.Email())
             .RuleFor(u => u.UserName, f => f.Internet.UserName())
@@ -98,6 +102,7 @@ public static class DataInitializer
     {
         var addressIds = 1;
         var faker = new Faker<Address>()
+            .UseSeed(SeedNumber)
             .RuleFor(a => a.Id, _ => addressIds++)
             .RuleFor(a => a.Name, f => f.Name.FullName())
             .RuleFor(a => a.City, f => f.Address.City())
@@ -115,6 +120,7 @@ public static class DataInitializer
     {
         var orderIds = 1;
         var faker = new Faker<Order>()
+            .UseSeed(SeedNumber)
             .RuleFor(o => o.Id, _ => orderIds++)
             .RuleFor(o => o.DeliveryType, f => f.PickRandom<DeliveryType>())
             .RuleFor(o => o.Status, f => f.PickRandom<OrderStatus>())
@@ -128,6 +134,7 @@ public static class DataInitializer
     {
         var cartItemIds = 1;
         var faker = new Faker<CartItem>()
+            .UseSeed(SeedNumber)
             .RuleFor(c => c.Id, _ => cartItemIds++)
             .RuleFor(c => c.ProductId, f => f.Random.Int(1, 47))
             .RuleFor(c => c.UserId, f => f.PickRandom(users).Id)
@@ -140,6 +147,7 @@ public static class DataInitializer
     {
         var orderProductIds = 1;
         var faker = new Faker<OrderProduct>()
+            .UseSeed(SeedNumber)
             .RuleFor(op => op.Id, _ => orderProductIds++)
             .RuleFor(op => op.OrderId, f => f.PickRandom(orders).Id)
             .RuleFor(op => op.ProductId, f => f.Random.Int(1, 47))
@@ -152,6 +160,7 @@ public static class DataInitializer
     {
         var reviewIds = 1;
         var faker = new Faker<Review>()
+            .UseSeed(SeedNumber)
             .RuleFor(r => r.Id, _ => reviewIds++)
             .RuleFor(r => r.ProductId, f => f.Random.Int(1, 47))
             .RuleFor(r => r.UserId, f => f.PickRandom(users).Id)
@@ -165,6 +174,7 @@ public static class DataInitializer
     {
         var wishListItemIds = 1;
         var faker = new Faker<WishListItem>()
+            .UseSeed(SeedNumber)
             .RuleFor(w => w.Id, _ => wishListItemIds++)
             .RuleFor(w => w.ProductId, f => f.Random.Int(1, 47))
             .RuleFor(w => w.UserId, f => f.PickRandom(users).Id);

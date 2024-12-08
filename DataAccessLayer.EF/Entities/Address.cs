@@ -7,28 +7,28 @@ namespace JuiceWorld.Entities;
 public class Address : BaseEntity
 {
     [MaxLength(100)]
-    public string Name { get; set; } = null!;
+    public required string Name { get; set; }
 
     [MaxLength(100)]
-    public string City { get; set; } = null!;
+    public required string City { get; set; }
 
     [MaxLength(100)]
-    public string Street { get; set; } = null!;
+    public required string Street { get; set; }
 
     [MaxLength(10)]
-    public string HouseNumber { get; set; } = null!;
+    public required string HouseNumber { get; set; }
 
     [MaxLength(10)]
-    public string ZipCode { get; set; } = null!;
+    public required string ZipCode { get; set; }
 
     [MaxLength(100)]
-    public string Country { get; set; } = null!;
+    public required string Country { get; set; }
 
-    public AddressType Type { get; set; } = AddressType.Shipping;
+    public AddressType Type { get; set; } = AddressType.Unknown;
     public int UserId { get; set; }
 
     [ForeignKey(nameof(UserId))]
-    public virtual User User { get; set; } = null!;
+    public virtual User? User { get; set; }
 
-    public virtual IEnumerable<Order> Orders { get; set; } = null!;
+    public virtual List<Order> Orders { get; set; } = [];
 }

@@ -2,7 +2,6 @@ using AutoMapper;
 using BusinessLayer.DTOs;
 using BusinessLayer.Services.Interfaces;
 using Infrastructure.Repositories;
-using Infrastructure.UnitOfWork;
 using JuiceWorld.Entities;
 using JuiceWorld.UnitOfWork;
 
@@ -10,14 +9,13 @@ namespace BusinessLayer.Services;
 
 public class OrderService(
     IRepository<Order> orderRepository,
-    IUnitOfWorkProvider<OrderUnitOfWork> orderUnitOfWorkProvider,
+    OrderUnitOfWork orderUnitOfWork,
     IMapper mapper) : IOrderService
 {
     public async Task<OrderDto?> ExecuteOrderAsync(CreateOrderDto orderDto)
     {
-        using var unitOfWork = orderUnitOfWorkProvider.Create();
         var order = mapper.Map<Order>(orderDto);
-        var newOrder = await unitOfWork.OrderRepository.CreateAsync(order, order.UserId);
+        var newOrder = await orderUnitOfWork.OrderRepository.CreateAsync(order, order.UserId);
 
         if (newOrder is null)
         {
@@ -25,8 +23,8 @@ public class OrderService(
         }
 
         // remove cart items
-        await unitOfWork.CartItemRepository.RemoveAllByConditionAsync(ci => ci.UserId == order.UserId, order.UserId);
-        await unitOfWork.Commit();
+        await orderUnitOfWork.CartItemRepository.RemoveAllByConditionAsync(ci => ci.UserId == order.UserId, order.UserId);
+        await orderUnitOfWork.Commit();
 
         return mapper.Map<OrderDto>(newOrder);
     }
