@@ -83,7 +83,7 @@ public class ProductService(
     {
         Enum.TryParse<ProductCategory>(productFilter.Category, true, out var categoryEnum);
         var query = queryObject.Filter(p =>
-            (productFilter.ManufacturerName == null ||
+            (productFilter.ManufacturerName == null || p.Manufacturer == null ||
              p.Manufacturer.Name.ToLower().Contains(productFilter.ManufacturerName.ToLower())) &&
             (productFilter.Category == null || p.Category == categoryEnum) &&
             (productFilter.PriceMax == null || p.Price <= productFilter.PriceMax) &&
