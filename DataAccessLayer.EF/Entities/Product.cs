@@ -18,8 +18,8 @@ public class Product : BaseEntity, IAuditableEntity
     [MaxLength(1000)]
     public required string Description { get; set; }
 
-    public ProductCategory Category { get; set; } = ProductCategory.Testosterone;
-    public ProductUsageType UsageType { get; set; } = ProductUsageType.Injectable;
+    public ProductCategory Category { get; set; } = ProductCategory.Unknown;
+    public ProductUsageType UsageType { get; set; } = ProductUsageType.Unknown;
     public int ManufacturerId { get; set; }
 
     [ForeignKey(nameof(ManufacturerId))]

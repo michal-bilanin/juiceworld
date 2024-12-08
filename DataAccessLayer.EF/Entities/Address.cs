@@ -24,7 +24,7 @@ public class Address : BaseEntity
     [MaxLength(100)]
     public required string Country { get; set; }
 
-    public AddressType Type { get; set; } = AddressType.Shipping;
+    public AddressType Type { get; set; } = AddressType.Unknown;
     public int UserId { get; set; }
 
     [ForeignKey(nameof(UserId))]

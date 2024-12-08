@@ -16,7 +16,7 @@ public class User : BaseEntity
     public required string PasswordHash { get; set; }
     public int PasswordHashRounds { get; set; }
     public required string PasswordSalt { get; set; }
-    public UserRole UserRole { get; set; } = UserRole.Customer;
+    public UserRole UserRole { get; set; } = UserRole.Unknown;
 
     [MaxLength(300)]
     public required string Bio { get; set; }

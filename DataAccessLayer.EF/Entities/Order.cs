@@ -6,11 +6,11 @@ namespace JuiceWorld.Entities;
 
 public class Order : BaseEntity, IAuditableEntity
 {
-    public DeliveryType DeliveryType { get; set; } = DeliveryType.Standard;
-    public OrderStatus Status { get; set; } = OrderStatus.Pending;
+    public DeliveryType DeliveryType { get; set; } = DeliveryType.Unknown;
+    public OrderStatus Status { get; set; } = OrderStatus.Unknown;
     public DateTime? Departure { get; set; }
     public DateTime? Arrival { get; set; }
-    public PaymentMethodType PaymentMethodType { get; set; } = PaymentMethodType.Monero;
+    public PaymentMethodType PaymentMethodType { get; set; } = PaymentMethodType.Unknown;
     public int UserId { get; set; }
 
     [ForeignKey(nameof(UserId))]
