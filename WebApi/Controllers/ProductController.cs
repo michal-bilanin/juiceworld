@@ -1,4 +1,5 @@
 using BusinessLayer.DTOs;
+using BusinessLayer.Facades.Interfaces;
 using BusinessLayer.Services.Interfaces;
 using Commons.Enums;
 using Microsoft.AspNetCore.Authorization;
@@ -10,15 +11,15 @@ namespace WebApi.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize(Roles = nameof(UserRole.Admin) + "," + nameof(UserRole.Customer))]
-public class ProductController(IProductService productService) : ControllerBase
+public class ProductController(IProductFacade productFacade) : ControllerBase
 {
     private const string ApiBaseName = "Product";
 
     [HttpPost]
     [OpenApiOperation(ApiBaseName + nameof(CreateProduct))]
-    public async Task<ActionResult<ProductDto>> CreateProduct(ProductDto product)
+    public async Task<ActionResult<ProductDto>> CreateProduct(ProductImageDto product)
     {
-        var result = await productService.CreateProductAsync(product);
+        var result = await productFacade.CreateProductAsync(product);
         return result == null ? Problem() : Ok(result);
     }
 
@@ -27,7 +28,7 @@ public class ProductController(IProductService productService) : ControllerBase
     public async Task<ActionResult<IEnumerable<ProductDto>>> GetProductFiltered(
         [FromQuery] ProductFilterDto productFilter)
     {
-        var result = await productService.GetProductsFilteredAsync(productFilter);
+        var result = await productFacade.GetProductsFilteredAsync(productFilter);
         return Ok(result);
     }
 
@@ -35,7 +36,7 @@ public class ProductController(IProductService productService) : ControllerBase
     [OpenApiOperation(ApiBaseName + nameof(GetProduct))]
     public async Task<ActionResult<ProductDto>> GetProduct(int productId)
     {
-        var result = await productService.GetProductByIdAsync(productId);
+        var result = await productFacade.GetProductByIdAsync(productId);
         return result == null ? NotFound() : Ok(result);
     }
 
@@ -43,15 +44,15 @@ public class ProductController(IProductService productService) : ControllerBase
     [OpenApiOperation(ApiBaseName + nameof(GetProductDetail))]
     public async Task<ActionResult<ProductDetailDto>> GetProductDetail(int productId)
     {
-        var result = await productService.GetProductDetailByIdAsync(productId);
+        var result = await productFacade.GetProductDetailByIdAsync(productId);
         return result == null ? NotFound() : Ok(result);
     }
 
     [HttpPut]
     [OpenApiOperation(ApiBaseName + nameof(UpdateProduct))]
-    public async Task<ActionResult<ProductDto>> UpdateProduct(ProductDto product)
+    public async Task<ActionResult<ProductDto>> UpdateProduct(ProductImageDto product)
     {
-        var result = await productService.UpdateProductAsync(product);
+        var result = await productFacade.UpdateProductAsync(product);
         return result == null ? NotFound() : Ok(result);
     }
 
@@ -59,7 +60,7 @@ public class ProductController(IProductService productService) : ControllerBase
     [OpenApiOperation(ApiBaseName + nameof(DeleteProduct))]
     public async Task<ActionResult<bool>> DeleteProduct(int productId)
     {
-        var result = await productService.DeleteProductByIdAsync(productId);
+        var result = await productFacade.DeleteProductByIdAsync(productId);
         return result ? Ok() : NotFound();
     }
 }

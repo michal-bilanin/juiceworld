@@ -4,6 +4,7 @@ using System.Text;
 using AutoMapper;
 using BusinessLayer.DTOs;
 using BusinessLayer.Services.Interfaces;
+using BusinessLayer.Utils;
 using Commons.Constants;
 using Commons.Utils;
 using Infrastructure.QueryObjects;
@@ -31,7 +32,7 @@ public class UserService(IRepository<User> userRepository, IQueryObject<User> us
             return null;
         }
 
-        return !VerifyPassword(user, login.Password) ? null : CreateToken(user);
+        return !VerifyPassword(user, login.Password) ? null : TokenGenerator.CreateToken(user);
     }
 
     public async Task<string?> RegisterUserAsync(UserRegisterDto userRegisterDto)
@@ -54,7 +55,7 @@ public class UserService(IRepository<User> userRepository, IQueryObject<User> us
         };
 
         var user = await CreateUserAsync(userDto);
-        return user is null ? null : CreateToken(user);
+        return user is null ? null : TokenGenerator.CreateToken(user);
     }
 
     public async Task<IEnumerable<UserDto>> GetAllUsersAsync()
@@ -84,46 +85,6 @@ public class UserService(IRepository<User> userRepository, IQueryObject<User> us
     public async Task<bool> DeleteUserByIdAsync(int id)
     {
         return await userRepository.DeleteAsync(id);
-    }
-
-    private static string CreateToken(UserDto user)
-    {
-        var handler = new JwtSecurityTokenHandler();
-
-        var secret = Environment.GetEnvironmentVariable(EnvironmentConstants.JwtSecret);
-
-        if (secret == null)
-        {
-            throw new Exception($"{EnvironmentConstants.JwtSecret} environment variable is not set");
-        }
-
-        var privateKey = Encoding.UTF8.GetBytes(secret);
-
-        var credentials = new SigningCredentials(
-            new SymmetricSecurityKey(privateKey),
-            SecurityAlgorithms.HmacSha256);
-
-        var tokenDescriptor = new SecurityTokenDescriptor
-        {
-            SigningCredentials = credentials,
-            Expires = DateTime.UtcNow.AddHours(1),
-            Subject = GenerateClaims(user)
-        };
-
-        var token = handler.CreateToken(tokenDescriptor);
-        return handler.WriteToken(token);
-    }
-
-    private static ClaimsIdentity GenerateClaims(UserDto user)
-    {
-        var ci = new ClaimsIdentity();
-
-        ci.AddClaim(new Claim(ClaimTypes.Sid, user.Id.ToString()));
-        ci.AddClaim(new Claim(ClaimTypes.Name, user.UserName));
-        ci.AddClaim(new Claim(ClaimTypes.Email, user.Email));
-        ci.AddClaim(new Claim(ClaimTypes.Role, user.UserRole.ToString()));
-
-        return ci;
     }
 
     private bool VerifyPassword(UserDto user, string password) =>

@@ -12,63 +12,10 @@ namespace BusinessLayer.Services;
 public class ProductService(
     IRepository<Product> productRepository,
     IMapper mapper,
-    ILogger<ProductService> logger,
     IQueryObject<Product> queryObject) : IProductService
 {
-    private const string ImgFolderPath = "Images";
-    private static readonly Dictionary<string, string> MimeTypes = new()
-    {
-        // enough to determine the image type
-        // source https://stackoverflow.com/questions/57976898/how-to-get-mime-type-from-base-64-string
-        { "/9j/", ".jpg" },
-        { "iVBORw0KGgo", ".png" },
-        { "R0lGODlh", ".gif" },
-        { "R0lGODdh", ".gif" }
-    };
-
-    private async Task<bool> SaveImageAsync(string base64Image, string imageName)
-    {
-        Directory.CreateDirectory(ImgFolderPath);
-        var imageBytes = Convert.FromBase64String(base64Image);
-        var filePath = Path.Combine(ImgFolderPath, imageName);
-        try
-        {
-            await File.WriteAllBytesAsync(filePath, imageBytes);
-        }
-        catch (Exception e)
-        {
-            logger.LogError($"ERROR - unable to write to file {filePath} \n ERROR-MESSAGE: {e.Message}");
-            return false;
-        }
-
-        return true;
-    }
-
-    private static string GetImageExtension(string base64Image)
-    {
-        foreach (var mimeType in MimeTypes)
-        {
-            if (base64Image.StartsWith(mimeType.Key))
-            {
-                return mimeType.Value;
-            }
-        }
-        return string.Empty;
-    }
-
     public async Task<ProductDto?> CreateProductAsync(ProductDto productDto)
     {
-        if (!string.IsNullOrEmpty(productDto.Image))
-        {
-            var extension = GetImageExtension(productDto.Image);
-            var imageName = $"{Guid.NewGuid()}{extension}";
-            if (!await SaveImageAsync(productDto.Image, imageName))
-            {
-                return null;
-            }
-            productDto.Image = imageName;
-        }
-
         var newProduct = await productRepository.CreateAsync(mapper.Map<Product>(productDto));
         return newProduct is null ? null : mapper.Map<ProductDto>(newProduct);
     }
@@ -117,24 +64,7 @@ public class ProductService(
             return null;
         }
 
-        var ret = mapper.Map<ProductDetailDto>(product);
-        if (product.Image is null)
-        {
-            return ret;
-        }
-
-        var imagePath = Path.Combine(ImgFolderPath, product.Image);
-        Console.WriteLine(Path.GetFullPath(imagePath));
-
-        if (!File.Exists(imagePath))
-        {
-            return ret;
-        }
-
-        var image = await File.ReadAllBytesAsync(imagePath);
-        ret.Image = Convert.ToBase64String(image);
-
-        return ret;
+        return  mapper.Map<ProductDetailDto>(product);
     }
 
     public async Task<ProductDto?> UpdateProductAsync(ProductDto productDto)
@@ -143,28 +73,6 @@ public class ProductService(
         if (oldProduct is null)
         {
             return null;
-        }
-
-        if (!string.IsNullOrEmpty(productDto.Image))
-        {
-            if (oldProduct.Image != null)
-            {
-                var oldImagePath = Path.Combine(ImgFolderPath, oldProduct.Image);
-                if (File.Exists(oldImagePath))
-                {
-                    File.Delete(oldImagePath);
-                }
-            }
-
-            var extension = GetImageExtension(productDto.Image);
-            var imageName = $"{Guid.NewGuid()}{extension}";
-
-            if (!await SaveImageAsync(productDto.Image, imageName))
-            {
-                return null;
-            }
-
-            productDto.Image = imageName;
         }
 
         var updatedProduct = await productRepository.UpdateAsync(mapper.Map<Product>(productDto));
