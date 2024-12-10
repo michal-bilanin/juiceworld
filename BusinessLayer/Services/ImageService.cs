@@ -7,7 +7,7 @@ namespace BusinessLayer.Services;
 public class ImageService(ILogger<ImageService> logger) : IImageService
 {
     private const string ImgFolderPath = "Images";
-    
+
     private static readonly Dictionary<string, string> MimeTypes = new()
     {
         // enough to determine the image type
@@ -17,7 +17,7 @@ public class ImageService(ILogger<ImageService> logger) : IImageService
         { "R0lGODlh", ".gif" },
         { "R0lGODdh", ".gif" }
     };
-    
+
     public string GetImageExtension(string base64Image)
     {
         foreach (var mimeType in MimeTypes)
@@ -29,7 +29,7 @@ public class ImageService(ILogger<ImageService> logger) : IImageService
         }
         return string.Empty;
     }
-    
+
 
     public async Task<bool> SaveImageAsync(string base64Image, string imageName)
     {
@@ -63,7 +63,7 @@ public class ImageService(ILogger<ImageService> logger) : IImageService
         try
         {
             File.Delete(Path.Combine(ImgFolderPath, imageName));
-        } 
+        }
         catch (Exception e)
         {
             logger.LogError($"ERROR - unable to delete file {imageName} \n ERROR-MESSAGE: {e.Message}");

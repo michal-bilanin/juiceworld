@@ -11,7 +11,7 @@ public class ProductFacade(IProductService _productService, IImageService _image
     {
         return $"{Guid.NewGuid()}{_imageService.GetImageExtension(productImageDto.ImageValue)}";
     }
-    
+
     public async Task<ProductDto?> CreateProductAsync(ProductImageDto productImageDto)
     {
         if (!string.IsNullOrEmpty(productImageDto.Image))

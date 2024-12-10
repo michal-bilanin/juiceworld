@@ -82,16 +82,16 @@ namespace BusinessLayer.Tests.Services
             // Setup the mocks
             _queryObjectMock.Setup(qo => qo.Filter(It.IsAny<Expression<Func<AuditTrail, bool>>>()))
                             .Returns(_queryObjectMock.Object);
-            
+
             _queryObjectMock.Setup(qo => qo.OrderBy(It.IsAny<Expression<Func<AuditTrail, DateTime>>>(), false))
                             .Returns(_queryObjectMock.Object);
-            
+
             _queryObjectMock.Setup(qo => qo.ExecuteAsync())
                             .ReturnsAsync(auditTrails);
-            
+
             _queryObjectMock.Setup(qo => qo.Paginate(1, 10))
                             .Returns(_queryObjectMock.Object);
-            
+
             _mapperMock.Setup(m => m.Map<List<AuditTrailDto>>(auditTrails))
                        .Returns(new List<AuditTrailDto> { auditTrailDto });
 
@@ -104,7 +104,7 @@ namespace BusinessLayer.Tests.Services
             Assert.Equal(auditTrails[0].Id, result.First().Id);
             Assert.Equal(auditTrails[0].TrailType, result.First().TrailType);
         }
-        
+
 
         [Fact]
         public async Task GetAuditTrailsFilteredAsync_InvalidFilter_ReturnsEmptyList()

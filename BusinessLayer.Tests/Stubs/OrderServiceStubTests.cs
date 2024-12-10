@@ -74,7 +74,7 @@ namespace BusinessLayer.Tests.Services
         [Fact]
         public async Task CreateOrderAsync_Simple()
         {
-            var orderDto = new CreateOrderDto { Id = 3, UserId = 1, AddressId = 1, DeliveryType = DeliveryType.Standard, PaymentMethodType = PaymentMethodType.Bitcoin};
+            var orderDto = new CreateOrderDto { Id = 3, UserId = 1, AddressId = 1, DeliveryType = DeliveryType.Standard, PaymentMethodType = PaymentMethodType.Bitcoin };
             var order = _mapper.Map<Order>(orderDto);
             _orderRepositoryMock.Setup(repo => repo.CreateAsync(It.IsAny<Order>(), null)).ReturnsAsync(order);
             var result = await _orderService.CreateOrderAsync(orderDto);
@@ -85,7 +85,7 @@ namespace BusinessLayer.Tests.Services
         [Fact]
         public async Task UpdateOrderAsync_Simple()
         {
-            var orderDto =  new OrderDto
+            var orderDto = new OrderDto
             {
                 Id = 1,
                 DeliveryType = DeliveryType.Express,

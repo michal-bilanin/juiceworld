@@ -70,7 +70,7 @@ public class AddressServiceStubTests
     {
         // Arrange
 
-        
+
         _addressRepositoryMock.Setup(repo => repo.GetAllAsync()).ReturnsAsync(addresses);
 
         // Act

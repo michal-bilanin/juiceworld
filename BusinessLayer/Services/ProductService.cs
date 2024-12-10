@@ -64,7 +64,7 @@ public class ProductService(
             return null;
         }
 
-        return  mapper.Map<ProductDetailDto>(product);
+        return mapper.Map<ProductDetailDto>(product);
     }
 
     public async Task<ProductDto?> UpdateProductAsync(ProductDto productDto)
