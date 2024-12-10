@@ -8,8 +8,8 @@ namespace JuiceWorld.UnitOfWork;
 public class OrderUnitOfWork
 {
     private readonly JuiceWorldDbContext _context;
-    public readonly IRepository<CartItem> CartItemRepository;
-    public readonly IRepository<Order> OrderRepository;
+    public  IRepository<CartItem> CartItemRepository;
+    public  IRepository<Order> OrderRepository;
 
     public OrderUnitOfWork(JuiceWorldDbContext context)
     {

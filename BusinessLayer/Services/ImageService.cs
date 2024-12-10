@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 
 namespace BusinessLayer.Services;
 
-public class ImageService(ILogger<ProductService> logger) : IImageService
+public class ImageService(ILogger<ImageService> logger) : IImageService
 {
     private const string ImgFolderPath = "Images";
     
