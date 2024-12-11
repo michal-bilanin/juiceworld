@@ -34,6 +34,15 @@ h1, h2, h3, h4, h5, h6 {
     border-bottom: 2px solid #ff9873;
 }
 
+.card-header {
+    background-color: #ffbf00;
+    color: #000;
+}
+
+.card-header h3 {
+    color: #000;
+}
+
 .footer {
     background-color: #ffccff;
     color: #ff66ff;

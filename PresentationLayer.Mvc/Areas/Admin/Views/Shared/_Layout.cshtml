@@ -36,32 +36,31 @@ bool isCustomer = User.IsInRole(Commons.Enums.UserRole.Customer.ToString());
                         </li>
                     }
                     <div class="ms-auto d-flex">
-                    @if (isCustomer)
-                    {
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Logout">Logout</a>
-                        </li>    
-                    }
-                    else
-                    {
-                        <li class="nav-item align-content-end">
-                            <a class="nav-link text-dark" asp-area="Customer" asp-controller="User" asp-action="Register">Register</a>
-                        </li>
-                        <li class="nav-item align-content-end">
-                            <a class="nav-link text-dark" asp-area="Customer" asp-controller="User" asp-action="Login">Login</a>
-                        </li>
-                    }
+                        @if (isCustomer)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Logout">Logout</a>
+                            </li>    
+                        }
+                        else
+                        {
+                            <li class="nav-item align-content-end">
+                                <a class="nav-link text-dark" asp-area="Customer" asp-controller="User" asp-action="Register">Register</a>
+                            </li>
+                            <li class="nav-item align-content-end">
+                                <a class="nav-link text-dark" asp-area="Customer" asp-controller="User" asp-action="Login">Login</a>
+                            </li>
+                        }
                     </div>
                 </ul>
             </div>
         </div>
     </nav>
 </header>
-<div class="container" style="flex-grow: 1;">
-    <main role="main" class="pb-3">
-        @RenderBody()
-    </main>
-</div>
+
+<main role="main" class="container" style="flex-grow: 1;">
+    @RenderBody()
+</main>
 
 <footer class="border-top footer text-muted">
     <div class="container">
