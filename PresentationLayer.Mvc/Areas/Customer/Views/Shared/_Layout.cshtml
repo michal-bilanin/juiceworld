@@ -1,7 +1,6 @@
 ﻿@{
 // Assume these roles are defined as "Admin" and "Customer"
-bool isAdmin = User.IsInRole(Commons.Enums.UserRole.Admin.ToString());
-bool isCustomer = User.IsInRole(Commons.Enums.UserRole.Customer.ToString());
+bool isAuthenticated = User.Identity is { IsAuthenticated: true };
 }
 
 <!DOCTYPE html>
@@ -29,14 +28,14 @@ bool isCustomer = User.IsInRole(Commons.Enums.UserRole.Customer.ToString());
                     <li class="nav-item">
                         <a class="nav-link text-dark" asp-area="Customer" asp-controller="Home" asp-action="Index">Home</a>
                     </li>
-                    @if (isCustomer)
+                    @if (isAuthenticated)
                     {
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="Customer" asp-controller="User" asp-action="Profile">User Profile</a>
                         </li>
                     }
                     <div class="ms-auto d-flex">
-                    @if (isCustomer)
+                    @if (isAuthenticated)
                     {
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Logout">Logout</a>

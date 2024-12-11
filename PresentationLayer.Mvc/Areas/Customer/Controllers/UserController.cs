@@ -3,6 +3,7 @@ using AutoMapper;
 using BusinessLayer.DTOs;
 using BusinessLayer.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using PresentationLayer.Mvc.ActionFilters;
 using PresentationLayer.Mvc.Models;
 
 namespace PresentationLayer.Mvc.Areas.Customer.Controllers;
@@ -97,6 +98,7 @@ public class UserController(IUserService userService, IMapper mapper) : Controll
 
     // GET: /User/Profile
     [HttpGet]
+    [RedirectIfNotAuthenticatedActionFilter]
     public async Task<ActionResult> Profile()
     {
         var user = await userService.GetUserByEmailAsync(User.FindFirst(ClaimTypes.Email)?.Value ?? "");
