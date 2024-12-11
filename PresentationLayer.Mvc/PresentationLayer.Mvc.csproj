@@ -24,7 +24,6 @@
     <ItemGroup>
       <AdditionalFiles Include="Areas\Customer\Views\Home\Index.cshtml" />
       <AdditionalFiles Include="Areas\Customer\Views\Shared\Error.cshtml" />
-      <AdditionalFiles Include="Areas\Customer\Views\Shared\_Layout.cshtml" />
       <AdditionalFiles Include="Areas\Customer\Views\Shared\_ValidationScriptsPartial.cshtml" />
       <AdditionalFiles Include="Areas\Customer\Views\User\Login.cshtml" />
       <AdditionalFiles Include="Areas\Customer\Views\User\Profile.cshtml" />
