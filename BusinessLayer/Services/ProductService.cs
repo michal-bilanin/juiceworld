@@ -94,6 +94,7 @@ public class ProductService(
                 (productFilter.Name == null || p.Name.ToLower().Contains(productFilter.Name.ToLower())) &&
                 (productFilter.Description == null ||
                  p.Description.ToLower().Contains(productFilter.Description.ToLower())))
+            .OrderBy(p => p.Id)
             .Paginate(productFilter.PageIndex, productFilter.PageSize);
 
         var filteredProducts = await query.ExecuteAsync();
