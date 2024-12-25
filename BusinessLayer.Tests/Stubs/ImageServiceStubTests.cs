@@ -101,12 +101,12 @@ namespace BusinessLayer.Tests.Services
         }
 
         [Fact]
-        public void DeleteImageAsync_ExistingImage_ReturnsTrue()
+        public async Task DeleteImageAsync_ExistingImage_ReturnsTrue()
         {
             // Arrange
             var base64Image = TestImageBase64;
             var imageName = TestImageName;
-            _imageService.SaveImageAsync(base64Image, imageName).Wait();
+            await _imageService.SaveImageAsync(base64Image, imageName);
 
             // Act
             var result = _imageService.DeleteImageAsync(imageName);
