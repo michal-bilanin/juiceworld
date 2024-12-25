@@ -18,6 +18,37 @@ public class ProductController(IProductService productService, IManufacturerServ
     }
 
     [HttpGet]
+    public async Task<IActionResult> Create()
+    {
+        var manufacturers = await manufacturerService.GetAllManufacturersAsync();
+        var viewModel = new ProductEditViewModel
+        {
+            Product = new ProductDto(),
+            AllManufacturers = manufacturers
+        };
+
+        return View(viewModel);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Create(ProductEditViewModel viewModel)
+    {
+        if (!ModelState.IsValid)
+        {
+            viewModel.AllManufacturers = await manufacturerService.GetAllManufacturersAsync();
+            return View(viewModel);
+        }
+
+        var createdProduct = await productService.CreateProductAsync(viewModel.Product);
+        if (createdProduct == null)
+        {
+            return BadRequest();
+        }
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpGet]
     public async Task<IActionResult> Edit(int id)
     {
         var product = await productService.GetProductByIdAsync(id);
@@ -52,5 +83,12 @@ public class ProductController(IProductService productService, IManufacturerServ
         }
 
         return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var result = await productService.DeleteProductByIdAsync(id);
+        return result ? RedirectToAction(nameof(Index)) : NotFound();
     }
 }
