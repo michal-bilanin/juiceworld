@@ -1,21 +1,34 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using JuiceWorld.Enums;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Commons.Enums;
 
 namespace JuiceWorld.Entities;
 
 public class Address : BaseEntity
 {
-    public string Name { get; set; }
-    public string City { get; set; }
-    public string Street { get; set; }
-    public string HouseNumber { get; set; }
-    public string ZipCode { get; set; }
-    public string Country { get; set; }
-    public AddressType Type { get; set; } = AddressType.Shipping;
+    [MaxLength(100)]
+    public required string Name { get; set; }
+
+    [MaxLength(100)]
+    public required string City { get; set; }
+
+    [MaxLength(100)]
+    public required string Street { get; set; }
+
+    [MaxLength(10)]
+    public required string HouseNumber { get; set; }
+
+    [MaxLength(10)]
+    public required string ZipCode { get; set; }
+
+    [MaxLength(100)]
+    public required string Country { get; set; }
+
+    public AddressType Type { get; set; } = AddressType.Unknown;
     public int UserId { get; set; }
 
     [ForeignKey(nameof(UserId))]
-    public virtual User User { get; set; }
+    public virtual User? User { get; set; }
 
-    public virtual IEnumerable<Order> Orders { get; set; }
+    public virtual List<Order> Orders { get; set; } = [];
 }

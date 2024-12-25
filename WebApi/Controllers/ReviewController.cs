@@ -1,7 +1,6 @@
-using AutoMapper;
-using Infrastructure.Repositories;
-using JuiceWorld.Entities;
-using JuiceWorld.Enums;
+using BusinessLayer.DTOs;
+using BusinessLayer.Services.Interfaces;
+using Commons.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
@@ -10,8 +9,8 @@ namespace WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = nameof(UserRole.Customer))]
-public class ReviewController(IRepository<Review> reviewRepository, IMapper mapper) : ControllerBase
+[Authorize(Roles = nameof(UserRole.Admin) + "," + nameof(UserRole.Customer))]
+public class ReviewController(IReviewService reviewService) : ControllerBase
 {
     private const string ApiBaseName = "Review";
 
@@ -19,39 +18,39 @@ public class ReviewController(IRepository<Review> reviewRepository, IMapper mapp
     [OpenApiOperation(ApiBaseName + nameof(CreateReview))]
     public async Task<ActionResult<ReviewDto>> CreateReview(ReviewDto review)
     {
-        var result = await reviewRepository.CreateAsync(mapper.Map<Review>(review));
-        return result == null ? Problem() : Ok(mapper.Map<ReviewDto>(result));
+        var result = await reviewService.CreateReviewAsync(review);
+        return result == null ? Problem() : Ok(result);
     }
 
     [HttpGet]
     [OpenApiOperation(ApiBaseName + nameof(GetAllReviews))]
-    public async Task<ActionResult<List<ReviewDto>>> GetAllReviews()
+    public async Task<ActionResult<IEnumerable<ReviewDto>>> GetAllReviews()
     {
-        var result = await reviewRepository.GetAllAsync();
-        return Ok(mapper.Map<ICollection<ReviewDto>>(result).ToList());
+        var result = await reviewService.GetAllReviewsAsync();
+        return Ok(result);
     }
 
     [HttpGet("{reviewId:int}")]
     [OpenApiOperation(ApiBaseName + nameof(GetReview))]
     public async Task<ActionResult<ReviewDto>> GetReview(int reviewId)
     {
-        var result = await reviewRepository.GetByIdAsync(reviewId);
-        return result == null ? NotFound() : Ok(mapper.Map<ReviewDto>(result));
+        var result = await reviewService.GetReviewByIdAsync(reviewId);
+        return result == null ? NotFound() : Ok(result);
     }
 
     [HttpPut]
     [OpenApiOperation(ApiBaseName + nameof(UpdateReview))]
     public async Task<ActionResult<ReviewDto>> UpdateReview(ReviewDto review)
     {
-        var result = await reviewRepository.UpdateAsync(mapper.Map<Review>(review));
-        return result == null ? Problem() : Ok(mapper.Map<ReviewDto>(result));
+        var result = await reviewService.UpdateReviewAsync(review);
+        return result == null ? NotFound() : Ok(result);
     }
 
     [HttpDelete("{reviewId:int}")]
     [OpenApiOperation(ApiBaseName + nameof(DeleteReview))]
     public async Task<ActionResult<bool>> DeleteReview(int reviewId)
     {
-        var result = await reviewRepository.DeleteAsync(reviewId);
+        var result = await reviewService.DeleteReviewByIdAsync(reviewId);
         return result ? Ok() : NotFound();
     }
 }

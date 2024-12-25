@@ -38,10 +38,14 @@ here: [https://gitlab.fi.muni.cz/xbilanin/juiceworld/-/wikis/Entity-Relationship
 
 The system consists of the following modules:
 
-1. **WebApi** - responsible for handling HTTP requests and responses.
-2. **DataAccessLayer.EF** - responsible for handling database operations, implemented using Entity Framework.
+1. **BusinessLayer** - responsible for handling the business logic of the application.
+2. **BusinessLayer.Tests** - tests for the business layer.
 3. **Commons** - contains shared classes and interfaces used across the system.
-4. **Infrastructure** - contains classes and interfaces used for applying patterns in an implementation-agnostic way.
+4. **DataAccessLayer.EF** - responsible for handling database operations, implemented using Entity Framework.
+5. **Infrastructure** - contains classes and interfaces used for applying patterns in an implementation-agnostic way.
+6. **PresentationLayer.Mvc** - MVC app providing front-end for the user.
+7. **TestUtilities.EF** - utilities and test objects regarding the Entity Framework.
+8. **WebApi** - responsible for handling HTTP requests and responses.
 
 ## Setup For Development
 
@@ -61,12 +65,12 @@ dotnet restore
 ```
 
 3. Set up your `.env` file in the project's root directory. You can use the provided `.env.example` file as a template.
-4. If you're developing in a Dev Container, the database should start automatically. In case it doesn't, or you're not
-   developing in the Dev Container, run the database container by executing the following command in the project's root
+4. If you're developing in a Dev Container, both the logging and storage database should start automatically. In case it doesn't, or you're not
+   developing in the Dev Container, run the databases containers by executing the following command in the project's root
    directory:
 
 ```bash
-docker compose up postgres
+docker compose up postgres mongodb
 ```
 
 5. After that, you can select one of the `*-development` launch profiles and run the application:

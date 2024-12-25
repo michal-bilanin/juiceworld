@@ -9,7 +9,9 @@ public class RequestLoggingMiddleware(RequestDelegate next, ILogger<RequestLoggi
         var stopwatch = Stopwatch.StartNew();
         var traceIdentifier = context.TraceIdentifier;
 
-        logger.LogInformation("[INCOMING_REQUEST] - TRACE_ID: {traceId} | METHOD: {method} | URL: {url} | IP: {ip}",
+        // Log incoming request
+        logger.LogInformation(
+            "INCOMING_REQUEST - TRACE_ID: {TraceId}, METHOD: {Method}, URL: {Url}, IP: {IP}",
             traceIdentifier,
             context.Request.Method,
             context.Request.Path,
@@ -19,9 +21,9 @@ public class RequestLoggingMiddleware(RequestDelegate next, ILogger<RequestLoggi
 
         stopwatch.Stop();
 
+        // Log outgoing response
         logger.LogInformation(
-            "[OUTGOING_RESPONSE] - TRACE_ID: {traceId} | METHOD: {method} | URL: {url} | IP: {ip} | " +
-            "STATUS: {status} | DOWNTIME: {downtime}ms",
+            "OUTGOING_RESPONSE - TRACE_ID: {TraceId}, METHOD: {Method}, URL: {Url}, IP: {IP}, STATUS: {Status}, DOWNTIME: {Downtime}ms",
             traceIdentifier,
             context.Request.Method,
             context.Request.Path,

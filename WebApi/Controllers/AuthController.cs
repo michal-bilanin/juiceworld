@@ -1,16 +1,14 @@
-﻿using Infrastructure.QueryObjects;
-using JuiceWorld.Entities;
+﻿using BusinessLayer.DTOs;
+using BusinessLayer.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
-using WebApi.Models;
-using WebApi.Services;
 
 namespace WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class AuthController(IQueryObject<User> userQueryObject, AuthService authService) : ControllerBase
+public class AuthController(IUserService userService) : ControllerBase
 {
     private const string ApiBaseName = "CartItem";
 
@@ -19,11 +17,7 @@ public class AuthController(IQueryObject<User> userQueryObject, AuthService auth
     [AllowAnonymous]
     public async Task<ActionResult<string>> Login(LoginDto login)
     {
-        var user = (await userQueryObject.Filter(user => user.Email == login.Email).Execute()).FirstOrDefault();
-        if (user == null) return NotFound();
-
-        if (!authService.VerifyPassword(user, login.Password)) return Unauthorized();
-
-        return Ok(authService.Create(user));
+        var token = await userService.LoginAsync(login);
+        return token == null ? Unauthorized() : Ok(token);
     }
 }

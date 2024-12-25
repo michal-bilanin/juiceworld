@@ -1,7 +1,12 @@
-﻿namespace JuiceWorld.Entities;
+﻿using System.ComponentModel.DataAnnotations;
+using JuiceWorld.Entities.Interfaces;
 
-public class Manufacturer : BaseEntity
+namespace JuiceWorld.Entities;
+
+public class Manufacturer : BaseEntity, IAuditableEntity
 {
-    public string Name { get; set; }
-    public virtual IEnumerable<Product> Products { get; set; }
+    [MaxLength(100)]
+    public required string Name { get; set; }
+
+    public virtual List<Product> Products { get; set; } = [];
 }

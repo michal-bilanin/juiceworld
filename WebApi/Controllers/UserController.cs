@@ -1,7 +1,6 @@
-using AutoMapper;
-using Infrastructure.Repositories;
-using JuiceWorld.Entities;
-using JuiceWorld.Enums;
+using BusinessLayer.DTOs;
+using BusinessLayer.Services.Interfaces;
+using Commons.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
@@ -10,8 +9,8 @@ namespace WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = nameof(UserRole.Customer))]
-public class UserController(IRepository<User> userRepository, IMapper mapper) : ControllerBase
+[Authorize(Roles = nameof(UserRole.Admin) + "," + nameof(UserRole.Customer))]
+public class UserController(IUserService userService) : ControllerBase
 {
     private const string ApiBaseName = "User";
 
@@ -19,39 +18,39 @@ public class UserController(IRepository<User> userRepository, IMapper mapper) : 
     [OpenApiOperation(ApiBaseName + nameof(CreateUser))]
     public async Task<ActionResult<UserDto>> CreateUser(UserDto user)
     {
-        var result = await userRepository.CreateAsync(mapper.Map<User>(user));
-        return result == null ? Problem() : Ok(mapper.Map<UserDto>(result));
+        var result = await userService.CreateUserAsync(user);
+        return result == null ? Problem() : Ok(result);
     }
 
     [HttpGet]
     [OpenApiOperation(ApiBaseName + nameof(GetAllUsers))]
-    public async Task<ActionResult<List<UserDto>>> GetAllUsers()
+    public async Task<ActionResult<IEnumerable<UserDto>>> GetAllUsers()
     {
-        var result = await userRepository.GetAllAsync();
-        return Ok(mapper.Map<ICollection<UserDto>>(result).ToList());
+        var result = await userService.GetAllUsersAsync();
+        return Ok(result);
     }
 
     [HttpGet("{userId:int}")]
     [OpenApiOperation(ApiBaseName + nameof(GetUser))]
     public async Task<ActionResult<UserDto>> GetUser(int userId)
     {
-        var result = await userRepository.GetByIdAsync(userId);
-        return result == null ? NotFound() : Ok(mapper.Map<UserDto>(result));
+        var result = await userService.GetUserByIdAsync(userId);
+        return result == null ? NotFound() : Ok(result);
     }
 
     [HttpPut]
     [OpenApiOperation(ApiBaseName + nameof(UpdateUser))]
     public async Task<ActionResult<UserDto>> UpdateUser(UserDto user)
     {
-        var result = await userRepository.UpdateAsync(mapper.Map<User>(user));
-        return result == null ? Problem() : Ok(mapper.Map<UserDto>(result));
+        var result = await userService.UpdateUserAsync(user);
+        return result == null ? NotFound() : Ok(result);
     }
 
     [HttpDelete("{userId:int}")]
     [OpenApiOperation(ApiBaseName + nameof(DeleteUser))]
     public async Task<ActionResult> DeleteUser(int userId)
     {
-        var result = await userRepository.DeleteAsync(userId);
+        var result = await userService.DeleteUserByIdAsync(userId);
         return result ? Ok() : NotFound();
     }
 }

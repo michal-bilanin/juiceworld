@@ -1,5 +1,7 @@
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: "true"
+  DOTNET_CLI_TELEMETRY_OPTOUT: "true"
 
 stages:
   - build
@@ -70,3 +72,26 @@ format-check:
     - shared-fi
   script:
     - dotnet format --verify-no-changes
+
+.test-template:
+  stage: quality
+  image: mcr.microsoft.com/dotnet/sdk:8.0
+  tags:
+    - shared-fi
+  script:
+    - dotnet restore
+    - dotnet test --configuration $CONFIGURATION
+
+test-debug:
+    extends:
+        - .test-template
+        - .debug_rules
+    variables:
+        CONFIGURATION: Debug
+
+test-release:
+    extends:
+        - .test-template
+        - .release_rules
+    variables:
+        CONFIGURATION: Release

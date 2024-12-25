@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Infrastructure.Repositories;
 using JuiceWorld.Data;
 using JuiceWorld.Entities;
@@ -10,38 +11,57 @@ public class Repository<TEntity>(JuiceWorldDbContext context) : IRepository<TEnt
 {
     private readonly DbSet<TEntity> _dbSet = context.Set<TEntity>();
 
-    public async Task<TEntity?> CreateAsync(TEntity entity)
+    public async Task<TEntity?> CreateAsync(TEntity entity, object? userId = null)
     {
         var result = await _dbSet.AddAsync(entity);
-        await context.SaveChangesAsync();
+
+        if (userId is null)
+        {
+            await context.SaveChangesAsync();
+        }
+        else
+        {
+            await context.SaveChangesAsync((int)userId);
+        }
+
         return result.Entity;
     }
 
-    public async Task<TEntity?> GetByIdAsync(object id)
+    public async Task<TEntity?> GetByIdAsync(object id, params string[] includes)
     {
-        return await _dbSet.FindAsync(id);
+        var query = includes.Aggregate(_dbSet.AsQueryable(), (current, include) => current.Include(include));
+        return await query.FirstOrDefaultAsync(e => e.Id == (int)id);
     }
 
-    public async Task<IEnumerable<TEntity>> GetAllAsync()
+    public async Task<IEnumerable<TEntity>> GetAllAsync(params string[] includes)
     {
-        return await _dbSet.ToListAsync();
+        var query = includes.Aggregate(_dbSet.AsQueryable(), (current, include) => current.Include(include));
+        return await query.ToListAsync();
     }
 
-    public async Task<TEntity?> UpdateAsync(TEntity entity)
+    public async Task<TEntity?> UpdateAsync(TEntity entity, object? userId = null)
     {
         var existingEntity = await _dbSet.FindAsync(entity.Id);
-        if (existingEntity is null)
+        if (existingEntity != null)
         {
-            return null;
+            context.Entry(existingEntity).State = EntityState.Detached;
         }
 
-        entity.UpdatedAt = DateTime.Now;
-        _dbSet.Update(entity);
-        await context.SaveChangesAsync();
-        return entity;
+        var result = _dbSet.Update(entity);
+
+        if (userId is null)
+        {
+            await context.SaveChangesAsync();
+        }
+        else
+        {
+            await context.SaveChangesAsync((int)userId);
+        }
+
+        return result.Entity;
     }
 
-    public async Task<bool> DeleteAsync(object id)
+    public async Task<bool> DeleteAsync(object id, object? userId = null)
     {
         var entity = await _dbSet.FindAsync(id);
         if (entity is null)
@@ -50,7 +70,33 @@ public class Repository<TEntity>(JuiceWorldDbContext context) : IRepository<TEnt
         }
 
         _dbSet.Remove(entity);
-        await context.SaveChangesAsync();
+
+        if (userId is null)
+        {
+            await context.SaveChangesAsync();
+        }
+        else
+        {
+            await context.SaveChangesAsync((int)userId);
+        }
+
         return true;
+    }
+
+    public async Task<int> RemoveAllByConditionAsync(Expression<Func<TEntity, bool>> predicate, object? userId = null)
+    {
+        var entities = await _dbSet.Where(predicate).ToListAsync();
+        _dbSet.RemoveRange(entities);
+
+        if (userId is null)
+        {
+            await context.SaveChangesAsync();
+        }
+        else
+        {
+            await context.SaveChangesAsync((int)userId);
+        }
+
+        return entities.Count;
     }
 }

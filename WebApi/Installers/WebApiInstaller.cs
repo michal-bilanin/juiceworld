@@ -1,17 +1,12 @@
 using System.Diagnostics;
 using System.Text;
-using Infrastructure.QueryObjects;
-using Infrastructure.Repositories;
-using JuiceWorld.Data;
-using JuiceWorld.Entities;
-using JuiceWorld.QueryObjects;
-using JuiceWorld.Repositories;
+using Commons.Constants;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using WebApi.Constants;
-using WebApi.Services;
+using MongoDB.Driver;
+using Serilog;
+using Serilog.Events;
 
 namespace WebApi.Installers;
 
@@ -23,23 +18,38 @@ public static class WebApiInstaller
         services.AddControllers();
         services.AddEndpointsApiExplorer();
 
-        services.AddTransient<AuthService>();
+        // Configure Logging
+        var connectionString = Environment.GetEnvironmentVariable(EnvironmentConstants.LoggingDbConnectionString);
+        var collectionName = Environment.GetEnvironmentVariable(EnvironmentConstants.LoggingDbCollectionName);
+        var databaseName = Environment.GetEnvironmentVariable(EnvironmentConstants.LoggingDbDatabaseName);
 
-        services.AddScoped<IQueryObject<User>, QueryObject<User>>();
-        services.AddScoped<IQueryObject<Product>, QueryObject<Product>>();
+        if (connectionString is null || collectionName is null || databaseName is null)
+        {
+            Log.Warning(
+                $"Logging database connection string, collection name or database name is null, make sure they are specified " +
+                $"in the environment variables: " +
+                $"{EnvironmentConstants.LoggingDbConnectionString} ({connectionString}), " +
+                $"{EnvironmentConstants.LoggingDbCollectionName} ({collectionName}), " +
+                $"{EnvironmentConstants.LoggingDbDatabaseName} ({databaseName}). Using the default logger.");
+        }
+        else
+        {
+            var client = new MongoClient(connectionString);
+            var database = client.GetDatabase(databaseName);
 
-        services.AddScoped<IRepository<User>, Repository<User>>();
-        services.AddScoped<IRepository<Address>, Repository<Address>>();
-        services.AddScoped<IRepository<CartItem>, Repository<CartItem>>();
-        services.AddScoped<IRepository<Manufacturer>, Repository<Manufacturer>>();
-        services.AddScoped<IRepository<Order>, Repository<Order>>();
-        services.AddScoped<IRepository<OrderProduct>, Repository<OrderProduct>>();
-        services.AddScoped<IRepository<Product>, Repository<Product>>();
-        services.AddScoped<IRepository<Review>, Repository<Review>>();
-        services.AddScoped<IRepository<WishListItem>, Repository<WishListItem>>();
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo.MongoDBCapped(database, collectionName: collectionName)
+                .WriteTo.Console(LogEventLevel.Information)
+                .CreateLogger();
 
-        services.AddAutoMapper(typeof(WebApiInstaller));
+            services.AddLogging(builder =>
+            {
+                builder.ClearProviders();
+                builder.AddSerilog();
+            });
+        }
 
+        // Configure Swagger
         services.AddSwaggerGen(opt =>
         {
             opt.SwaggerDoc("v1", new OpenApiInfo { Title = "JuiceWorld WebApi", Version = "v1" });
@@ -70,6 +80,7 @@ public static class WebApiInstaller
             });
         });
 
+        // Configure JWT
         var secret = Environment.GetEnvironmentVariable(EnvironmentConstants.JwtSecret);
         if (secret == null)
         {
@@ -89,21 +100,6 @@ public static class WebApiInstaller
                 ValidateIssuer = false,
                 ValidateAudience = false
             };
-        });
-
-        services.AddDbContextFactory<JuiceWorldDbContext>(options =>
-        {
-            var connectionString = Environment.GetEnvironmentVariable(EnvironmentConstants.DbConnectionString);
-
-            if (connectionString == null)
-                throw new Exception(
-                    $"Connection string is null, make sure it is specified " +
-                    $"in the environment variable: {EnvironmentConstants.DbConnectionString}");
-
-            options
-                .UseNpgsql(connectionString)
-                .LogTo(s => Debug.WriteLine(s))
-                .UseLazyLoadingProxies();
         });
 
         return services;
