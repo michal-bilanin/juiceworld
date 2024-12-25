@@ -10,5 +10,5 @@ public interface IQueryObject<TEntity> where TEntity : class
 
     IQueryObject<TEntity> Paginate(int pageIndex, int pageSize);
 
-    Task<IEnumerable<TEntity>> ExecuteAsync();
+    Task<FilteredResult<TEntity>> ExecuteAsync();
 }

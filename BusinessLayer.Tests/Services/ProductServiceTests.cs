@@ -103,7 +103,7 @@ public class ProductServiceTests
         var result = await _productService.GetProductsFilteredAsync(productFilter);
 
         // Assert
-        var productDtos = result.ToList();
+        var productDtos = result.Entities.ToList();
         Assert.Single(productDtos);
         Assert.All(productDtos, product =>
         {

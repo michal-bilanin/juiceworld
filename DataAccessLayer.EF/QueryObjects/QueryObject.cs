@@ -10,6 +10,9 @@ public class QueryObject<TEntity>(JuiceWorldDbContext context) : IQueryObject<TE
     where TEntity : BaseEntity
 {
     private IQueryable<TEntity> _query = context.Set<TEntity>();
+    private bool _pagingEnabled = false;
+    private int _pageIndex = 1;
+    private int _pageSize = 10;
 
     public IQueryObject<TEntity> Filter(Expression<Func<TEntity, bool>> filter)
     {
@@ -25,12 +28,24 @@ public class QueryObject<TEntity>(JuiceWorldDbContext context) : IQueryObject<TE
 
     public IQueryObject<TEntity> Paginate(int pageIndex, int pageSize)
     {
-        _query = _query.Skip((pageIndex - 1) * pageSize).Take(pageSize);
+        _pagingEnabled = true;
+        _pageIndex = pageIndex;
+        _pageSize = pageSize;
         return this;
     }
 
-    public async Task<IEnumerable<TEntity>> ExecuteAsync()
+    public async Task<FilteredResult<TEntity>> ExecuteAsync()
     {
-        return await _query.ToListAsync();
+        var totalEntities = await _query.CountAsync();
+        var entities = _pagingEnabled
+            ? await _query.Skip((_pageIndex - 1) * _pageSize).Take(_pageSize).ToListAsync()
+            : await _query.ToListAsync();
+
+        return new FilteredResult<TEntity>
+        {
+            Entities = entities,
+            PageIndex = _pageIndex * _pageSize > totalEntities ? 1 : _pageIndex,
+            TotalPages = (int)Math.Ceiling(totalEntities / (double)_pageSize),
+        };
     }
 }

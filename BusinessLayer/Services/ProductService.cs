@@ -16,6 +16,7 @@ public class ProductService(
     IQueryObject<Product> queryObject) : IProductService
 {
     private const string ImgFolderPath = "Images";
+
     private static readonly Dictionary<string, string> MimeTypes = new()
     {
         // enough to determine the image type
@@ -53,6 +54,7 @@ public class ProductService(
                 return mimeType.Value;
             }
         }
+
         return string.Empty;
     }
 
@@ -66,6 +68,7 @@ public class ProductService(
             {
                 return null;
             }
+
             productDto.Image = imageName;
         }
 
@@ -79,26 +82,27 @@ public class ProductService(
         return mapper.Map<List<ProductDto>>(products);
     }
 
-    public async Task<IEnumerable<ProductDto>> GetProductsFilteredAsync(ProductFilterDto productFilter)
+    public async Task<FilteredResult<ProductDto>> GetProductsFilteredAsync(ProductFilterDto productFilter)
     {
         Enum.TryParse<ProductCategory>(productFilter.Category, true, out var categoryEnum);
         var query = queryObject.Filter(p =>
-            (productFilter.ManufacturerName == null || p.Manufacturer == null ||
-             p.Manufacturer.Name.ToLower().Contains(productFilter.ManufacturerName.ToLower())) &&
-            (productFilter.Category == null || p.Category == categoryEnum) &&
-            (productFilter.PriceMax == null || p.Price <= productFilter.PriceMax) &&
-            (productFilter.PriceMin == null || p.Price >= productFilter.PriceMin) &&
-            (productFilter.Name == null || p.Name.ToLower().Contains(productFilter.Name.ToLower())) &&
-            (productFilter.Description == null ||
-             p.Description.ToLower().Contains(productFilter.Description.ToLower())));
+                (productFilter.ManufacturerName == null || p.Manufacturer == null ||
+                 p.Manufacturer.Name.ToLower().Contains(productFilter.ManufacturerName.ToLower())) &&
+                (productFilter.Category == null || p.Category == categoryEnum) &&
+                (productFilter.PriceMax == null || p.Price <= productFilter.PriceMax) &&
+                (productFilter.PriceMin == null || p.Price >= productFilter.PriceMin) &&
+                (productFilter.Name == null || p.Name.ToLower().Contains(productFilter.Name.ToLower())) &&
+                (productFilter.Description == null ||
+                 p.Description.ToLower().Contains(productFilter.Description.ToLower())))
+            .Paginate(productFilter.PageIndex, productFilter.PageSize);
 
-        if (productFilter is { PageIndex: not null, PageSize: not null })
+        var filteredProducts = await query.ExecuteAsync();
+        return new FilteredResult<ProductDto>
         {
-            query = query.Paginate(productFilter.PageIndex.Value, productFilter.PageSize.Value);
-        }
-
-        var result = await query.ExecuteAsync();
-        return mapper.Map<ICollection<ProductDto>>(result);
+            Entities = mapper.Map<List<ProductDto>>(filteredProducts.Entities),
+            PageIndex = filteredProducts.PageIndex,
+            TotalPages = filteredProducts.TotalPages
+        };
     }
 
     public async Task<ProductDto?> GetProductByIdAsync(int id)

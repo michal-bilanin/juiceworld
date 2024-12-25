@@ -65,7 +65,7 @@ public class UserService(IRepository<User> userRepository, IQueryObject<User> us
 
     public async Task<UserDto?> GetUserByEmailAsync(string email)
     {
-        var user = (await userQueryObject.Filter(user => user.Email == email).ExecuteAsync()).FirstOrDefault();
+        var user = (await userQueryObject.Filter(user => user.Email == email).ExecuteAsync()).Entities.FirstOrDefault();
         return user is null ? null : mapper.Map<UserDto>(user);
     }
 
