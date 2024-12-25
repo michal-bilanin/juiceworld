@@ -29,6 +29,11 @@
         <select asp-for="Product.ManufacturerId" class="form-control" asp-items="@(new SelectList(Model.AllManufacturers, "Id", "Name"))"></select>
         <span asp-validation-for="Product.ManufacturerId" class="text-danger"></span>
     </div>
+    <div class="form-group">
+        <label asp-for="Product.TagIds" class="control-label">Tags</label>
+        <select asp-for="Product.TagIds" class="form-control" asp-items="@(new SelectList(Model.AllTags, "Id", "Name"))" multiple="multiple"></select>
+        <span asp-validation-for="Product.TagIds" class="text-danger"></span>
+    </div>
     <div class="form-group mt-3 d-flex justify-content-end">
         <a href="@Url.Action("Index", "Product")" class="btn btn-secondary me-2">Cancel</a>
         <input type="submit" value="@ViewData["ButtonText"]" class="btn btn-primary" />

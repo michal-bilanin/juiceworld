@@ -8,7 +8,7 @@ namespace PresentationLayer.Mvc.Areas.Admin.Controllers;
 
 [Area(Constants.Areas.Admin)]
 [RedirectIfNotAdminActionFilter]
-public class ProductController(IProductService productService, IManufacturerService manufacturerService) : Controller
+public class ProductController(IProductService productService, IManufacturerService manufacturerService, ITagService tagService) : Controller
 {
     [HttpGet]
     public async Task<IActionResult> Index([FromQuery] ProductFilterDto productFilter)
@@ -21,10 +21,12 @@ public class ProductController(IProductService productService, IManufacturerServ
     public async Task<IActionResult> Create()
     {
         var manufacturers = await manufacturerService.GetAllManufacturersAsync();
+        var tags = await tagService.GetAllTagsAsync();
         var viewModel = new ProductEditViewModel
         {
             Product = new ProductDto(),
-            AllManufacturers = manufacturers
+            AllManufacturers = manufacturers,
+            AllTags = tags
         };
 
         return View(viewModel);
@@ -36,6 +38,7 @@ public class ProductController(IProductService productService, IManufacturerServ
         if (!ModelState.IsValid)
         {
             viewModel.AllManufacturers = await manufacturerService.GetAllManufacturersAsync();
+            viewModel.AllTags = await tagService.GetAllTagsAsync();
             return View(viewModel);
         }
 
@@ -58,10 +61,12 @@ public class ProductController(IProductService productService, IManufacturerServ
         }
 
         var manufacturers = await manufacturerService.GetAllManufacturersAsync();
+        var tags = await tagService.GetAllTagsAsync();
         var viewModel = new ProductEditViewModel
         {
             Product = product,
-            AllManufacturers = manufacturers
+            AllManufacturers = manufacturers,
+            AllTags = tags,
         };
 
         return View(viewModel);
@@ -73,6 +78,7 @@ public class ProductController(IProductService productService, IManufacturerServ
         if (!ModelState.IsValid)
         {
             viewModel.AllManufacturers = await manufacturerService.GetAllManufacturersAsync();
+            viewModel.AllTags = await tagService.GetAllTagsAsync();
             return View(viewModel);
         }
 

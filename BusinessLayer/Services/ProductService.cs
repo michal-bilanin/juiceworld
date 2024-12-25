@@ -5,6 +5,7 @@ using Commons.Enums;
 using Infrastructure.QueryObjects;
 using Infrastructure.Repositories;
 using JuiceWorld.Entities;
+using JuiceWorld.UnitOfWork;
 using Microsoft.Extensions.Logging;
 
 namespace BusinessLayer.Services;
@@ -13,6 +14,7 @@ public class ProductService(
     IRepository<Product> productRepository,
     IMapper mapper,
     ILogger<ProductService> logger,
+    ProductUnitOfWork productUnitOfWork,
     IQueryObject<Product> queryObject) : IProductService
 {
     private const string ImgFolderPath = "Images";
@@ -72,8 +74,54 @@ public class ProductService(
             productDto.Image = imageName;
         }
 
-        var newProduct = await productRepository.CreateAsync(mapper.Map<Product>(productDto));
+        var product = mapper.Map<Product>(productDto);
+        var tags = await productUnitOfWork.TagRepository.GetByIdRangeAsync(productDto.TagIds.Cast<object>());
+        product.Tags = tags.ToList();
+
+        var newProduct = await productUnitOfWork.ProductRepository.CreateAsync(product);
+        await productUnitOfWork.Commit();
         return newProduct is null ? null : mapper.Map<ProductDto>(newProduct);
+    }
+
+    public async Task<ProductDto?> UpdateProductAsync(ProductDto productDto)
+    {
+        var oldProduct = await productUnitOfWork.ProductRepository.GetByIdAsync(productDto.Id);
+        if (oldProduct is null)
+        {
+            return null;
+        }
+
+        if (!string.IsNullOrEmpty(productDto.Image))
+        {
+            if (oldProduct.Image != null)
+            {
+                var oldImagePath = Path.Combine(ImgFolderPath, oldProduct.Image);
+                if (File.Exists(oldImagePath))
+                {
+                    File.Delete(oldImagePath);
+                }
+            }
+
+            var extension = GetImageExtension(productDto.Image);
+            var imageName = $"{Guid.NewGuid()}{extension}";
+
+            if (!await SaveImageAsync(productDto.Image, imageName))
+            {
+                return null;
+            }
+
+            productDto.Image = imageName;
+        }
+
+        var product = mapper.Map<Product>(productDto);
+        oldProduct.Tags.Clear();
+
+        var tags = await productUnitOfWork.TagRepository.GetByIdRangeAsync(productDto.TagIds.Cast<object>());
+        product.Tags = tags.ToList();
+
+        var updatedProduct = await productUnitOfWork.ProductRepository.UpdateAsync(product);
+        await productUnitOfWork.Commit();
+        return updatedProduct is null ? null : mapper.Map<ProductDto>(updatedProduct);
     }
 
     public async Task<IEnumerable<ProductDto>> GetAllProductsAsync()
@@ -108,7 +156,7 @@ public class ProductService(
 
     public async Task<ProductDto?> GetProductByIdAsync(int id)
     {
-        var product = await productRepository.GetByIdAsync(id);
+        var product = await productRepository.GetByIdAsync(id, nameof(Product.Tags));
         return product is null ? null : mapper.Map<ProductDto>(product);
     }
 
@@ -140,40 +188,6 @@ public class ProductService(
         ret.Image = Convert.ToBase64String(image);
 
         return ret;
-    }
-
-    public async Task<ProductDto?> UpdateProductAsync(ProductDto productDto)
-    {
-        var oldProduct = await productRepository.GetByIdAsync(productDto.Id);
-        if (oldProduct is null)
-        {
-            return null;
-        }
-
-        if (!string.IsNullOrEmpty(productDto.Image))
-        {
-            if (oldProduct.Image != null)
-            {
-                var oldImagePath = Path.Combine(ImgFolderPath, oldProduct.Image);
-                if (File.Exists(oldImagePath))
-                {
-                    File.Delete(oldImagePath);
-                }
-            }
-
-            var extension = GetImageExtension(productDto.Image);
-            var imageName = $"{Guid.NewGuid()}{extension}";
-
-            if (!await SaveImageAsync(productDto.Image, imageName))
-            {
-                return null;
-            }
-
-            productDto.Image = imageName;
-        }
-
-        var updatedProduct = await productRepository.UpdateAsync(mapper.Map<Product>(productDto));
-        return updatedProduct is null ? null : mapper.Map<ProductDto>(updatedProduct);
     }
 
     public async Task<bool> DeleteProductByIdAsync(int id)

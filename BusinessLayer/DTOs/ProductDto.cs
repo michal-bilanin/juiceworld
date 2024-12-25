@@ -14,4 +14,5 @@ public class ProductDto : BaseEntityDto
 
     [DisplayName("Manufacturer")]
     public int ManufacturerId { get; set; }
+    public List<int> TagIds { get; set; } = [];
 }

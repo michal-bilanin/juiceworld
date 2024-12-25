@@ -35,6 +35,9 @@ public static class DataInstaller
         services.AddScoped<OrderUnitOfWork, OrderUnitOfWork>(serviceProvider =>
             new OrderUnitOfWork(serviceProvider.GetRequiredService<JuiceWorldDbContext>()));
 
+        services.AddScoped<ProductUnitOfWork, ProductUnitOfWork>(serviceProvider =>
+            new ProductUnitOfWork(serviceProvider.GetRequiredService<JuiceWorldDbContext>()));
+
         services.AddDbContextFactory<JuiceWorldDbContext>(options =>
         {
             var connectionString = Environment.GetEnvironmentVariable(EnvironmentConstants.DbConnectionString);

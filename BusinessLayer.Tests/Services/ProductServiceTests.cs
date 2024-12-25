@@ -7,6 +7,7 @@ using Commons.Enums;
 using JuiceWorld.Entities;
 using JuiceWorld.QueryObjects;
 using JuiceWorld.Repositories;
+using JuiceWorld.UnitOfWork;
 using Microsoft.Extensions.Logging;
 using TestUtilities.MockedObjects;
 using Xunit;
@@ -27,7 +28,8 @@ public class ProductServiceTests
         var mapper = config.CreateMapper();
         var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
         var logger = new Logger<ProductService>(loggerFactory);
-        _productService = new ProductService(productRepository, mapper, logger, new QueryObject<Product>(dbContext));
+        var productUnitOfWork = new ProductUnitOfWork(dbContext);
+        _productService = new ProductService(productRepository, mapper, logger, productUnitOfWork, new QueryObject<Product>(dbContext));
     }
 
     [Fact]

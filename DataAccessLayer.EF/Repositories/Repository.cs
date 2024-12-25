@@ -39,6 +39,11 @@ public class Repository<TEntity>(JuiceWorldDbContext context) : IRepository<TEnt
         return await query.ToListAsync();
     }
 
+    public async Task<IEnumerable<TEntity>> GetByIdRangeAsync(IEnumerable<object> ids)
+    {
+        return await _dbSet.Where(e => ids.Contains(e.Id)).ToListAsync();
+    }
+
     public async Task<TEntity?> UpdateAsync(TEntity entity, object? userId = null)
     {
         var existingEntity = await _dbSet.FindAsync(entity.Id);
