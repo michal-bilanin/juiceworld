@@ -11,6 +11,7 @@ public class OrderUnitOfWork
     public readonly IRepository<CartItem> CartItemRepository;
     public readonly IRepository<Order> OrderRepository;
     public readonly IRepository<OrderProduct> OrderProductRepository;
+    public readonly IRepository<Product> ProductRepository;
 
     public OrderUnitOfWork(JuiceWorldDbContext context)
     {
@@ -18,6 +19,7 @@ public class OrderUnitOfWork
         OrderRepository = new Repository<Order>(_context);
         CartItemRepository = new Repository<CartItem>(_context);
         OrderProductRepository = new Repository<OrderProduct>(_context);
+        ProductRepository = new Repository<Product>(_context);
     }
 
     public async Task Commit()

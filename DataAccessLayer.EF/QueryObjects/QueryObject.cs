@@ -11,6 +11,7 @@ public class QueryObject<TEntity>(JuiceWorldDbContext context) : IQueryObject<TE
 {
     private IQueryable<TEntity> _query = context.Set<TEntity>();
     private bool _pagingEnabled = false;
+    private bool _orderingEnabled = false;
     private int _pageIndex = 1;
     private int _pageSize = 10;
 
@@ -22,7 +23,23 @@ public class QueryObject<TEntity>(JuiceWorldDbContext context) : IQueryObject<TE
 
     public IQueryObject<TEntity> OrderBy<TKey>(Expression<Func<TEntity, TKey>> keySelector, bool isDesc = false)
     {
-        _query = isDesc ? _query.OrderByDescending(keySelector) : _query.OrderBy(keySelector);
+        return OrderBy((keySelector, isDesc));
+    }
+
+    public IQueryObject<TEntity> OrderBy<TKey>(params (Expression<Func<TEntity, TKey>> KeySelector, bool IsDesc)[] keySelectors)
+    {
+        foreach (var (keySelector, isDesc) in keySelectors)
+        {
+            if (_orderingEnabled)
+            {
+                _query = isDesc ? ((IOrderedQueryable<TEntity>)_query).ThenByDescending(keySelector) : ((IOrderedQueryable<TEntity>)_query).ThenBy(keySelector);
+            }
+            else
+            {
+                _query = isDesc ? _query.OrderByDescending(keySelector) : _query.OrderBy(keySelector);
+                _orderingEnabled = true;
+            }
+        }
         return this;
     }
 
@@ -50,7 +67,7 @@ public class QueryObject<TEntity>(JuiceWorldDbContext context) : IQueryObject<TE
         return new FilteredResult<TEntity>
         {
             Entities = entities,
-            PageIndex = _pageIndex * _pageSize > totalEntities ? 1 : _pageIndex,
+            PageIndex = (_pageIndex - 1) * _pageSize > totalEntities ? 1 : _pageIndex,
             TotalPages = (int)Math.Ceiling(totalEntities / (double)_pageSize),
         };
     }

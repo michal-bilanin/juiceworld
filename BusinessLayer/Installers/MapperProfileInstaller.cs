@@ -12,8 +12,10 @@ public class MapperProfileInstaller : Profile
         CreateMap<CartItemDto, CartItem>().ReverseMap();
         CreateMap<ManufacturerDto, Manufacturer>().ReverseMap();
         CreateMap<OrderDto, Order>().ReverseMap();
+        CreateMap<OrderDetailDto, Order>().ReverseMap();
         CreateMap<CreateOrderDto, Order>().ReverseMap();
         CreateMap<OrderProductDto, OrderProduct>().ReverseMap();
+        CreateMap<OrderProductDetailDto, OrderProduct>().ReverseMap();
         CreateMap<ProductDto, Product>()
             .ForMember(dest => dest.Tags, opt => opt.MapFrom(src => src.TagIds.Select(id => new Tag { Id = id })))
             .ReverseMap()

@@ -123,6 +123,7 @@ public static class DataInitializer
             .UseSeed(SeedNumber)
             .RuleFor(o => o.Id, _ => orderIds++)
             .RuleFor(o => o.DeliveryType, f => f.PickRandom<DeliveryType>())
+            .RuleFor(o => o.PaymentMethodType, f => f.PickRandom<PaymentMethodType>())
             .RuleFor(o => o.Status, f => f.PickRandom<OrderStatus>())
             .RuleFor(o => o.UserId, f => f.PickRandom(users).Id)
             .RuleFor(o => o.AddressId, f => f.PickRandom(addresses).Id);
@@ -151,7 +152,8 @@ public static class DataInitializer
             .RuleFor(op => op.Id, _ => orderProductIds++)
             .RuleFor(op => op.OrderId, f => f.PickRandom(orders).Id)
             .RuleFor(op => op.ProductId, f => f.Random.Int(1, 47))
-            .RuleFor(op => op.Quantity, f => f.Random.Int(1, 10));
+            .RuleFor(op => op.Quantity, f => f.Random.Int(1, 10))
+            .RuleFor(op => op.Price, f => f.Random.Decimal(1, 1000));
 
         return faker.Generate(2000);
     }
