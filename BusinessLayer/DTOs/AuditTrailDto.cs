@@ -8,7 +8,7 @@ public class AuditTrailDto
     public int UserId { get; set; }
     public TrailType TrailType { get; set; }
     public DateTime CreatedAt { get; set; }
-    public string EntityName { get; set; } = null!;
+    public string EntityName { get; set; }
     public int PrimaryKey { get; set; }
     public List<string> ChangedColumns { get; set; } = [];
 }

@@ -1,17 +1,9 @@
 ﻿using System.Diagnostics;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using System.Text;
-using AutoMapper;
 using Commons.Constants;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 using Serilog;
-using AutoMapper;
-using BusinessLayer.Installers;
 using MongoDB.Driver;
 using Serilog.Events;
 

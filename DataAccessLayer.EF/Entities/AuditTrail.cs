@@ -9,12 +9,12 @@ public class AuditTrail : BaseEntity
     public int UserId { get; set; }
 
     [ForeignKey(nameof(UserId))]
-    public virtual User User { get; set; } = null!;
+    public virtual User? User { get; set; }
 
     public TrailType TrailType { get; set; }
 
     [MaxLength(100)]
-    public string EntityName { get; set; } = null!;
+    public required string EntityName { get; set; }
 
     public int PrimaryKey { get; set; }
 

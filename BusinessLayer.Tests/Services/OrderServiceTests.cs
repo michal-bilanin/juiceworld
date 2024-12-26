@@ -24,8 +24,8 @@ public class OrderServiceTests
         var orderRepository = new Repository<Order>(dbContext);
         var config = new MapperConfiguration(cfg => cfg.AddProfile<MapperProfileInstaller>());
         var mapper = config.CreateMapper();
-        var unitOfWorkProvider = new OrderUnitOfWorkProvider(() => MockedDbContext.CreateFromOptions(dbContextOptions));
-        _orderService = new OrderService(orderRepository, unitOfWorkProvider, mapper);
+        var orderUnitOfWork = new OrderUnitOfWork(dbContext);
+        _orderService = new OrderService(orderRepository, orderUnitOfWork, mapper);
     }
 
     [Fact]

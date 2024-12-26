@@ -6,7 +6,7 @@ namespace JuiceWorld.Entities;
 public class Manufacturer : BaseEntity, IAuditableEntity
 {
     [MaxLength(100)]
-    public string Name { get; set; } = null!;
+    public required string Name { get; set; }
 
-    public virtual IEnumerable<Product> Products { get; set; } = null!;
+    public virtual List<Product> Products { get; set; } = [];
 }
