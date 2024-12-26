@@ -34,6 +34,12 @@ public class QueryObject<TEntity>(JuiceWorldDbContext context) : IQueryObject<TE
         return this;
     }
 
+    public IQueryObject<TEntity> Include(params string[] includes)
+    {
+        _query = includes.Aggregate(_query, (current, include) => current.Include(include));
+        return this;
+    }
+
     public async Task<FilteredResult<TEntity>> ExecuteAsync()
     {
         var totalEntities = await _query.CountAsync();

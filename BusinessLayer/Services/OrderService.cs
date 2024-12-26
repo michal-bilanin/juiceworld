@@ -1,6 +1,7 @@
 using AutoMapper;
 using BusinessLayer.DTOs;
 using BusinessLayer.Services.Interfaces;
+using Infrastructure.QueryObjects;
 using Infrastructure.Repositories;
 using JuiceWorld.Entities;
 using JuiceWorld.UnitOfWork;
@@ -9,6 +10,7 @@ namespace BusinessLayer.Services;
 
 public class OrderService(
     IRepository<Order> orderRepository,
+    IQueryObject<Order> orderQueryObject,
     OrderUnitOfWork orderUnitOfWork,
     IMapper mapper) : IOrderService
 {
@@ -22,8 +24,33 @@ public class OrderService(
             return null;
         }
 
+        var cartItems =
+            (List<CartItem>)await orderUnitOfWork.CartItemRepository.GetByConditionAsync(
+                ci => ci.UserId == order.UserId, nameof(CartItem.Product));
+
         // remove cart items
-        await orderUnitOfWork.CartItemRepository.RemoveAllByConditionAsync(ci => ci.UserId == order.UserId, order.UserId);
+        await orderUnitOfWork.CartItemRepository.RemoveAllByConditionAsync(ci => ci.UserId == order.UserId,
+            order.UserId);
+
+        // create order products
+        List<OrderProduct> orderProducts = [];
+        foreach (var cartItem in cartItems)
+        {
+            if (cartItem.Product is null)
+            {
+                return null;
+            }
+
+            orderProducts.Add(new OrderProduct
+            {
+                OrderId = newOrder.Id,
+                ProductId = cartItem.ProductId,
+                Quantity = cartItem.Quantity,
+                Price = cartItem.Product.Price
+            });
+        }
+
+        await orderUnitOfWork.OrderProductRepository.CreateRangeAsync(orderProducts);
         await orderUnitOfWork.Commit();
 
         return mapper.Map<OrderDto>(newOrder);
@@ -39,6 +66,21 @@ public class OrderService(
     {
         var orders = await orderRepository.GetAllAsync();
         return mapper.Map<List<OrderDto>>(orders);
+    }
+
+    public async Task<FilteredResult<OrderDto>> GetOrdersByUserIdAsync(int userId, PaginationDto paginationDto)
+    {
+        var query = orderQueryObject.Filter(o => o.UserId == userId)
+            .OrderBy(o => o.Id)
+            .Paginate(paginationDto.PageIndex, paginationDto.PageSize);
+        var filteredOrders = await query.ExecuteAsync();
+
+        return new FilteredResult<OrderDto>
+        {
+            Entities = mapper.Map<List<OrderDto>>(filteredOrders.Entities),
+            PageIndex = filteredOrders.PageIndex,
+            TotalPages = filteredOrders.TotalPages
+        };
     }
 
     public async Task<OrderDto?> GetOrderByIdAsync(int id)

@@ -8,11 +8,15 @@
     <div class="row justify-content-center">
         <div class="col-md-6">
             <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white text-center">
-                    <h3>User Profile</h3>
+                <div>
+                    <div class="card-header bg-primary text-white text-center">
+                        <h3>User Profile</h3>
+                    </div>
+                    <div class="card-footer text-end">
+                        <a href="@Url.Action("Index", "Order")">Display Orders</a>
+                    </div>
                 </div>
                 <div class="card-body">
-                    <!-- Display User Information -->
                     <div class="mb-3">
                         <strong>Username:</strong> @Model.UserName
                     </div>
@@ -24,7 +28,6 @@
                         <p>@Model.Bio</p>
                     </div>
 
-                    <!-- Edit Profile Button -->
                     <a href="@Url.Action("Edit", "User")" class="btn btn-warning w-100">Edit Profile</a>
                 </div>
                 <div class="card-footer text-center">

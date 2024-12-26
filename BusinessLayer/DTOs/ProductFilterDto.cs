@@ -1,6 +1,6 @@
 ﻿namespace BusinessLayer.DTOs;
 
-public class ProductFilterDto
+public class ProductFilterDto : PaginationDto
 {
     public string? ManufacturerName { get; set; }
     public string? Category { get; set; }
@@ -8,6 +8,4 @@ public class ProductFilterDto
     public string? Description { get; set; }
     public decimal? PriceMax { get; set; }
     public decimal? PriceMin { get; set; }
-    public int PageIndex { get; set; } = 1;
-    public int PageSize { get; set; } = 10;
 }

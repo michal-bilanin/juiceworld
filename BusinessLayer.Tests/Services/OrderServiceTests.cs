@@ -5,6 +5,7 @@ using BusinessLayer.Services;
 using BusinessLayer.Services.Interfaces;
 using Commons.Enums;
 using JuiceWorld.Entities;
+using JuiceWorld.QueryObjects;
 using JuiceWorld.Repositories;
 using JuiceWorld.UnitOfWork;
 using TestUtilities.MockedObjects;
@@ -25,7 +26,8 @@ public class OrderServiceTests
         var config = new MapperConfiguration(cfg => cfg.AddProfile<MapperProfileInstaller>());
         var mapper = config.CreateMapper();
         var orderUnitOfWork = new OrderUnitOfWork(dbContext);
-        _orderService = new OrderService(orderRepository, orderUnitOfWork, mapper);
+        var orderQueryObject = new QueryObject<Order>(dbContext);
+        _orderService = new OrderService(orderRepository, orderQueryObject, orderUnitOfWork, mapper);
     }
 
     [Fact]

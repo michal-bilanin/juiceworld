@@ -20,6 +20,12 @@ public class CartItemService(IRepository<CartItem> cartItemRepository, IMapper m
         return mapper.Map<List<CartItemDto>>(cartItems);
     }
 
+    public async Task<IEnumerable<CartItemDetailDto>> GetCartItemsByUserIdAsync(int userId)
+    {
+        var cartItems = await cartItemRepository.GetByConditionAsync(c => c.UserId == userId, nameof(CartItem.Product));
+        return mapper.Map<List<CartItemDetailDto>>(cartItems);
+    }
+
     public async Task<CartItemDto?> GetCartItemByIdAsync(int id)
     {
         var cartItem = await cartItemRepository.GetByIdAsync(id);

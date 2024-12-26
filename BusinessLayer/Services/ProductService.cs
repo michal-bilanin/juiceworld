@@ -130,10 +130,11 @@ public class ProductService(
         return mapper.Map<List<ProductDto>>(products);
     }
 
-    public async Task<FilteredResult<ProductDto>> GetProductsFilteredAsync(ProductFilterDto productFilter)
+    private IQueryObject<Product> GetQueryObject(ProductFilterDto productFilter)
     {
         Enum.TryParse<ProductCategory>(productFilter.Category, true, out var categoryEnum);
-        var query = queryObject.Filter(p =>
+
+        return queryObject.Filter(p =>
                 (productFilter.ManufacturerName == null || p.Manufacturer == null ||
                  p.Manufacturer.Name.ToLower().Contains(productFilter.ManufacturerName.ToLower())) &&
                 (productFilter.Category == null || p.Category == categoryEnum) &&
@@ -144,11 +145,29 @@ public class ProductService(
                  p.Description.ToLower().Contains(productFilter.Description.ToLower())))
             .OrderBy(p => p.Id)
             .Paginate(productFilter.PageIndex, productFilter.PageSize);
+    }
 
+    public async Task<FilteredResult<ProductDto>> GetProductsFilteredAsync(ProductFilterDto productFilter)
+    {
+        var query = GetQueryObject(productFilter);
+        query.Include(nameof(Product.Tags), nameof(Product.Manufacturer), nameof(Product.Reviews));
         var filteredProducts = await query.ExecuteAsync();
+
         return new FilteredResult<ProductDto>
         {
             Entities = mapper.Map<List<ProductDto>>(filteredProducts.Entities),
+            PageIndex = filteredProducts.PageIndex,
+            TotalPages = filteredProducts.TotalPages
+        };
+    }
+
+    public async Task<FilteredResult<ProductDetailDto>> GetProductDetailsFilteredAsync(ProductFilterDto productFilter)
+    {
+        var query = GetQueryObject(productFilter);
+        var filteredProducts = await query.ExecuteAsync();
+        return new FilteredResult<ProductDetailDto>
+        {
+            Entities = mapper.Map<List<ProductDetailDto>>(filteredProducts.Entities),
             PageIndex = filteredProducts.PageIndex,
             TotalPages = filteredProducts.TotalPages
         };
