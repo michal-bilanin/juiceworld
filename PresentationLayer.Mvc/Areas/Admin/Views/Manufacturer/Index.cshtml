@@ -1,8 +1,8 @@
 @using BusinessLayer.DTOs
-@model Infrastructure.QueryObjects.FilteredResult<BusinessLayer.DTOs.ProductDto>
+@model Infrastructure.QueryObjects.FilteredResult<BusinessLayer.DTOs.ManufacturerDto>
 
 @{
-    ViewData["Title"] = "Products";
+    ViewData["Title"] = "Manufacturers";
 }
 
 <div class="container mt-5">
@@ -15,27 +15,24 @@
         </div>
     </form>
 
-    <a href="@Url.Action("Create", "Product")" class="btn btn-success mb-3">Create New Product</a>
+    <a href="@Url.Action("Create", "Manufacturer")" class="btn btn-success mb-3">Create New Manufacturer</a>
 
     <table class="table table-striped">
         <thead>
         <tr>
-            <th>Product ID</th>
+            <th>Manufacturer ID</th>
             <th>Name</th>
-            <th>Price</th>
-            <th>Actions</th>
         </tr>
         </thead>
         <tbody>
-        @foreach (var product in Model.Entities)
+        @foreach (var manufacturer in Model.Entities)
         {
             <tr>
-                <td>@product.Id</td>
-                <td>@product.Name</td>
-                <td>@product.Price</td>
+                <td>@manufacturer.Id</td>
+                <td>@manufacturer.Name</td>
                 <td>
-                    <a href="@Url.Action("Edit", "Product", new { id = product.Id })" class="btn btn-info">Edit</a>
-                    <form method="post" asp-action="Delete" asp-controller="Product" asp-route-id="@product.Id" class="d-inline" onsubmit="return confirm(`Are you sure you want to delete product: @product.Name`);">
+                    <a href="@Url.Action("Edit", "Manufacturer", new { id = manufacturer.Id })" class="btn btn-info">Edit</a>
+                    <form method="post" asp-action="Delete" asp-controller="Manufacturer" asp-route-id="@manufacturer.Id" class="d-inline" onsubmit="return confirm(`Are you sure you want to delete manufacturer: @manufacturer.Name`);">
                         <button type="submit" class="btn btn-danger">Delete</button>
                     </form>
                 </td>
@@ -49,7 +46,7 @@
             @for (int i = 1; i <= Model.TotalPages; i++)
             {
                 <li class="page-item @(i == Model.PageIndex ? "active" : "")">
-                    <a class="page-link" href="@Url.Action("Index", new ProductFilterDto{PageIndex = i })">@i</a>
+                    <a class="page-link" href="@Url.Action("Index", new ManufacturerFilterDto{PageIndex = i})">@i</a>
                 </li>
             }
         </ul>
