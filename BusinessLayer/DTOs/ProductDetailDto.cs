@@ -12,7 +12,7 @@ public class ProductDetailDto
     public ProductCategory Category { get; set; }
     public ProductUsageType UsageType { get; set; }
 
-    public required ManufacturerDto Manufacturer { get; set; };
+    public required ManufacturerDto Manufacturer { get; set; }
     public IEnumerable<ReviewDto> Reviews { get; set; } = [];
     public IEnumerable<TagDto> Tags { get; set; } = [];
 }
