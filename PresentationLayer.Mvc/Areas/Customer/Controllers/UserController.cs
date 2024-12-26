@@ -21,14 +21,14 @@ public class UserController(IUserService userService, IMapper mapper) : Controll
     // POST: /User/Register
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<ActionResult> Register(UserRegisterViewModel model)
+    public async Task<ActionResult> Register(UserRegisterDto model)
     {
         if (!ModelState.IsValid)
         {
             return View(model);
         }
 
-        var token = await userService.RegisterUserAsync(mapper.Map<UserRegisterViewModel, UserRegisterDto>(model));
+        var token = await userService.RegisterUserAsync(mapper.Map<UserRegisterDto, UserRegisterDto>(model));
         if (token is null)
         {
             ModelState.AddModelError("Email", "A user with this username or email already exists.");

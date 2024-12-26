@@ -45,7 +45,8 @@ public class ProductController(IProductService productService, IManufacturerServ
         var createdProduct = await productService.CreateProductAsync(viewModel.Product);
         if (createdProduct == null)
         {
-            return BadRequest();
+            ModelState.AddModelError("Id", "Failed to create product.");
+            return View(viewModel);
         }
 
         return RedirectToAction(nameof(Index));
@@ -57,7 +58,8 @@ public class ProductController(IProductService productService, IManufacturerServ
         var product = await productService.GetProductByIdAsync(id);
         if (product == null)
         {
-            return NotFound();
+            ModelState.AddModelError("Id", "Product not found.");
+            return View();
         }
 
         var manufacturers = await manufacturerService.GetAllManufacturersAsync();
@@ -85,7 +87,8 @@ public class ProductController(IProductService productService, IManufacturerServ
         var updatedProduct = await productService.UpdateProductAsync(viewModel.Product);
         if (updatedProduct == null)
         {
-            return NotFound();
+            ModelState.AddModelError("Id", "Failed to update product.");
+            return View(viewModel);
         }
 
         return RedirectToAction(nameof(Index));

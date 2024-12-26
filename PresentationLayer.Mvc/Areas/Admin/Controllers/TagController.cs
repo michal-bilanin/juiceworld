@@ -33,7 +33,8 @@ public class TagController(ITagService tagService) : Controller
         var createdTag = await tagService.CreateTagAsync(viewModel);
         if (createdTag == null)
         {
-            return BadRequest();
+            ModelState.AddModelError("Id", "Failed to create tag.");
+            return View(viewModel);
         }
 
         return RedirectToAction(nameof(Index));
@@ -45,7 +46,8 @@ public class TagController(ITagService tagService) : Controller
         var tag = await tagService.GetTagByIdAsync(id);
         if (tag == null)
         {
-            return NotFound();
+            ModelState.AddModelError("Id", "Tag not found.");
+            return View(tag);
         }
 
         return View(tag);
@@ -62,7 +64,8 @@ public class TagController(ITagService tagService) : Controller
         var updatedTag = await tagService.UpdateTagAsync(viewModel);
         if (updatedTag == null)
         {
-            return BadRequest();
+            ModelState.AddModelError("Id", "Failed to update tag.");
+            return View(viewModel);
         }
 
         return RedirectToAction(nameof(Index));
@@ -74,7 +77,8 @@ public class TagController(ITagService tagService) : Controller
         var isDeleted = await tagService.DeleteTagByIdAsync(id);
         if (!isDeleted)
         {
-            return BadRequest();
+            ModelState.AddModelError("Id", "Failed to delete tag.");
+            return View(nameof(Index));
         }
 
         return RedirectToAction(nameof(Index));

@@ -17,7 +17,7 @@ public class ManufacturerController(IManufacturerService manufacturerService) : 
     }
 
     [HttpGet]
-    public async Task<IActionResult> Create()
+    public IActionResult Create()
     {
         return View(new ManufacturerDto { Name = "" });
     }
@@ -33,7 +33,8 @@ public class ManufacturerController(IManufacturerService manufacturerService) : 
         var createdManufacturer = await manufacturerService.CreateManufacturerAsync(viewModel);
         if (createdManufacturer == null)
         {
-            return BadRequest();
+            ModelState.AddModelError("Id", "Failed to create manufacturer.");
+            return View(viewModel);
         }
 
         return RedirectToAction(nameof(Index));
@@ -45,7 +46,8 @@ public class ManufacturerController(IManufacturerService manufacturerService) : 
         var manufacturer = await manufacturerService.GetManufacturerByIdAsync(id);
         if (manufacturer == null)
         {
-            return NotFound();
+            ModelState.AddModelError("Id", "Manufacturer not found.");
+            return View(manufacturer);
         }
 
         return View(manufacturer);
@@ -62,7 +64,8 @@ public class ManufacturerController(IManufacturerService manufacturerService) : 
         var updatedManufacturer = await manufacturerService.UpdateManufacturerAsync(viewModel);
         if (updatedManufacturer == null)
         {
-            return BadRequest();
+            ModelState.AddModelError("Id", "Failed to update manufacturer.");
+            return View(viewModel);
         }
 
         return RedirectToAction(nameof(Index));
@@ -74,7 +77,8 @@ public class ManufacturerController(IManufacturerService manufacturerService) : 
         var isDeleted = await manufacturerService.DeleteManufacturerByIdAsync(id);
         if (!isDeleted)
         {
-            return BadRequest();
+            ModelState.AddModelError("Id", "Failed to delete manufacturer.");
+            return View(nameof(Index));
         }
 
         return RedirectToAction(nameof(Index));

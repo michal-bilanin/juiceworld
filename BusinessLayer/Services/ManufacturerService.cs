@@ -25,7 +25,9 @@ public class ManufacturerService(IRepository<Manufacturer> manufacturerRepositor
     {
         var query = manufacturerQueryObject
             .Filter(m => manufacturerFilterDto.Name == null || m.Name.ToLower().Contains(manufacturerFilterDto.Name.ToLower()))
-            .Paginate(manufacturerFilterDto.PageIndex, manufacturerFilterDto.PageSize);
+            .Paginate(manufacturerFilterDto.PageIndex, manufacturerFilterDto.PageSize)
+            .OrderBy(m => m.Id);
+
         var filteredManufacturers = await query.ExecuteAsync();
 
         return new FilteredResult<ManufacturerDto>

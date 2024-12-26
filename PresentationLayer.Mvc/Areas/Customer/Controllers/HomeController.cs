@@ -5,7 +5,7 @@ using PresentationLayer.Mvc.Models;
 namespace PresentationLayer.Mvc.Areas.Customer.Controllers;
 
 [Area(Constants.Areas.Customer)]
-public class HomeController(ILogger<HomeController> logger) : Controller
+public class HomeController : Controller
 {
     public IActionResult Index()
     {

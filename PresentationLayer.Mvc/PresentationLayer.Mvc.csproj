@@ -32,8 +32,4 @@
       <AdditionalFiles Include="Areas\Customer\Views\_ViewStart.cshtml" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Areas\Admin\Views\User\" />
-    </ItemGroup>
-
 </Project>
