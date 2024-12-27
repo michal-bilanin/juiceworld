@@ -1,5 +1,99 @@
 @model Infrastructure.QueryObjects.FilteredResult<BusinessLayer.DTOs.ProductDetailDto>
 
 @{
-    ViewData["Title"] = "Products";
+    ViewData["Title"] = "Browse products";
 }
+
+<h1>Browse products</h1>
+
+<div class="product-list">
+    @foreach (var product in Model.Entities)
+    {
+        <div class="product-card">
+            <a href="@Url.Action("Details", new { id = product.Id })">
+                <div class="product-image">
+                    <img src="@(string.IsNullOrEmpty(product.Image) ? "/images/product_placeholder.jpg" : $"data:image/png;base64,{product.Image}")" alt="@product.Name" />
+                </div>
+                <div class="product-info">
+                    <h3>@product.Name</h3>
+                    <p>@product.Price.ToString("C")</p>
+                    <p>Manufacturer: @product.Manufacturer.Name</p>
+                </div>
+            </a>
+        </div>
+    }
+</div>
+
+<div class="pagination">
+    @if (Model.PageIndex > 1)
+    {
+        <a href="@Url.Action("Index", new { PageIndex = Model.PageIndex - 1 })">Previous</a>
+    }
+
+    @for (int i = 1; i <= Model.TotalPages; i++)
+    {
+        <a href="@Url.Action("Index", new { PageIndex = i })" class="@(i == Model.PageIndex ? "active" : "")">@i</a>
+    }
+
+    @if (Model.PageIndex < Model.TotalPages)
+    {
+        <a href="@Url.Action("Index", new { PageIndex = Model.PageIndex + 1 })">Next</a>
+    }
+</div>
+
+<style>
+    h1 {
+        margin-bottom: 20px;
+    }
+    .product-list {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    .product-card {
+        display: flex;
+        align-items: center;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        overflow: hidden;
+        width: 100%;
+        text-align: left;
+        padding-left: 10px;
+        transition: background-color 0.3s ease;
+    }
+    .product-card:hover {
+        background-color: #f0f0f0;
+    }
+    .product-card a {
+        display: flex;
+        width: 100%;
+        text-decoration: none;
+        color: inherit;
+    }
+    .product-image {
+        display: flex;
+        align-items: center;
+        flex: 0 0 auto;
+        width: 100px;
+    }
+    .product-image img {
+        width: 100%;
+        height: auto;
+        margin-right: 10px;
+    }
+    .product-info {
+        flex: 1 1 auto;
+        padding: 10px;
+    }
+    .pagination {
+        margin-top: 20px;
+        text-align: center;
+    }
+    .pagination a {
+        margin: 0 5px;
+        text-decoration: none;
+    }
+    .pagination a.active {
+        font-weight: bold;
+    }
+</style>
