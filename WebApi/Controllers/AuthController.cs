@@ -11,7 +11,7 @@ namespace WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class AuthController(IUserService userService, 
+public class AuthController(IUserService userService,
     UserManager<User> userManager,
     SignInManager<User> signInManager) : ControllerBase
 {
@@ -28,7 +28,7 @@ public class AuthController(IUserService userService,
             ModelState.AddModelError(string.Empty, "User doesn't exist.");
             return Unauthorized();
         }
-        
+
         var result = await signInManager.CheckPasswordSignInAsync(user, login.Password, lockoutOnFailure: false);
         if (result.Succeeded)
         {

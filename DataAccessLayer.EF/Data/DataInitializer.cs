@@ -55,7 +55,7 @@ public static class DataInitializer
             SecurityStamp = Guid.NewGuid().ToString("D"),
             LockoutEnabled = true
         };
-        
+
 
         // Use PasswordHasher to hash the password
         var passwordHasher = new PasswordHasher<User>();

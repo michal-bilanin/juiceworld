@@ -36,7 +36,7 @@ public class UserService(IRepository<User> userRepository,
             Bio = userRegisterDto.Bio,
             UserRole = UserRole.Customer
         };
-        
+
         var result = await userManager.CreateAsync(user, userRegisterDto.Password);
         return result;
     }

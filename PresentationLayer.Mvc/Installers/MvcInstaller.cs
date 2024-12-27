@@ -26,7 +26,7 @@ public static class MvcInstaller
             throw new Exception($"JWT secret is null, make sure it is specified " +
                                 $"in the environment variable: {EnvironmentConstants.JwtSecret}");
         }
-        
+
         services.AddIdentity<User, IdentityRole<int>>()
             .AddEntityFrameworkStores<JuiceWorldDbContext>()
             .AddDefaultTokenProviders();

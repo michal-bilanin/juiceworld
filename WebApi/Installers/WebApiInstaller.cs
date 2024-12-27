@@ -82,11 +82,11 @@ public static class WebApiInstaller
                 }
             });
         });
-        
+
         services.AddIdentity<User, IdentityRole<int>>()
             .AddEntityFrameworkStores<JuiceWorldDbContext>()
             .AddDefaultTokenProviders();
-        
+
         // Configure JWT
         var secret = Environment.GetEnvironmentVariable(EnvironmentConstants.JwtSecret);
         if (secret == null)

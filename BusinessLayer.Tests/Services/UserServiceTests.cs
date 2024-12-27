@@ -31,7 +31,7 @@ public class UserServiceTests
         var userRepository = new UserRepository(dbContext);
         var config = new MapperConfiguration(cfg => cfg.AddProfile<MapperProfileInstaller>());
         _mapper = config.CreateMapper();
-        _userService = new UserService(userRepository,  new UserQueryObject(dbContext), MockUserManager().Object, _mapper);
+        _userService = new UserService(userRepository, new UserQueryObject(dbContext), MockUserManager().Object, _mapper);
     }
     public static Mock<UserManager<User>> MockUserManager()
     {

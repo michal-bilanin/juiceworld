@@ -11,7 +11,7 @@ using PresentationLayer.Mvc.Models;
 namespace PresentationLayer.Mvc.Controllers;
 
 public class UserController(IUserService userService,
-    IMapper mapper, 
+    IMapper mapper,
     UserManager<User> userManager,
     SignInManager<User> signInManager) : Controller
 {
@@ -39,14 +39,14 @@ public class UserController(IUserService userService,
             Bio = model.Bio,
             Password = model.Password
         });
-        
+
         var userDb = await signInManager.UserManager.FindByEmailAsync(model.Email);
         if (userDb is null)
         {
             ModelState.AddModelError(string.Empty, "User doesn't exist.");
             return Unauthorized();
         }
-        
+
         if (result.Succeeded)
         {
             var ci = new[]
@@ -90,7 +90,7 @@ public class UserController(IUserService userService,
             ModelState.AddModelError(string.Empty, "User doesn't exist.");
             return Unauthorized();
         }
-        
+
         var result = await signInManager.CheckPasswordSignInAsync(user, model.Password, lockoutOnFailure: false);
         if (result.Succeeded)
         {
