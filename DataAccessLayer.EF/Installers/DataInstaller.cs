@@ -23,7 +23,6 @@ public static class DataInstaller
         services.AddScoped<IQueryObject<Manufacturer>, QueryObject<Manufacturer>>();
 
         services.AddScoped<IRepository<User>, Repository<User>>();
-        services.AddScoped<IRepository<Address>, Repository<Address>>();
         services.AddScoped<IRepository<CartItem>, Repository<CartItem>>();
         services.AddScoped<IRepository<Manufacturer>, Repository<Manufacturer>>();
         services.AddScoped<IRepository<Order>, Repository<Order>>();

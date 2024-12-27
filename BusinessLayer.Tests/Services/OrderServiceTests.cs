@@ -68,7 +68,12 @@ public class OrderServiceTests
             UserId = 1,
             AddressId = 4,
             DeliveryType = DeliveryType.Express,
-            PaymentMethodType = PaymentMethodType.Monero
+            PaymentMethodType = PaymentMethodType.Monero,
+            City = "Miami",
+            Street = "Ocean Drive",
+            HouseNumber = "4",
+            ZipCode = "33139",
+            Country = "USA"
         };
 
         // Act
@@ -76,7 +81,7 @@ public class OrderServiceTests
 
         // Assert
         Assert.NotNull(result);
-        Assert.True(order.UserId == result.UserId && order.AddressId == result.AddressId &&
+        Assert.True(order.UserId == result.UserId &&
                     order.DeliveryType == result.DeliveryType &&
                     order.PaymentMethodType == result.PaymentMethodType);
     }
@@ -92,7 +97,12 @@ public class OrderServiceTests
             AddressId = 4,
             Status = OrderStatus.Pending,
             DeliveryType = DeliveryType.Express,
-            PaymentMethodType = PaymentMethodType.Monero
+            PaymentMethodType = PaymentMethodType.Monero,
+            City = "Miami",
+            Street = "Ocean Drive",
+            HouseNumber = "4",
+            ZipCode = "33139",
+            Country = "USA"
         };
 
         // Act
@@ -100,7 +110,7 @@ public class OrderServiceTests
 
         // Assert
         Assert.NotNull(result);
-        Assert.True(order.Id == result.Id && order.UserId == result.UserId && order.AddressId == result.AddressId &&
+        Assert.True(order.Id == result.Id && order.UserId == result.UserId &&
                     order.Status == result.Status && order.DeliveryType == result.DeliveryType &&
                     order.PaymentMethodType == result.PaymentMethodType);
     }

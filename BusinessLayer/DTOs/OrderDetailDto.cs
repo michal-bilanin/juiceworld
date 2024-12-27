@@ -10,10 +10,14 @@ public class OrderDetailDto
     public DateTime? Departure { get; set; }
     public DateTime? Arrival { get; set; }
     public PaymentMethodType PaymentMethodType { get; set; } = PaymentMethodType.Monero;
+    public required string City { get; set; }
+    public required string Street { get; set; }
+    public required string HouseNumber { get; set; }
+    public required string ZipCode { get; set; }
+    public required string Country { get; set; }
     public UserDto? User { get; set; }
     public int UserId { get; set; }
 
-    public AddressDto? Address { get; set; }
     public int AddressId { get; set; }
     public List<OrderProductDetailDto> OrderProducts { get; set; } = [];
 }

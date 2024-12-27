@@ -1,5 +1,94 @@
+@using PresentationLayer.Mvc
 @model IEnumerable<BusinessLayer.DTOs.CartItemDetailDto>
 
 @{
     ViewData["Title"] = "Cart";
 }
+
+<div class="container mt-5">
+    <h2>@ViewData["Title"]</h2>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            Your cart is empty. <a href="@Url.Action("Index", "Product", new { area = Constants.Areas.Customer })">Browse products</a>
+        </div>
+    }
+    else
+    {
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var cartItem in Model)
+            {
+                <tr>
+                    <td>@cartItem.Product.Name</td>
+                    <td>
+                        <span id="quantity-@cartItem.Id">@cartItem.Quantity</span>
+                    </td>
+                    <td>
+                        <button class="btn btn-primary btn-sm" onclick="updateCart(@cartItem.Id, -1)">-</button>
+                        <button class="btn btn-primary btn-sm" onclick="updateCart(@cartItem.Id, 1)">+</button>
+                        <button class="btn btn-danger btn-sm" onclick="removeFromCart(@cartItem.Id)">Remove</button>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+        <div class="text-right">
+            <a href="@Url.Action("Create", "Order", new { area = Constants.Areas.Customer })" class="btn btn-success">Checkout</a>
+        </div>
+    }
+</div>
+
+<div id="error-message" style="color: red; display: none;"></div>
+
+<script>
+    function updateCart(cartItemId, change) {
+        const quantityElement = document.getElementById('quantity-' + cartItemId);
+        const newQuantity = parseInt(quantityElement.textContent) + change;
+
+        if (newQuantity < 0) {
+            return;
+        }
+
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', '@Url.Action("AddToCart", "Cart", new { area = Constants.Areas.Customer })', true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.onload = function () {
+            var response = JSON.parse(this.responseText);
+            if (response.success) {
+                quantityElement.textContent = newQuantity;
+            } else {
+                var errorMessage = document.getElementById('error-message');
+                errorMessage.textContent = response.message;
+                errorMessage.style.display = 'block';
+            }
+        };
+        xhr.send(JSON.stringify({ ProductId: cartItemId, Quantity: newQuantity }));
+    }
+
+    function removeFromCart(cartItemId) {
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', '@Url.Action("DeleteCartItem", "Cart", new { area = Constants.Areas.Customer })', true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.onload = function () {
+            const response = JSON.parse(this.responseText);
+            if (response.success) {
+                const row = document.getElementById('quantity-' + cartItemId).closest('tr');
+                row.parentNode.removeChild(row);
+            } else {
+                const errorMessage = document.getElementById('error-message');
+                errorMessage.textContent = response.message;
+                errorMessage.style.display = 'block';
+            }
+        };
+        xhr.send(JSON.stringify({ id: cartItemId }));
+    }
+</script>

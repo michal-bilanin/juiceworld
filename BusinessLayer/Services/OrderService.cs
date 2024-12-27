@@ -29,6 +29,11 @@ public class OrderService(
             (List<CartItem>)await orderUnitOfWork.CartItemRepository.GetByConditionAsync(
                 ci => ci.UserId == order.UserId, nameof(CartItem.Product));
 
+        if (cartItems.Count == 0)
+        {
+            return null;
+        }
+
         // remove cart items
         await orderUnitOfWork.CartItemRepository.RemoveAllByConditionAsync(ci => ci.UserId == order.UserId,
             order.UserId);
@@ -119,7 +124,7 @@ public class OrderService(
     public async Task<OrderDetailDto?> GetOrderDetailByIdAsync(int id)
     {
         var order = await orderRepository.GetByIdAsync(id,
-            nameof(Order.OrderProducts), $"{nameof(Order.OrderProducts)}.{nameof(OrderProduct.Product)}", nameof(User), nameof(Address));
+            nameof(Order.OrderProducts), $"{nameof(Order.OrderProducts)}.{nameof(OrderProduct.Product)}", nameof(User));
         return order is null ? null : mapper.Map<OrderDetailDto>(order);
     }
 

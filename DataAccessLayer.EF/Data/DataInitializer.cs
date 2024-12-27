@@ -98,25 +98,7 @@ public static class DataInitializer
         return faker.Generate(100);
     }
 
-    private static List<Address> GenerateAddresses(List<User> users)
-    {
-        var addressIds = 1;
-        var faker = new Faker<Address>()
-            .UseSeed(SeedNumber)
-            .RuleFor(a => a.Id, _ => addressIds++)
-            .RuleFor(a => a.Name, f => f.Name.FullName())
-            .RuleFor(a => a.City, f => f.Address.City())
-            .RuleFor(a => a.Street, f => f.Address.StreetName())
-            .RuleFor(a => a.HouseNumber, f => f.Address.BuildingNumber())
-            .RuleFor(a => a.ZipCode, f => f.Address.ZipCode())
-            .RuleFor(a => a.Country, f => f.Address.Country())
-            .RuleFor(a => a.Type, f => f.PickRandom<AddressType>())
-            .RuleFor(a => a.UserId, f => f.PickRandom(users).Id);
-
-        return faker.Generate(150);
-    }
-
-    private static List<Order> GenerateOrders(List<User> users, List<Address> addresses)
+    private static List<Order> GenerateOrders(List<User> users)
     {
         var orderIds = 1;
         var faker = new Faker<Order>()
@@ -126,7 +108,11 @@ public static class DataInitializer
             .RuleFor(o => o.PaymentMethodType, f => f.PickRandom<PaymentMethodType>())
             .RuleFor(o => o.Status, f => f.PickRandom<OrderStatus>())
             .RuleFor(o => o.UserId, f => f.PickRandom(users).Id)
-            .RuleFor(o => o.AddressId, f => f.PickRandom(addresses).Id);
+            .RuleFor(o => o.City, f => f.Address.City())
+            .RuleFor(o => o.Street, f => f.Address.StreetName())
+            .RuleFor(o => o.HouseNumber, f => f.Address.BuildingNumber())
+            .RuleFor(o => o.ZipCode, f => f.Address.ZipCode())
+            .RuleFor(o => o.Country, f => f.Address.Country());
 
         return faker.Generate(1000);
     }
@@ -187,8 +173,7 @@ public static class DataInitializer
     public static void Seed(this ModelBuilder modelBuilder)
     {
         var users = GenerateUsers();
-        var addresses = GenerateAddresses(users);
-        var orders = GenerateOrders(users, addresses);
+        var orders = GenerateOrders(users);
         var cartItems = GenerateCartItems(users);
         var orderProducts = GenerateOrderProducts(orders);
         var reviews = GenerateReviews(users);
@@ -210,7 +195,6 @@ public static class DataInitializer
 
         // Generated data
         modelBuilder.Entity<User>().HasData(users);
-        modelBuilder.Entity<Address>().HasData(addresses);
         modelBuilder.Entity<Order>().HasData(orders);
         modelBuilder.Entity<CartItem>().HasData(cartItems);
         modelBuilder.Entity<OrderProduct>().HasData(orderProducts);
