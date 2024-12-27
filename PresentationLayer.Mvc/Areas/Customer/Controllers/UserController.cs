@@ -109,4 +109,56 @@ public class UserController(IUserService userService, IMapper mapper) : Controll
 
         return View(mapper.Map<UserDto, UserProfileViewModel>(user));
     }
+
+    [HttpGet]
+    [RedirectIfNotAuthenticatedActionFilter]
+    public async Task<IActionResult> Edit()
+    {
+        if (!int.TryParse(User.FindFirst(ClaimTypes.Sid)?.Value, out var userId))
+        {
+            return BadRequest();
+        }
+
+        var user = await userService.GetUserByIdAsync(userId);
+        if (user == null)
+        {
+            return BadRequest();
+        }
+
+        return View(mapper.Map<UserDto, UserUpdateRestrictedViewModel>(user));
+    }
+
+    [HttpPost]
+    [RedirectIfNotAuthenticatedActionFilter]
+    public async Task<IActionResult> Edit(UserUpdateRestrictedViewModel viewModel)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(viewModel);
+        }
+
+        if (!int.TryParse(User.FindFirst(ClaimTypes.Sid)?.Value, out var userId))
+        {
+            return BadRequest();
+        }
+
+        if (viewModel.Id != userId)
+        {
+            return BadRequest();
+        }
+
+        if (string.IsNullOrEmpty(viewModel.Password))
+        {
+            viewModel.Password = null; // Do not update password if it is empty
+        }
+
+        var updatedUser = await userService.UpdateUserAsync(mapper.Map<UserUpdateRestrictedViewModel, UserUpdateDto>(viewModel));
+        if (updatedUser == null)
+        {
+            ModelState.AddModelError("Email", "A user with this username or email already exists.");
+            return View(viewModel);
+        }
+
+        return RedirectToAction(nameof(Profile));
+    }
 }

@@ -10,5 +10,7 @@ public class MvcMapperInstaller : Profile
     {
         CreateMap<UserProfileViewModel, UserDto>().ReverseMap();
         CreateMap<UserSimpleViewModel, UserDto>().ReverseMap();
+        CreateMap<UserUpdateRestrictedViewModel, UserDto>().ReverseMap();
+        CreateMap<UserUpdateRestrictedViewModel, UserUpdateDto>().ReverseMap();
     }
 }
