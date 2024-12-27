@@ -73,7 +73,13 @@ public static class DataInitializer
             .RuleFor(u => u.Email, f => f.Internet.Email())
             .RuleFor(u => u.UserName, f => f.Internet.UserName())
             .RuleFor(u => u.Bio, f => f.Lorem.Sentence())
-            .RuleFor(u => u.UserRole, f => f.PickRandom<UserRole>());
+            .RuleFor(u => u.UserRole, f => f.PickRandom<UserRole>())
+            .RuleFor(u => u.NormalizedEmail, (f, u) => u.Email.ToUpperInvariant())
+            .RuleFor(u => u.NormalizedUserName, (f, u) => u.UserName.ToUpperInvariant())
+            .RuleFor(u => u.EmailConfirmed, true)
+            .RuleFor(u => u.PhoneNumberConfirmed, true)
+            .RuleFor(u => u.SecurityStamp, f => Guid.NewGuid().ToString("D"))
+            .RuleFor(u => u.LockoutEnabled, true);
 
         var users = faker.Generate(100);
 

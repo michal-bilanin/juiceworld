@@ -15,11 +15,11 @@ public class UserController(IUserService userService) : ControllerBase
     private const string ApiBaseName = "User";
 
     [HttpPost]
-    [OpenApiOperation(ApiBaseName + nameof(CreateUser))]
-    public async Task<ActionResult<UserDto>> CreateUser(UserDto user)
+    [OpenApiOperation(ApiBaseName + nameof(RegisterUser))]
+    public async Task<ActionResult<UserDto>> RegisterUser(UserRegisterDto user)
     {
-        var result = await userService.CreateUserAsync(user);
-        return result == null ? Problem() : Ok(result);
+        var result = await userService.RegisterUserAsync(user);
+        return result.Succeeded ? Ok(result) : Problem();
     }
 
     [HttpGet]

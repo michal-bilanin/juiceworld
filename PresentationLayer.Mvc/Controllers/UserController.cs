@@ -31,16 +31,14 @@ public class UserController(IUserService userService,
         {
             return View(model);
         }
-        
-        var user = new User
+
+        var result = await userService.RegisterUserAsync(new UserRegisterDto()
         {
             UserName = model.Username,
             Email = model.Email,
             Bio = model.Bio,
-            UserRole = UserRole.Customer
-        };
-        
-        var result = await userManager.CreateAsync(user, model.Password);
+            Password = model.Password
+        });
         
         var userDb = await signInManager.UserManager.FindByEmailAsync(model.Email);
         if (userDb is null)

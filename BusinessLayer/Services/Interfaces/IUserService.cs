@@ -1,13 +1,13 @@
 using BusinessLayer.DTOs;
+using JuiceWorld.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BusinessLayer.Services.Interfaces;
 
 public interface IUserService
 {
-    Task<UserDto?> CreateUserAsync(UserDto userDto);
-    Task<string?> RegisterUserAsync(UserRegisterDto userRegisterDto);
-    public Task<string?> LoginAsync(LoginDto login);
+    Task<IdentityResult> RegisterUserAsync(UserRegisterDto userRegisterDto);
     Task<IEnumerable<UserDto>> GetAllUsersAsync();
     Task<UserDto?> GetUserByEmailAsync(string email);
     Task<UserDto?> GetUserByIdAsync(int id);
