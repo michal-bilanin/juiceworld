@@ -2,12 +2,17 @@
 using AutoMapper;
 using BusinessLayer.DTOs;
 using BusinessLayer.Services.Interfaces;
+using JuiceWorld.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using PresentationLayer.Mvc.Models;
 
 namespace PresentationLayer.Mvc.Controllers;
 
-public class UserController(IUserService userService, IMapper mapper) : Controller
+public class UserController(IUserService userService,
+    IMapper mapper, 
+    UserManager<LocalIdentityUser> userManager,
+    SignInManager<LocalIdentityUser> signInManager) : Controller
 {
     // GET: /User/Register
     [HttpGet]
@@ -25,20 +30,47 @@ public class UserController(IUserService userService, IMapper mapper) : Controll
         {
             return View(model);
         }
-
-        var token = await userService.RegisterUserAsync(mapper.Map<UserRegisterViewModel, UserRegisterDto>(model));
-        if (token is null)
+        
+        var user = new User
         {
-            ModelState.AddModelError("Email", "A user with this username or email already exists.");
-            return View(model);
+            UserName = model.Email,
+            Email = model.Email,
+            Bio = model.Bio,
+        };
+        
+        var userIdentity = new LocalIdentityUser
+        {
+            User = user,
+            UserName = model.Email,
+            Email = model.Email
+        };
+        
+        var result = await userManager.CreateAsync(userIdentity, model.Password);
+
+        if (result.Succeeded)
+        {
+            await signInManager.SignInAsync(userIdentity, isPersistent: false);
+            return RedirectToAction("Index", "Home");
         }
 
-        Response.Cookies.Append(Constants.JwtToken, token, new CookieOptions
+        foreach (var error in result.Errors)
         {
-            HttpOnly = true,
-            Secure = true,
-            Expires = DateTimeOffset.UtcNow.AddMinutes(30) // or set expiration based on token expiry
-        });
+            ModelState.AddModelError(string.Empty, error.Description);
+        }
+
+        // var token = await userService.RegisterUserAsync(mapper.Map<UserRegisterViewModel, UserRegisterDto>(model));
+        // if (token is null)
+        // {
+        //     ModelState.AddModelError("Email", "A user with this username or email already exists.");
+        //     return View(model);
+        // }
+        //
+        // Response.Cookies.Append(Constants.JwtToken, token, new CookieOptions
+        // {
+        //     HttpOnly = true,
+        //     Secure = true,
+        //     Expires = DateTimeOffset.UtcNow.AddMinutes(30) // or set expiration based on token expiry
+        // });
 
         return RedirectToAction("Index", "Home");
     }
@@ -58,25 +90,36 @@ public class UserController(IUserService userService, IMapper mapper) : Controll
             ModelState.AddModelError("InvalidCredentials", "Invalid username or password.");
             return View(model);
         }
+        
+        var result = await signInManager.PasswordSignInAsync(model.Email, model.Password, true, false);
 
-        var token = await userService.LoginAsync(new LoginDto
+        if (result.Succeeded)
         {
-            Email = model.Email,
-            Password = model.Password,
-        });
-
-        if (token is null)
-        {
-            ModelState.AddModelError("InvalidCredentials", "Invalid username or password.");
-            return View(model);
+            // return RedirectToAction("LoginSuccess", "Account");
+            return RedirectToAction(nameof(Index), "Home");
         }
 
-        Response.Cookies.Append(Constants.JwtToken, token, new CookieOptions
-        {
-            HttpOnly = true,
-            Secure = true,
-            Expires = DateTimeOffset.UtcNow.AddMinutes(30) // or set expiration based on token expiry
-        });
+        ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+        
+
+        // var token = await userService.LoginAsync(new LoginDto
+        // {
+        //     Email = model.Email,
+        //     Password = model.Password,
+        // });
+        //
+        // if (token is null)
+        // {
+        //     ModelState.AddModelError("InvalidCredentials", "Invalid username or password.");
+        //     return View(model);
+        // }
+        //
+        // Response.Cookies.Append(Constants.JwtToken, token, new CookieOptions
+        // {
+        //     HttpOnly = true,
+        //     Secure = true,
+        //     Expires = DateTimeOffset.UtcNow.AddMinutes(30) // or set expiration based on token expiry
+        // });
 
 
         return RedirectToAction(nameof(Index), "Home");
@@ -86,12 +129,7 @@ public class UserController(IUserService userService, IMapper mapper) : Controll
     [HttpGet]
     public ActionResult Logout()
     {
-        Response.Cookies.Append(Constants.JwtToken, "", new CookieOptions
-        {
-            HttpOnly = true,
-            Secure = true,
-            Expires = DateTimeOffset.UtcNow.AddDays(-1) // Expire immediately
-        });
+        signInManager.SignOutAsync();
         return RedirectToAction("Login", "User");
     }
 
