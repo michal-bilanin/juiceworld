@@ -21,6 +21,7 @@ public class MapperProfileInstaller : Profile
             .ForMember(dest => dest.TagIds, opt => opt.MapFrom(src => src.Tags.Select(tag => tag.Id)));
         CreateMap<ProductDetailDto, Product>().ReverseMap();
         CreateMap<ReviewDto, Review>().ReverseMap();
+        CreateMap<ReviewDetailDto, Review>().ReverseMap();
         CreateMap<UserDto, User>().ReverseMap();
         CreateMap<UserDto, UserUpdateDto>().ReverseMap();
         CreateMap<UserDto, UserRegisterDto>().ReverseMap();

@@ -1,1 +1,75 @@
 @model BusinessLayer.DTOs.ProductDetailDto
+
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<h1>@Model.Name</h1>
+
+<div class="product-detail">
+    <div class="product-image">
+        <img src="@(string.IsNullOrEmpty(Model.Image) ? "/images/product_placeholder.jpg" : $"data:image/png;base64,{Model.Image}")" alt="@Model.Name" />
+    </div>
+    <div class="product-info">
+        <p><strong>Manufacturer:</strong> @Model.Manufacturer.Name</p>
+        <p><strong>Price:</strong> @Model.Price.ToString("C")</p>
+        <form asp-controller="Cart" asp-action="AddToCart" method="post">
+            <input type="hidden" name="ProductId" value="@Model.Id" />
+            <button type="submit">Add to Cart</button>
+        </form>
+    </div>
+</div>
+
+<h2>Reviews</h2>
+<div class="reviews">
+    @foreach (var review in Model.Reviews)
+    {
+        <div class="review">
+            <p><strong>Rating:</strong> @review.Rating</p>
+            <p>@review.Body</p>
+            <p><strong>User:</strong> @review.User.UserName</p>
+        </div>
+    }
+</div>
+
+<h2>Write a Review</h2>
+<form asp-action="AddReview" method="post">
+    <input type="hidden" name="ProductId" value="@Model.Id" />
+    <div>
+        <label for="Rating">Rating:</label>
+        <input type="number" id="Rating" name="Rating" min="1" max="5" required />
+    </div>
+    <div>
+        <label for="Body">Review:</label>
+        <textarea id="Body" name="Body" required></textarea>
+    </div>
+    <button type="submit">Submit Review</button>
+</form>
+
+<style>
+    .product-detail {
+        display: flex;
+        gap: 20px;
+    }
+    .product-image img {
+        max-width: 300px;
+        height: auto;
+    }
+    .product-info {
+        flex: 1;
+    }
+    .reviews {
+        margin-top: 20px;
+    }
+    .review {
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+    form {
+        margin-top: 20px;
+    }
+    form div {
+        margin-bottom: 10px;
+    }
+</style>

@@ -14,6 +14,6 @@ public class ProductDetailDto
     public ProductUsageType UsageType { get; set; }
 
     public required ManufacturerDto Manufacturer { get; set; }
-    public List<ReviewDto> Reviews { get; set; } = [];
+    public List<ReviewDetailDto> Reviews { get; set; } = [];
     public List<TagDto> Tags { get; set; } = [];
 }

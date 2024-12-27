@@ -182,7 +182,7 @@ public class ProductService(
     public async Task<ProductDetailDto?> GetProductDetailByIdAsync(int id)
     {
         var product = await productRepository.GetByIdAsync(id, nameof(Product.Manufacturer),
-            nameof(Product.Reviews), nameof(Product.Tags));
+            nameof(Product.Reviews), $"{nameof(Product.Reviews)}.{nameof(Review.User)}", nameof(Product.Tags));
 
         if (product is null)
         {
