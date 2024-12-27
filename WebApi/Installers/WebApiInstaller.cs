@@ -1,7 +1,10 @@
 using System.Diagnostics;
 using System.Text;
 using Commons.Constants;
+using JuiceWorld.Data;
+using JuiceWorld.Entities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
@@ -79,7 +82,11 @@ public static class WebApiInstaller
                 }
             });
         });
-
+        
+        services.AddIdentity<User, IdentityRole<int>>()
+            .AddEntityFrameworkStores<JuiceWorldDbContext>()
+            .AddDefaultTokenProviders();
+        
         // Configure JWT
         var secret = Environment.GetEnvironmentVariable(EnvironmentConstants.JwtSecret);
         if (secret == null)
@@ -87,20 +94,6 @@ public static class WebApiInstaller
             throw new Exception($"JWT secret is null, make sure it is specified " +
                                 $"in the environment variable: JWT_SECRET");
         }
-
-        services.AddAuthentication(x =>
-        {
-            x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        }).AddJwtBearer(x =>
-        {
-            x.TokenValidationParameters = new TokenValidationParameters
-            {
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret)),
-                ValidateIssuer = false,
-                ValidateAudience = false
-            };
-        });
 
         return services;
     }

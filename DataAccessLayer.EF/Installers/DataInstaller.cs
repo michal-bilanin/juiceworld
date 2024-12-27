@@ -16,11 +16,11 @@ public static class DataInstaller
 {
     public static IServiceCollection DalInstall(this IServiceCollection services)
     {
-        services.AddScoped<IQueryObject<User>, QueryObject<User>>();
+        services.AddScoped<IQueryObject<User>, UserQueryObject>();
         services.AddScoped<IQueryObject<Product>, QueryObject<Product>>();
         services.AddScoped<IQueryObject<AuditTrail>, QueryObject<AuditTrail>>();
 
-        services.AddScoped<IRepository<User>, Repository<User>>();
+        services.AddScoped<IRepository<User>, UserRepository>();
         services.AddScoped<IRepository<Address>, Repository<Address>>();
         services.AddScoped<IRepository<CartItem>, Repository<CartItem>>();
         services.AddScoped<IRepository<Manufacturer>, Repository<Manufacturer>>();
@@ -33,8 +33,7 @@ public static class DataInstaller
 
         services.AddScoped<OrderUnitOfWork, OrderUnitOfWork>(serviceProvider =>
             new OrderUnitOfWork(serviceProvider.GetRequiredService<JuiceWorldDbContext>()));
-
-        services.AddDbContextFactory<JuiceWorldDbContext>(options =>
+        services.AddDbContext<JuiceWorldDbContext>(options =>
         {
             var connectionString = Environment.GetEnvironmentVariable(EnvironmentConstants.DbConnectionString);
 
@@ -48,6 +47,21 @@ public static class DataInstaller
                 .LogTo(s => Debug.WriteLine(s))
                 .UseLazyLoadingProxies();
         });
+        //
+        // services.AddDbContextFactory<JuiceWorldDbContext>(options =>
+        // {
+        //     var connectionString = Environment.GetEnvironmentVariable(EnvironmentConstants.DbConnectionString);
+        //
+        //     if (connectionString == null)
+        //         throw new Exception(
+        //             $"Connection string is null, make sure it is specified " +
+        //             $"in the environment variable: {EnvironmentConstants.DbConnectionString}");
+        //
+        //     options
+        //         .UseNpgsql(connectionString)
+        //         .LogTo(s => Debug.WriteLine(s))
+        //         .UseLazyLoadingProxies();
+        // });
 
         return services;
     }

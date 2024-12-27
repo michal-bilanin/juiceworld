@@ -6,14 +6,8 @@ using Microsoft.EntityFrameworkCore;
 namespace JuiceWorld.Entities;
 
 [Index(nameof(Email), IsUnique = true)]
-public class User : IdentityUser
+public class User : IdentityUser<int>
 {
-    [MaxLength(100)]
-    public string UserName { get; set; }
-
-    [EmailAddress]
-    public string Email { get; set; }
-
     public UserRole UserRole { get; set; } = UserRole.Unknown;
 
     [MaxLength(300)]

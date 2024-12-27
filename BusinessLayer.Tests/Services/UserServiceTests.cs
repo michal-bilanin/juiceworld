@@ -24,10 +24,10 @@ public class UserServiceTests
     {
         var dbContextOptions = MockedDbContext.GetOptions();
         var dbContext = MockedDbContext.CreateFromOptions(dbContextOptions);
-        var userRepository = new Repository<User>(dbContext);
+        var userRepository = new UserRepository(dbContext);
         var config = new MapperConfiguration(cfg => cfg.AddProfile<MapperProfileInstaller>());
         _mapper = config.CreateMapper();
-        _userService = new UserService(userRepository, new QueryObject<User>(dbContext), _mapper);
+        _userService = new UserService(userRepository, new UserQueryObject(dbContext), _mapper);
     }
 
     [Fact]

@@ -27,7 +27,7 @@ public static class MvcInstaller
                                 $"in the environment variable: {EnvironmentConstants.JwtSecret}");
         }
         
-        services.AddIdentity<User, IdentityRole>()
+        services.AddIdentity<User, IdentityRole<int>>()
             .AddEntityFrameworkStores<JuiceWorldDbContext>()
             .AddDefaultTokenProviders();
 

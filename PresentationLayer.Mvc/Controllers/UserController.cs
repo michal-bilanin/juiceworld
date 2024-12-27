@@ -2,6 +2,7 @@
 using AutoMapper;
 using BusinessLayer.DTOs;
 using BusinessLayer.Services.Interfaces;
+using Commons.Enums;
 using JuiceWorld.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -11,8 +12,8 @@ namespace PresentationLayer.Mvc.Controllers;
 
 public class UserController(IUserService userService,
     IMapper mapper, 
-    UserManager<LocalIdentityUser> userManager,
-    SignInManager<LocalIdentityUser> signInManager) : Controller
+    UserManager<User> userManager,
+    SignInManager<User> signInManager) : Controller
 {
     // GET: /User/Register
     [HttpGet]
@@ -33,44 +34,39 @@ public class UserController(IUserService userService,
         
         var user = new User
         {
-            UserName = model.Email,
+            UserName = model.Username,
             Email = model.Email,
             Bio = model.Bio,
+            UserRole = UserRole.Customer
         };
         
-        var userIdentity = new LocalIdentityUser
+        var result = await userManager.CreateAsync(user, model.Password);
+        
+        var userDb = await signInManager.UserManager.FindByEmailAsync(model.Email);
+        if (userDb is null)
         {
-            User = user,
-            UserName = model.Email,
-            Email = model.Email
-        };
+            ModelState.AddModelError(string.Empty, "User doesn't exist.");
+            return Unauthorized();
+        }
         
-        var result = await userManager.CreateAsync(userIdentity, model.Password);
-
         if (result.Succeeded)
         {
-            await signInManager.SignInAsync(userIdentity, isPersistent: false);
-            return RedirectToAction("Index", "Home");
+            var ci = new[]
+            {
+                new Claim(ClaimTypes.Sid, userDb.Id.ToString()),
+                new Claim(ClaimTypes.Name, userDb.UserName),
+                new Claim(ClaimTypes.Email, userDb.Email),
+                new Claim(ClaimTypes.Role, userDb.UserRole.ToString())
+            };
+
+            await signInManager.SignInWithClaimsAsync(userDb, false, ci);
+            return RedirectToAction(nameof(Index), "Home");
         }
 
         foreach (var error in result.Errors)
         {
             ModelState.AddModelError(string.Empty, error.Description);
         }
-
-        // var token = await userService.RegisterUserAsync(mapper.Map<UserRegisterViewModel, UserRegisterDto>(model));
-        // if (token is null)
-        // {
-        //     ModelState.AddModelError("Email", "A user with this username or email already exists.");
-        //     return View(model);
-        // }
-        //
-        // Response.Cookies.Append(Constants.JwtToken, token, new CookieOptions
-        // {
-        //     HttpOnly = true,
-        //     Secure = true,
-        //     Expires = DateTimeOffset.UtcNow.AddMinutes(30) // or set expiration based on token expiry
-        // });
 
         return RedirectToAction("Index", "Home");
     }
@@ -90,37 +86,29 @@ public class UserController(IUserService userService,
             ModelState.AddModelError("InvalidCredentials", "Invalid username or password.");
             return View(model);
         }
+        var user = await signInManager.UserManager.FindByEmailAsync(model.Email);
+        if (user == null)
+        {
+            ModelState.AddModelError(string.Empty, "User doesn't exist.");
+            return Unauthorized();
+        }
         
-        var result = await signInManager.PasswordSignInAsync(model.Email, model.Password, true, false);
-
+        var result = await signInManager.CheckPasswordSignInAsync(user, model.Password, lockoutOnFailure: false);
         if (result.Succeeded)
         {
-            // return RedirectToAction("LoginSuccess", "Account");
+            var ci = new[]
+            {
+                new Claim(ClaimTypes.Sid, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Role, user.UserRole.ToString())
+            };
+
+            await signInManager.SignInWithClaimsAsync(user, false, ci);
             return RedirectToAction(nameof(Index), "Home");
         }
 
         ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-        
-
-        // var token = await userService.LoginAsync(new LoginDto
-        // {
-        //     Email = model.Email,
-        //     Password = model.Password,
-        // });
-        //
-        // if (token is null)
-        // {
-        //     ModelState.AddModelError("InvalidCredentials", "Invalid username or password.");
-        //     return View(model);
-        // }
-        //
-        // Response.Cookies.Append(Constants.JwtToken, token, new CookieOptions
-        // {
-        //     HttpOnly = true,
-        //     Secure = true,
-        //     Expires = DateTimeOffset.UtcNow.AddMinutes(30) // or set expiration based on token expiry
-        // });
-
 
         return RedirectToAction(nameof(Index), "Home");
     }

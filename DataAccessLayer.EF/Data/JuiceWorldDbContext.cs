@@ -2,6 +2,8 @@
 using Commons.Enums;
 using JuiceWorld.Entities;
 using JuiceWorld.Entities.Interfaces;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
@@ -11,7 +13,7 @@ namespace JuiceWorld.Data;
  * The database context for the JuiceWorld database.
  */
 public class JuiceWorldDbContext(DbContextOptions<JuiceWorldDbContext> options)
-    : DbContext(options)
+    : IdentityDbContext<User, IdentityRole<int>, int>(options)
 {
     public DbSet<Product> Products { get; set; }
     public DbSet<Manufacturer> Manufacturers { get; set; }
