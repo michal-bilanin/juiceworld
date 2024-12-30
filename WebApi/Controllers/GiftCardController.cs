@@ -10,7 +10,7 @@ namespace WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = nameof(UserRole.Admin) + "," + nameof(UserRole.Customer))]
+[Authorize(Roles = nameof(UserRole.Admin))]
 public class GiftCardController(IGiftCardService GfitCardService) : ControllerBase
 {
     private const string ApiBaseName = "GfitCard";
@@ -57,6 +57,7 @@ public class GiftCardController(IGiftCardService GfitCardService) : ControllerBa
 
     [HttpPost("redeem")]
     [OpenApiOperation(ApiBaseName + nameof(RedeemCouponCode))]
+    [Authorize(Roles = nameof(UserRole.Customer))]
     public async Task<ActionResult<CouponCode>> RedeemCouponCode(string couponCode)
     {
         var result = await GfitCardService.RedeemCouponCodeAsync(couponCode);
