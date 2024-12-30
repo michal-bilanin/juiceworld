@@ -1,12 +1,13 @@
 using AutoMapper;
 using BusinessLayer.DTOs;
 using BusinessLayer.Services.Interfaces;
+using Infrastructure.QueryObjects;
 using Infrastructure.Repositories;
 using JuiceWorld.Entities;
 
 namespace BusinessLayer.Services;
 
-public class TagService(IRepository<Tag> tagRepository, IMapper mapper) : ITagService
+public class TagService(IRepository<Tag> tagRepository, IQueryObject<Tag> tagQueryObject, IMapper mapper) : ITagService
 {
     public async Task<TagDto?> CreateTagAsync(TagDto tagDto)
     {
@@ -18,6 +19,24 @@ public class TagService(IRepository<Tag> tagRepository, IMapper mapper) : ITagSe
     {
         var tags = await tagRepository.GetAllAsync();
         return mapper.Map<List<TagDto>>(tags);
+    }
+
+    public async Task<FilteredResult<TagDto>> GetTagsAsync(TagFilterDto tagFilterDto)
+    {
+        var query = tagQueryObject
+            .Filter(t => tagFilterDto.Name == null || t.Name.ToLower().Contains(tagFilterDto.Name.ToLower())
+                && tagFilterDto.Id == null || t.Id == tagFilterDto.Id)
+            .Paginate(tagFilterDto.PageIndex, tagFilterDto.PageSize)
+            .OrderBy(m => m.Id);
+
+        var filteredTags = await query.ExecuteAsync();
+
+        return new FilteredResult<TagDto>
+        {
+            Entities = mapper.Map<List<TagDto>>(filteredTags.Entities),
+            PageIndex = filteredTags.PageIndex,
+            TotalPages = filteredTags.TotalPages
+        };
     }
 
     public async Task<TagDto?> GetTagByIdAsync(int id)

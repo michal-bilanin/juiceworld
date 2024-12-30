@@ -135,12 +135,14 @@ public class ProductService(
         Enum.TryParse<ProductCategory>(productFilter.Category, true, out var categoryEnum);
 
         return queryObject.Filter(p =>
-                (productFilter.ManufacturerName == null || p.Manufacturer == null ||
-                 p.Manufacturer.Name.ToLower().Contains(productFilter.ManufacturerName.ToLower())) &&
                 (productFilter.Category == null || p.Category == categoryEnum) &&
                 (productFilter.PriceMax == null || p.Price <= productFilter.PriceMax) &&
                 (productFilter.PriceMin == null || p.Price >= productFilter.PriceMin) &&
-                (productFilter.Name == null || p.Name.ToLower().Contains(productFilter.Name.ToLower())) &&
+                (productFilter.ManufacturerName == null || p.Manufacturer == null ||
+                 p.Manufacturer.Name.ToLower()
+                     .Contains(productFilter.ManufacturerName.ToLower())) ||
+                (productFilter.Name == null ||
+                 p.Name.ToLower().Contains(productFilter.Name.ToLower())) ||
                 (productFilter.Description == null ||
                  p.Description.ToLower().Contains(productFilter.Description.ToLower())))
             .OrderBy(p => p.Id)

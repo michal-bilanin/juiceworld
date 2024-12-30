@@ -7,7 +7,10 @@ using JuiceWorld.Entities;
 
 namespace BusinessLayer.Services;
 
-public class ManufacturerService(IRepository<Manufacturer> manufacturerRepository, IQueryObject<Manufacturer> manufacturerQueryObject, IMapper mapper) : IManufacturerService
+public class ManufacturerService(
+    IRepository<Manufacturer> manufacturerRepository,
+    IQueryObject<Manufacturer> manufacturerQueryObject,
+    IMapper mapper) : IManufacturerService
 {
     public async Task<ManufacturerDto?> CreateManufacturerAsync(ManufacturerDto manufacturerDto)
     {
@@ -21,10 +24,13 @@ public class ManufacturerService(IRepository<Manufacturer> manufacturerRepositor
         return mapper.Map<List<ManufacturerDto>>(manufacturers);
     }
 
-    public async Task<FilteredResult<ManufacturerDto>> GetManufacturersAsync(ManufacturerFilterDto manufacturerFilterDto)
+    public async Task<FilteredResult<ManufacturerDto>> GetManufacturersAsync(
+        ManufacturerFilterDto manufacturerFilterDto)
     {
         var query = manufacturerQueryObject
-            .Filter(m => manufacturerFilterDto.Name == null || m.Name.ToLower().Contains(manufacturerFilterDto.Name.ToLower()))
+            .Filter(m => manufacturerFilterDto.Name == null ||
+                         m.Name.ToLower().Contains(manufacturerFilterDto.Name.ToLower())
+                         && manufacturerFilterDto.Id == null || m.Id == manufacturerFilterDto.Id)
             .Paginate(manufacturerFilterDto.PageIndex, manufacturerFilterDto.PageSize)
             .OrderBy(m => m.Id);
 

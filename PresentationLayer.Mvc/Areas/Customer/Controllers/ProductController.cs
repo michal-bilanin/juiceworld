@@ -3,17 +3,19 @@ using BusinessLayer.DTOs;
 using BusinessLayer.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using PresentationLayer.Mvc.ActionFilters;
+using PresentationLayer.Mvc.Facades.Interfaces;
+using PresentationLayer.Mvc.Models;
 
 namespace PresentationLayer.Mvc.Areas.Customer.Controllers;
 
 [Area(Constants.Areas.Customer)]
-public class ProductController(IProductService productService, ICartItemService cartItemService, IReviewService reviewService) : Controller
+public class ProductController(ISearchablesFacade searchablesFacade, IProductService productService, ICartItemService cartItemService, IReviewService reviewService) : Controller
 {
     [HttpGet]
-    public async Task<IActionResult> Index([FromQuery] ProductFilterDto productFilter)
+    public async Task<IActionResult> Index([FromQuery] SearchablesFilterViewModel searchablesFilter)
     {
-        var products = await productService.GetProductDetailsFilteredAsync(productFilter);
-        return View(products);
+        var searchables = await searchablesFacade.GetSearchablesFilteredAsync(searchablesFilter);
+        return View(searchables);
     }
 
     [HttpGet]

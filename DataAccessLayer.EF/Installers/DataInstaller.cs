@@ -21,6 +21,7 @@ public static class DataInstaller
         services.AddScoped<IQueryObject<AuditTrail>, QueryObject<AuditTrail>>();
         services.AddScoped<IQueryObject<Order>, QueryObject<Order>>();
         services.AddScoped<IQueryObject<Manufacturer>, QueryObject<Manufacturer>>();
+        services.AddScoped<IQueryObject<Tag>, QueryObject<Tag>>();
 
         services.AddScoped<IRepository<User>, Repository<User>>();
         services.AddScoped<IRepository<CartItem>, Repository<CartItem>>();
