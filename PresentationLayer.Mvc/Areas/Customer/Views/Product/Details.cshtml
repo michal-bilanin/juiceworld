@@ -1,3 +1,4 @@
+@using PresentationLayer.Mvc
 @model BusinessLayer.DTOs.ProductDetailDto
 
 @{
@@ -13,10 +14,15 @@
     <div class="product-info">
         <p><strong>Manufacturer:</strong> @Model.Manufacturer.Name</p>
         <p><strong>Price:</strong> @Model.Price.ToString("C")</p>
-        <form asp-controller="Cart" asp-action="AddToCart" method="post">
-            <input type="hidden" name="ProductId" value="@Model.Id" />
-            <button type="submit">Add to Cart</button>
+        <form id="add-to-cart-form" asp-controller="Product" asp-action="AddToCart" method="post">
+            <input type="hidden" id="ProductId" name="ProductId" value="@Model.Id" />
+            <input type="hidden" id="Quantity" name="Quantity" value="1" />
+            <button type="submit" id="add-to-cart-button">Add to Cart</button>
         </form>
+        @if (ViewData[Constants.Keys.ErrorMessage] != null)
+        {
+            <div id="error-message" style="color: red;">@ViewData[Constants.Keys.ErrorMessage]</div>
+        }
     </div>
 </div>
 

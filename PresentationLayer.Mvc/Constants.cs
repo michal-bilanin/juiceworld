@@ -8,6 +8,11 @@ public static class Constants
         public const string Customer = "Customer";
     }
 
+    public static class Keys
+    {
+        public const string ErrorMessage = "ErrorMessage";
+    }
+
     public static string JwtToken = "JWT_TOKEN";
 
     public static string DefaultArea = Areas.Customer;

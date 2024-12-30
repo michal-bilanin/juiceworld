@@ -38,12 +38,18 @@ public class ProductController(IProductService productService, ICartItemService 
         }
 
         var success = await cartItemService.AddToCartAsync(addToCartDto, userId);
-        if (!success)
+        var product = await productService.GetProductDetailByIdAsync(addToCartDto.ProductId);
+        if (product is null)
         {
-            return BadRequest();
+            return NotFound();
         }
 
-        return Ok();
+        if (!success)
+        {
+            ViewData[Constants.Keys.ErrorMessage] = "Failed to add the product to the cart.";
+        }
+
+        return View("Details", product);
     }
 
     [HttpPost]

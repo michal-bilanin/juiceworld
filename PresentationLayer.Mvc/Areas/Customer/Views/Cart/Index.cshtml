@@ -8,6 +8,13 @@
 <div class="container mt-5">
     <h2>@ViewData["Title"]</h2>
 
+    @if (ViewData[Constants.Keys.ErrorMessage] != null)
+    {
+        <div class="alert alert-danger">
+            @ViewData[Constants.Keys.ErrorMessage]
+        </div>
+    }
+
     @if (!Model.Any())
     {
         <div class="alert alert-info">
@@ -33,9 +40,20 @@
                         <span id="quantity-@cartItem.Id">@cartItem.Quantity</span>
                     </td>
                     <td>
-                        <button class="btn btn-primary btn-sm" onclick="updateCart(@cartItem.Id, -1)">-</button>
-                        <button class="btn btn-primary btn-sm" onclick="updateCart(@cartItem.Id, 1)">+</button>
-                        <button class="btn btn-danger btn-sm" onclick="removeFromCart(@cartItem.Id)">Remove</button>
+                        <form asp-controller="Cart" asp-action="AddToCart" method="POST" style="display:inline;">
+                            <input type="hidden" name="ProductId" value="@cartItem.Product.Id" />
+                            <input type="hidden" name="Quantity" value="@(cartItem.Quantity - 1)" />
+                            <button type="submit" class="btn btn-primary btn-sm">-</button>
+                        </form>
+                        <form asp-controller="Cart" asp-action="AddToCart" method="POST" style="display:inline;">
+                            <input type="hidden" name="ProductId" value="@cartItem.Product.Id" />
+                            <input type="hidden" name="Quantity" value="@(cartItem.Quantity + 1)" />
+                            <button type="submit" class="btn btn-primary btn-sm">+</button>
+                        </form>
+                        <form asp-controller="Cart" asp-action="DeleteCartItem" method="POST" style="display:inline;">
+                            <input type="hidden" name="id" value="@cartItem.Id" />
+                            <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                        </form>
                     </td>
                 </tr>
             }
@@ -46,49 +64,3 @@
         </div>
     }
 </div>
-
-<div id="error-message" style="color: red; display: none;"></div>
-
-<script>
-    function updateCart(cartItemId, change) {
-        const quantityElement = document.getElementById('quantity-' + cartItemId);
-        const newQuantity = parseInt(quantityElement.textContent) + change;
-
-        if (newQuantity < 0) {
-            return;
-        }
-
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', '@Url.Action("AddToCart", "Cart", new { area = Constants.Areas.Customer })', true);
-        xhr.setRequestHeader('Content-Type', 'application/json');
-        xhr.onload = function () {
-            var response = JSON.parse(this.responseText);
-            if (response.success) {
-                quantityElement.textContent = newQuantity;
-            } else {
-                var errorMessage = document.getElementById('error-message');
-                errorMessage.textContent = response.message;
-                errorMessage.style.display = 'block';
-            }
-        };
-        xhr.send(JSON.stringify({ ProductId: cartItemId, Quantity: newQuantity }));
-    }
-
-    function removeFromCart(cartItemId) {
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', '@Url.Action("DeleteCartItem", "Cart", new { area = Constants.Areas.Customer })', true);
-        xhr.setRequestHeader('Content-Type', 'application/json');
-        xhr.onload = function () {
-            const response = JSON.parse(this.responseText);
-            if (response.success) {
-                const row = document.getElementById('quantity-' + cartItemId).closest('tr');
-                row.parentNode.removeChild(row);
-            } else {
-                const errorMessage = document.getElementById('error-message');
-                errorMessage.textContent = response.message;
-                errorMessage.style.display = 'block';
-            }
-        };
-        xhr.send(JSON.stringify({ id: cartItemId }));
-    }
-</script>

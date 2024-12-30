@@ -15,7 +15,7 @@ public class CartController(ICartItemService cartItemService) : Controller
     {
         if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId))
         {
-            return RedirectToAction("Index", "Home", new { area = Constants.Areas.Customer });
+            return Unauthorized();
         }
 
         var cartItems = await cartItemService.GetCartItemsByUserIdAsync(userId);
@@ -23,36 +23,36 @@ public class CartController(ICartItemService cartItemService) : Controller
     }
 
     [HttpPost]
-    public async Task<JsonResult> AddToCart(AddToCartDto addToCartDto)
+    public async Task<IActionResult> AddToCart(AddToCartDto addToCartDto)
     {
         if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId))
         {
-            return Json(new { success = false, message = "User not authenticated." });
+            return Unauthorized();
         }
 
         var success = await cartItemService.AddToCartAsync(addToCartDto, userId);
         if (!success)
         {
-            return Json(new { success = false, message = "Failed to add item to cart." });
+            ViewData[Constants.Keys.ErrorMessage] = "Failed to add item to cart.";
         }
 
-        return Json(new { success = true });
+        return RedirectToAction(nameof(Index));
     }
 
     [HttpPost]
-    public async Task<JsonResult> DeleteCartItem(int id)
+    public async Task<IActionResult> DeleteCartItem(int id)
     {
         if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId))
         {
-            return Json(new { success = false, message = "User not authenticated." });
+            return Unauthorized();
         }
 
         var success = await cartItemService.DeleteCartItemByIdAsync(id, userId);
         if (!success)
         {
-            return Json(new { success = false, message = "Failed to delete item from cart." });
+            ViewData[Constants.Keys.ErrorMessage] = "Failed to delete item from cart.";
         }
 
-        return Json(new { success = true });
+        return RedirectToAction(nameof(Index));
     }
 }

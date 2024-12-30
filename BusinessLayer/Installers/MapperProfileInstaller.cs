@@ -9,6 +9,7 @@ public class MapperProfileInstaller : Profile
     public MapperProfileInstaller()
     {
         CreateMap<CartItemDto, CartItem>().ReverseMap();
+        CreateMap<CartItemDetailDto, CartItem>().ReverseMap();
         CreateMap<ManufacturerDto, Manufacturer>().ReverseMap();
         CreateMap<OrderDto, Order>().ReverseMap();
         CreateMap<OrderDetailDto, Order>().ReverseMap();
