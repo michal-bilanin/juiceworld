@@ -5,6 +5,7 @@ using BusinessLayer.Services;
 using BusinessLayer.Services.Interfaces;
 using Commons.Enums;
 using JuiceWorld.Entities;
+using JuiceWorld.QueryObjects;
 using JuiceWorld.Repositories;
 using TestUtilities.MockedObjects;
 using Xunit;
@@ -23,7 +24,8 @@ public class ManufacturerServiceTests
         var manufacturerRepository = new Repository<Manufacturer>(dbContext);
         var config = new MapperConfiguration(cfg => cfg.AddProfile<MapperProfileInstaller>());
         var mapper = config.CreateMapper();
-        _manufacturerService = new ManufacturerService(manufacturerRepository, mapper);
+        var manufacturerQueryObject = new QueryObject<Manufacturer>(dbContext);
+        _manufacturerService = new ManufacturerService(manufacturerRepository, manufacturerQueryObject, mapper);
     }
 
     [Fact]

@@ -19,7 +19,6 @@ public class JuiceWorldDbContext(DbContextOptions<JuiceWorldDbContext> options)
     public DbSet<User> Users { get; set; }
     public DbSet<Review> Reviews { get; set; }
     public DbSet<WishListItem> WishListItems { get; set; }
-    public DbSet<Address> Addresses { get; set; }
     public DbSet<Order> Orders { get; set; }
     public DbSet<OrderProduct> OrderProducts { get; set; }
     public DbSet<Tag> Tags { get; set; }
@@ -185,13 +184,6 @@ public class JuiceWorldDbContext(DbContextOptions<JuiceWorldDbContext> options)
             .Property(o => o.PaymentMethodType)
             .HasConversion<string>();
 
-        // Order -> Address
-        modelBuilder.Entity<Order>()
-            .HasOne(o => o.Address)
-            .WithMany(address => address.Orders)
-            .HasForeignKey(o => o.AddressId)
-            .OnDelete(DeleteBehavior.Cascade);
-
         // OrderProduct -> Product
         modelBuilder.Entity<OrderProduct>()
             .HasOne(op => op.Product)
@@ -204,17 +196,6 @@ public class JuiceWorldDbContext(DbContextOptions<JuiceWorldDbContext> options)
             .HasOne(op => op.Order)
             .WithMany(order => order.OrderProducts)
             .HasForeignKey(op => op.OrderId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        modelBuilder.Entity<Address>()
-            .Property(a => a.Type)
-            .HasConversion<string>();
-
-        // Address -> User
-        modelBuilder.Entity<Address>()
-            .HasOne(a => a.User)
-            .WithMany(user => user.Addresses)
-            .HasForeignKey(a => a.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<User>()

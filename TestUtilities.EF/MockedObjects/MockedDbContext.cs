@@ -27,7 +27,6 @@ public static class MockedDbContext
         var tags = TestDataHelper.GetTestTags();
         var manufacturers = TestDataHelper.GetTestManufacturers();
         var users = TestDataHelper.GetTestUsers();
-        var addresses = TestDataHelper.GetTestAddresses(users);
         var orders = TestDataHelper.GetTestOrders(users);
         var products = TestDataHelper.GetTestProducts(tags);
         var cartItems = TestDataHelper.GetTestCartItems(users, products);
@@ -38,7 +37,6 @@ public static class MockedDbContext
         dbContext.AddRange(tags);
         dbContext.AddRange(manufacturers);
         dbContext.AddRange(users);
-        dbContext.AddRange(addresses);
         dbContext.AddRange(orders);
         dbContext.AddRange(products);
         dbContext.AddRange(cartItems);
@@ -54,7 +52,6 @@ public static class MockedDbContext
         var tags = TestDataHelper.GetTestTags();
         var manufacturers = TestDataHelper.GetTestManufacturers();
         var users = TestDataHelper.GetTestUsers();
-        var addresses = TestDataHelper.GetTestAddresses(users);
         var orders = TestDataHelper.GetTestOrders(users);
         var products = TestDataHelper.GetTestProducts(tags);
         var cartItems = TestDataHelper.GetTestCartItems(users, products);
@@ -65,7 +62,6 @@ public static class MockedDbContext
         await dbContext.AddRangeAsync(tags);
         await dbContext.AddRangeAsync(manufacturers);
         await dbContext.AddRangeAsync(users);
-        await dbContext.AddRangeAsync(addresses);
         await dbContext.AddRangeAsync(orders);
         await dbContext.AddRangeAsync(products);
         await dbContext.AddRangeAsync(cartItems);

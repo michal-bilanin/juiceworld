@@ -8,7 +8,9 @@ public interface IQueryObject<TEntity> where TEntity : class
 
     IQueryObject<TEntity> OrderBy<TKey>(Expression<Func<TEntity, TKey>> keySelector, bool isDesc = false);
 
-    IQueryObject<TEntity> Paginate(int pageIndex, int pageSize);
+    IQueryObject<TEntity> OrderBy<TKey>(params (Expression<Func<TEntity, TKey>> KeySelector, bool IsDesc)[] keySelectors);
 
-    Task<IEnumerable<TEntity>> ExecuteAsync();
+    IQueryObject<TEntity> Paginate(int pageIndex, int pageSize);
+    IQueryObject<TEntity> Include(params string[] includes);
+    Task<FilteredResult<TEntity>> ExecuteAsync();
 }

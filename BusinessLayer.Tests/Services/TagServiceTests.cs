@@ -4,6 +4,7 @@ using BusinessLayer.Installers;
 using BusinessLayer.Services;
 using BusinessLayer.Services.Interfaces;
 using JuiceWorld.Entities;
+using JuiceWorld.QueryObjects;
 using JuiceWorld.Repositories;
 using TestUtilities.MockedObjects;
 using Xunit;
@@ -22,7 +23,8 @@ public class TagServiceTests
         var tagRepository = new Repository<Tag>(dbContext);
         var config = new MapperConfiguration(cfg => cfg.AddProfile<MapperProfileInstaller>());
         var mapper = config.CreateMapper();
-        _tagService = new TagService(tagRepository, mapper);
+        var tagQueryObject = new QueryObject<Tag>(dbContext);
+        _tagService = new TagService(tagRepository, tagQueryObject, mapper);
     }
 
     [Fact]
