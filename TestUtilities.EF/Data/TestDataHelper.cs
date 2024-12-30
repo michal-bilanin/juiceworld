@@ -6,6 +6,18 @@ namespace TestUtilities.Data;
 
 public static class TestDataHelper
 {
+    public static List<Tag> GetTestTags()
+    {
+        return
+        [
+            new Tag { Id = 1, Name = "Hot", ColorHex = "#FF0000" },
+            new Tag { Id = 2, Name = "Sale", ColorHex = "#00FF00" },
+            new Tag { Id = 3, Name = "New", ColorHex = "#0000FF" },
+            new Tag { Id = 4, Name = "Recommended", ColorHex = "#FFFF00" },
+            new Tag { Id = 5, Name = "Best Seller", ColorHex = "#00FFFF" }
+        ];
+    }
+
     public static List<User> GetTestUsers()
     {
         return
@@ -27,7 +39,7 @@ public static class TestDataHelper
         ];
     }
 
-    public static List<Product> GetTestProducts()
+    public static List<Product> GetTestProducts(List<Tag> tags)
     {
         return
         [

@@ -21,5 +21,6 @@ public class MapperProfileInstaller : Profile
         CreateMap<WishListItemDto, WishListItem>().ReverseMap();
         CreateMap<WishListItemDetailDto, WishListItem>().ReverseMap();
         CreateMap<AuditTrailDto, AuditTrail>().ReverseMap();
+        CreateMap<TagDto, Tag>().ReverseMap();
     }
 }

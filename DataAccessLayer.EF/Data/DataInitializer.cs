@@ -13,6 +13,18 @@ public static class DataInitializer
 {
     private const int SeedNumber = 69420;
 
+    private static readonly List<Tag> Tags =
+    [
+        new() { Id = 1, Name = "Sale", ColorHex = "#ff0000" },
+        new() { Id = 2, Name = "New", ColorHex = "#00ff00" },
+        new() { Id = 3, Name = "Bestseller", ColorHex = "#0000ff" },
+        new() { Id = 4, Name = "Top Rated", ColorHex = "#ffff00" },
+        new() { Id = 5, Name = "Recommended", ColorHex = "#00ffff" },
+        new() { Id = 6, Name = "Popular", ColorHex = "#ff00ff" },
+        new() { Id = 7, Name = "Trending", ColorHex = "#000000" },
+        new() { Id = 8, Name = "Hot", ColorHex = "#ffffff" }
+    ];
+
     private static readonly List<Manufacturer> Manufacturers =
     [
         new() { Id = 1, Name = "MediPharma" },
@@ -56,6 +68,17 @@ public static class DataInitializer
         return user;
     }
 
+    private static List<object> GenerateProductTags(List<Product> products, List<Tag> tags)
+    {
+        var productTags = new List<object>();
+        foreach (var product in products)
+        {
+            var tag = tags[new Random().Next(3)];
+            productTags.Add(new { ProductsId = product.Id, TagsId = tag.Id });
+        }
+
+        return productTags;
+    }
 
     private static List<User> GenerateUsers()
     {
@@ -168,10 +191,17 @@ public static class DataInitializer
         var orderProducts = GenerateOrderProducts(orders);
         var reviews = GenerateReviews(users);
         var wishListItems = GenerateWishListItems(users);
+        var productTags = GenerateProductTags(ProductsSeedData.Products, Tags);
 
-        // Not generated (authentic) manufacturer and product data
+        // Not generated (authentic) tags, manufacturer and product data
+        modelBuilder.Entity<Tag>().HasData(Tags);
         modelBuilder.Entity<Manufacturer>().HasData(Manufacturers);
         modelBuilder.Entity<Product>().HasData(ProductsSeedData.Products);
+
+        modelBuilder.Entity<Product>()
+            .HasMany(p => p.Tags)
+            .WithMany(t => t.Products)
+            .UsingEntity(j => j.HasData(productTags));
 
         // Fixed users for testing
         modelBuilder.Entity<User>().HasData(Users);

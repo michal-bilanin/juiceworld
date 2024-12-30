@@ -22,6 +22,7 @@ public class JuiceWorldDbContext(DbContextOptions<JuiceWorldDbContext> options)
     public DbSet<Address> Addresses { get; set; }
     public DbSet<Order> Orders { get; set; }
     public DbSet<OrderProduct> OrderProducts { get; set; }
+    public DbSet<Tag> Tags { get; set; }
 
     private void SetAuditableProperties()
     {
@@ -117,6 +118,11 @@ public class JuiceWorldDbContext(DbContextOptions<JuiceWorldDbContext> options)
             .WithMany(manufacturer => manufacturer.Products)
             .HasForeignKey(p => p.ManufacturerId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        // Product -> Tag
+        modelBuilder.Entity<Product>()
+            .HasMany(p => p.Tags)
+            .WithMany(tag => tag.Products);
 
         // CartItem -> Product
         modelBuilder.Entity<CartItem>()
