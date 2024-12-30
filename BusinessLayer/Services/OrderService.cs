@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 using AutoMapper;
 using BusinessLayer.DTOs;
 using BusinessLayer.Services.Interfaces;
+using Commons.Enums;
 using Infrastructure.QueryObjects;
 using Infrastructure.Repositories;
 using JuiceWorld.Entities;
@@ -18,6 +19,7 @@ public class OrderService(
     public async Task<OrderDto?> ExecuteOrderAsync(CreateOrderDto orderDto)
     {
         var order = mapper.Map<Order>(orderDto);
+        order.Status = OrderStatus.Pending;
         var newOrder = await orderUnitOfWork.OrderRepository.CreateAsync(order, order.UserId);
 
         if (newOrder is null)
