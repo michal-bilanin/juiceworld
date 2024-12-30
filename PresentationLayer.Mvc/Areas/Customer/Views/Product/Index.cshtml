@@ -28,7 +28,7 @@
     <div class="tag-list">
         @foreach (var tag in Model.Tags.Entities)
         {
-            <div class="tag-card" style="color: @tag.ColorHex;" onclick="setTagId(@tag.Id)">
+            <div class="tag-card" style="color: @tag.ColorHex;" onclick="setTagId(event, @tag.Id)">
                 <p>@tag.Name</p>
             </div>
         }

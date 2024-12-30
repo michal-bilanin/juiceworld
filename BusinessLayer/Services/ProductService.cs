@@ -188,7 +188,7 @@ public class ProductService(
         {
             return null;
         }
-    
+
         product.Reviews = product.Reviews.OrderByDescending(r => r.CreatedAt).ToList();
 
         var ret = mapper.Map<ProductDetailDto>(product);
