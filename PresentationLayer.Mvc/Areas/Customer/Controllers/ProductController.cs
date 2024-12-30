@@ -58,7 +58,7 @@ public class ProductController(IProductService productService, ICartItemService 
     {
         if (!ModelState.IsValid)
         {
-            return BadRequest();
+            return RedirectToAction(nameof(Details), new { id = reviewDto.ProductId });
         }
 
         if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId))
@@ -66,11 +66,7 @@ public class ProductController(IProductService productService, ICartItemService 
             return Unauthorized();
         }
 
-        if (reviewDto.UserId != userId)
-        {
-            return Unauthorized();
-        }
-
+        reviewDto.UserId = userId;
         var review = await reviewService.CreateReviewAsync(reviewDto);
         if (review is null)
         {
