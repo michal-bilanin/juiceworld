@@ -10,12 +10,13 @@ namespace WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = nameof(UserRole.Admin))]
+[Authorize(Roles = nameof(UserRole.Customer))]
 public class GiftCardController(IGiftCardService GfitCardService) : ControllerBase
 {
     private const string ApiBaseName = "GfitCard";
 
     [HttpPost]
+    [Authorize(Roles = nameof(UserRole.Admin))]
     [OpenApiOperation(ApiBaseName + nameof(CreateGfitCard))]
     public async Task<ActionResult<GiftCardDetailDto>> CreateGfitCard(GiftCardCreateDto gfitCardCreate)
     {
@@ -25,6 +26,7 @@ public class GiftCardController(IGiftCardService GfitCardService) : ControllerBa
 
     [HttpGet]
     [OpenApiOperation(ApiBaseName + nameof(GetAllGfitCards))]
+    [Authorize(Roles = nameof(UserRole.Admin))]
     public async Task<ActionResult<IEnumerable<GiftCardEditDto>>> GetAllGfitCards()
     {
         var result = await GfitCardService.GetAllGfitCardsAsync();
@@ -33,6 +35,7 @@ public class GiftCardController(IGiftCardService GfitCardService) : ControllerBa
 
     [HttpGet("{GfitCardId:int}")]
     [OpenApiOperation(ApiBaseName + nameof(GetGfitCard))]
+    [Authorize(Roles = nameof(UserRole.Admin))]
     public async Task<ActionResult<GiftCardDetailDto>> GetGfitCard(int GfitCardId)
     {
         var result = await GfitCardService.GetGfitCardByIdAsync(GfitCardId);
@@ -41,6 +44,7 @@ public class GiftCardController(IGiftCardService GfitCardService) : ControllerBa
 
     [HttpPut]
     [OpenApiOperation(ApiBaseName + nameof(UpdateGfitCard))]
+    [Authorize(Roles = nameof(UserRole.Admin))]
     public async Task<ActionResult<GiftCardDetailDto>> UpdateGfitCard(GiftCardEditDto gfitCard)
     {
         var result = await GfitCardService.UpdateGfitCardAsync(gfitCard);
@@ -49,6 +53,7 @@ public class GiftCardController(IGiftCardService GfitCardService) : ControllerBa
 
     [HttpDelete("{GfitCardId:int}")]
     [OpenApiOperation(ApiBaseName + nameof(DeleteGfitCard))]
+    [Authorize(Roles = nameof(UserRole.Admin))]
     public async Task<ActionResult<bool>> DeleteGfitCard(int GfitCardId)
     {
         var result = await GfitCardService.DeleteGfitCardByIdAsync(GfitCardId);
@@ -57,7 +62,7 @@ public class GiftCardController(IGiftCardService GfitCardService) : ControllerBa
 
     [HttpPost("redeem")]
     [OpenApiOperation(ApiBaseName + nameof(RedeemCouponCode))]
-    [Authorize(Roles = nameof(UserRole.Customer))]
+    [Authorize(Roles = nameof(UserRole.Customer) + "," + nameof(UserRole.Admin))]
     public async Task<ActionResult<CouponCode>> RedeemCouponCode(string couponCode)
     {
         var result = await GfitCardService.RedeemCouponCodeAsync(couponCode);
@@ -66,6 +71,7 @@ public class GiftCardController(IGiftCardService GfitCardService) : ControllerBa
 
     [HttpGet("coupon-codes")]
     [OpenApiOperation(ApiBaseName + nameof(GetCouponCodes))]
+    [Authorize(Roles = nameof(UserRole.Admin))]
     public async Task<ActionResult<IEnumerable<CouponCodeDto>>> GetCouponCodes()
     {
         var result = await GfitCardService.GetCouponCodesAsync();
@@ -74,6 +80,7 @@ public class GiftCardController(IGiftCardService GfitCardService) : ControllerBa
 
     [HttpGet("coupon-codes/{couponCode}")]
     [OpenApiOperation(ApiBaseName + nameof(GetCouponCode))]
+    [Authorize(Roles = nameof(UserRole.Admin))]
     public async Task<ActionResult<CouponCodeDto>> GetCouponCode(string couponCode)
     {
         var result = await GfitCardService.GetCouponByCodeAsync(couponCode);
