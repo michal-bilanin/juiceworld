@@ -13,10 +13,7 @@ public class OrderController(IOrderService orderService, ICartItemService cartIt
     [HttpGet]
     public async Task<ActionResult> Index([FromQuery] PaginationDto pagination)
     {
-        if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId))
-        {
-            return Unauthorized();
-        }
+        int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId);
 
         var orders = await orderService.GetOrdersByUserIdAsync(userId, pagination);
         return View(orders);
@@ -25,10 +22,7 @@ public class OrderController(IOrderService orderService, ICartItemService cartIt
     [HttpGet]
     public async Task<ActionResult> Details(int id)
     {
-        if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId))
-        {
-            return Unauthorized();
-        }
+        int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId);
 
         var order = await orderService.GetOrderDetailByIdAsync(id);
         if (order is null || order.UserId != userId)
@@ -42,10 +36,7 @@ public class OrderController(IOrderService orderService, ICartItemService cartIt
     [HttpGet]
     public async Task<ActionResult> Create()
     {
-        if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId))
-        {
-            return Unauthorized();
-        }
+        int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId);
 
         var cartItems = await cartItemService.GetCartItemsByUserIdAsync(userId);
         return View(new CreateOrderDto { UserId = userId, CartItems = cartItems });
@@ -54,10 +45,7 @@ public class OrderController(IOrderService orderService, ICartItemService cartIt
     [HttpPost]
     public async Task<ActionResult> Create(CreateOrderDto orderDto)
     {
-        if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId))
-        {
-            return Unauthorized();
-        }
+        int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId);
 
         if (!ModelState.IsValid)
         {

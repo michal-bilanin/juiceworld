@@ -34,10 +34,7 @@ public class ProductController(ISearchablesFacade searchablesFacade, IProductSer
     [RedirectIfNotAuthenticatedActionFilter]
     public async Task<IActionResult> AddToCart(AddToCartDto addToCartDto)
     {
-        if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId))
-        {
-            return Unauthorized();
-        }
+        int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId);
 
         var success = await cartItemService.AddToCartAsync(addToCartDto, userId);
         var product = await productService.GetProductDetailByIdAsync(addToCartDto.ProductId);
@@ -63,10 +60,7 @@ public class ProductController(ISearchablesFacade searchablesFacade, IProductSer
             return RedirectToAction(nameof(Details), new { id = reviewDto.ProductId });
         }
 
-        if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId))
-        {
-            return Unauthorized();
-        }
+        int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId);
 
         reviewDto.UserId = userId;
         var review = await reviewService.CreateReviewAsync(reviewDto);
@@ -82,10 +76,7 @@ public class ProductController(ISearchablesFacade searchablesFacade, IProductSer
     [RedirectIfNotAuthenticatedActionFilter]
     public async Task<IActionResult> DeleteReview(int id)
     {
-        if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId))
-        {
-            return Unauthorized();
-        }
+        int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId);
 
         var review = await reviewService.GetReviewByIdAsync(id);
         if (review is null || (review.UserId != userId && !User.IsInRole(Commons.Enums.UserRole.Admin.ToString())))

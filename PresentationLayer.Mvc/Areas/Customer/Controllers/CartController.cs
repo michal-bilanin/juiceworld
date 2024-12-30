@@ -13,10 +13,7 @@ public class CartController(ICartItemService cartItemService) : Controller
     [HttpGet]
     public async Task<ActionResult> Index()
     {
-        if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId))
-        {
-            return Unauthorized();
-        }
+        int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId);
 
         var cartItems = await cartItemService.GetCartItemsByUserIdAsync(userId);
         return View(cartItems);
@@ -25,10 +22,7 @@ public class CartController(ICartItemService cartItemService) : Controller
     [HttpPost]
     public async Task<IActionResult> AddToCart(AddToCartDto addToCartDto)
     {
-        if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId))
-        {
-            return Unauthorized();
-        }
+        int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId);
 
         var success = await cartItemService.AddToCartAsync(addToCartDto, userId);
         if (!success)
@@ -42,10 +36,7 @@ public class CartController(ICartItemService cartItemService) : Controller
     [HttpPost]
     public async Task<IActionResult> DeleteCartItem(int id)
     {
-        if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId))
-        {
-            return Unauthorized();
-        }
+        int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId);
 
         var success = await cartItemService.DeleteCartItemByIdAsync(id, userId);
         if (!success)
