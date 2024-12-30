@@ -106,6 +106,35 @@ public static class DataInitializer
 
         return faker.Generate(1000);
     }
+    
+    private static (List<GiftCard>, List<CouponCode>) GenerateGiftCardsWithCouponCodes()
+    {
+        var giftCardIds = 1;
+        var faker = new Faker<GiftCard>()
+            .UseSeed(SeedNumber)
+            .RuleFor(gc => gc.Id, _ => giftCardIds++)
+            .RuleFor(gc => gc.Discount, f => f.Random.Int(10, 1000))
+            .RuleFor(gc => gc.CouponsCount, f => f.Random.Int(1, 10));
+
+        var giftCards = faker.Generate(50);
+        
+        // for each giftcard generate appropriate ammount of coupons
+        var couponCodes = new List<CouponCode>();
+        var couponCodesIds = 1;
+        foreach (var giftCard in giftCards)
+        {
+            var couponCodesFaker = new Faker<CouponCode>()
+                .UseSeed(SeedNumber)
+                .RuleFor(cc => cc.Id, _ => couponCodesIds++)
+                .RuleFor(cc => cc.GiftCardId, giftCard.Id)
+                .RuleFor(cc => cc.Code, f => f.Random.AlphaNumeric(10))
+                .RuleFor(cc => cc.RedeemedAt, f => f.Random.Bool(0.5f) ? f.Date.Past().ToUniversalTime() : null);
+
+            couponCodes.AddRange(couponCodesFaker.Generate(giftCard.CouponsCount));
+        }
+        
+        return (giftCards, couponCodes);
+    }
 
     private static List<CartItem> GenerateCartItems(List<User> users)
     {
@@ -168,6 +197,7 @@ public static class DataInitializer
         var orderProducts = GenerateOrderProducts(orders);
         var reviews = GenerateReviews(users);
         var wishListItems = GenerateWishListItems(users);
+        var (giftCards, couponCodes) = GenerateGiftCardsWithCouponCodes();
 
         // Not generated (authentic) manufacturer and product data
         modelBuilder.Entity<Manufacturer>().HasData(Manufacturers);
@@ -184,5 +214,7 @@ public static class DataInitializer
         modelBuilder.Entity<OrderProduct>().HasData(orderProducts);
         modelBuilder.Entity<Review>().HasData(reviews);
         modelBuilder.Entity<WishListItem>().HasData(wishListItems);
+        modelBuilder.Entity<GiftCard>().HasData(giftCards);
+        modelBuilder.Entity<CouponCode>().HasData(couponCodes);
     }
 }
