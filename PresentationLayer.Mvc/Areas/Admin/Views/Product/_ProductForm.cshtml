@@ -1,8 +1,9 @@
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @using Commons.Enums
+@using PresentationLayer.Mvc
 @model PresentationLayer.Mvc.Models.ProductEditViewModel
 
-<form asp-action="@ViewData["Action"]" method="post" class="form-horizontal">
+<form asp-action="@ViewData[Constants.Keys.Action]" method="post" class="form-horizontal">
     <input type="hidden" asp-for="Product.Id" />
     <div class="form-group">
         <label asp-for="Product.Name" class="control-label"></label>
@@ -36,6 +37,6 @@
     </div>
     <div class="form-group mt-3 d-flex justify-content-end">
         <a href="@Url.Action("Index", "Product")" class="btn btn-secondary me-2">Cancel</a>
-        <input type="submit" value="@ViewData["ButtonText"]" class="btn btn-primary" />
+        <input type="submit" value="@ViewData[Constants.Keys.ButtonText]" class="btn btn-primary" />
     </div>
 </form>

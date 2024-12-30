@@ -1,14 +1,15 @@
 @using BusinessLayer.DTOs
+@using PresentationLayer.Mvc
 @model Infrastructure.QueryObjects.FilteredResult<BusinessLayer.DTOs.ManufacturerDto>
 
 @{
-    ViewData["Title"] = "Manufacturers";
+    ViewData[Constants.Keys.Title] = "Manufacturers";
     int startPage = Math.Max(1, Model.PageIndex - 5);
     int endPage = Math.Min(Model.TotalPages, Model.PageIndex + 5);
 }
 
 <div class="container mt-5">
-    <h2>@ViewData["Title"]</h2>
+    <h2>@ViewData[Constants.Keys.Title]</h2>
 
     <form method="get" asp-action="Index" class="form-inline mb-3">
         <div class="form-group mr-2 d-flex flex-row gap-2">

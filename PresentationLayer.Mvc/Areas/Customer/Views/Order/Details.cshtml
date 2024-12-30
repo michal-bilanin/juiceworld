@@ -1,7 +1,8 @@
+@using PresentationLayer.Mvc
 @model BusinessLayer.DTOs.OrderDetailDto
 
 @{
-    ViewData["Title"] = "Order Details";
+    ViewData[Constants.Keys.Title] = "Order Details";
 }
 
 <h2>Order Details</h2>
@@ -62,10 +63,10 @@
         @foreach (var item in Model.OrderProducts)
         {
             <tr>
-                <td>@item.Product.Name</td>
+                <td>@item.Product?.Name</td>
                 <td>@item.Quantity</td>
                 <td>@item.Price.ToString("C")</td>
-                <td>@(item.Price * item.Quantity).ToString("C")</td>
+                <td>@((item.Price * item.Quantity).ToString("C"))</td>
             </tr>
         }
         </tbody>

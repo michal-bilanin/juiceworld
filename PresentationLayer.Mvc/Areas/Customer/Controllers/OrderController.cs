@@ -61,7 +61,7 @@ public class OrderController(IOrderService orderService, ICartItemService cartIt
 
         if (!ModelState.IsValid)
         {
-            return View(orderDto);
+            return View();
         }
 
         if (orderDto.UserId != userId)
@@ -73,7 +73,7 @@ public class OrderController(IOrderService orderService, ICartItemService cartIt
         if (order is null)
         {
             ModelState.AddModelError("Order", "Failed to create order.");
-            return View(orderDto);
+            return View();
         }
 
         return RedirectToAction(nameof(Details), new { order.Id });

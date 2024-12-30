@@ -10,6 +10,9 @@ public static class Constants
 
     public static class Keys
     {
+        public const string Title = "Title";
+        public const string Action = "Action";
+        public const string ButtonText = "ButtonText";
         public const string ErrorMessage = "ErrorMessage";
     }
 

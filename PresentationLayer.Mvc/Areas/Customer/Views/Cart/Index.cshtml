@@ -2,11 +2,11 @@
 @model IEnumerable<BusinessLayer.DTOs.CartItemDetailDto>
 
 @{
-    ViewData["Title"] = "Cart";
+    ViewData[Constants.Keys.Title] = "Cart";
 }
 
 <div class="container mt-5">
-    <h2>@ViewData["Title"]</h2>
+    <h2>@ViewData[Constants.Keys.Title]</h2>
 
     @if (ViewData[Constants.Keys.ErrorMessage] != null)
     {

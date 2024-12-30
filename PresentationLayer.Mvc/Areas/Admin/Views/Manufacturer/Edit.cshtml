@@ -1,9 +1,10 @@
+@using PresentationLayer.Mvc
 @{
-    ViewData["Title"] = "Edit Manufacturer";
-    ViewData["Action"] = "Edit";
-    ViewData["ButtonText"] = "Save";
+    ViewData[Constants.Keys.Title] = "Edit Manufacturer";
+    ViewData[Constants.Keys.Action] = "Edit";
+    ViewData[Constants.Keys.ButtonText] = "Save";
 }
 
-<h2>@ViewData["Title"]</h2>
+<h2>@ViewData[Constants.Keys.Title]</h2>
 
 <partial name="_ManufacturerForm" model="Model" />

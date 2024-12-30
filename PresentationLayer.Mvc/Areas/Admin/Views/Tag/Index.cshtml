@@ -1,11 +1,12 @@
+@using PresentationLayer.Mvc
 @model IEnumerable<BusinessLayer.DTOs.TagDto>
 
 @{
-    ViewData["Title"] = "Tags";
+    ViewData[Constants.Keys.Title] = "Tags";
 }
 
 <div class="container mt-5">
-    <h2>@ViewData["Title"]</h2>
+    <h2>@ViewData[Constants.Keys.Title]</h2>
 
     <a href="@Url.Action("Create", "Tag")" class="btn btn-success mb-3">Create New Tag</a>
 
