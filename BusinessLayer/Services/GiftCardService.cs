@@ -7,16 +7,16 @@ using JuiceWorld.Entities;
 
 namespace BusinessLayer.Services;
 
-public class GiftCardService(IRepository<GiftCard> giftCardRepository, 
+public class GiftCardService(IRepository<GiftCard> giftCardRepository,
     IRepository<CouponCode> couponCodeRepository,
     IQueryObject<CouponCode> couponCodeQueryObject,
-    IMapper mapper): IGiftCardService
+    IMapper mapper) : IGiftCardService
 {
     public async Task<GiftCardDetailDto?> CreateGfitCardAsync(GiftCardCreateDto giftCardCreateDto)
     {
         var newGiftCard = await giftCardRepository.CreateAsync(mapper.Map<GiftCard>(giftCardCreateDto));
 
-        if (newGiftCard is null) 
+        if (newGiftCard is null)
             return null;
 
         foreach (var coupon in Enumerable.Range(0, giftCardCreateDto.CouponsCount))
@@ -58,13 +58,13 @@ public class GiftCardService(IRepository<GiftCard> giftCardRepository,
     public async Task<CouponCodeDto?> RedeemCouponCodeAsync(string couponCode)
     {
         var redeemedCoupon = (await couponCodeQueryObject.Filter(c => c.Code == couponCode).ExecuteAsync()).FirstOrDefault();
-        
+
         if (redeemedCoupon == null)
             return null;
-        
+
         if (redeemedCoupon.RedeemedAt != null)
             return null;
-        
+
         redeemedCoupon.RedeemedAt = DateTime.UtcNow;
         var ret = await couponCodeRepository.UpdateAsync(redeemedCoupon);
         return ret is null ? null : mapper.Map<CouponCodeDto>(ret);
@@ -74,13 +74,13 @@ public class GiftCardService(IRepository<GiftCard> giftCardRepository,
     {
         return await couponCodeRepository.GetAllAsync().ContinueWith(task => mapper.Map<List<CouponCodeDto>>(task.Result));
     }
-    
+
     public async Task<CouponCodeDto?> GetCouponCodeByIdAsync(int id)
     {
         var coupon = await couponCodeRepository.GetByIdAsync(id);
         return coupon is null ? null : mapper.Map<CouponCodeDto>(coupon);
     }
-    
+
     public async Task<CouponCodeDto?> GetCouponByCodeAsync(string code)
     {
         var coupon = (await couponCodeQueryObject.Filter(c => c.Code == code).ExecuteAsync()).FirstOrDefault();

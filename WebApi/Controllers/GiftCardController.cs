@@ -54,7 +54,7 @@ public class GiftCardController(IGiftCardService GfitCardService) : ControllerBa
         var result = await GfitCardService.DeleteGfitCardByIdAsync(GfitCardId);
         return result ? Ok() : NotFound();
     }
-    
+
     [HttpPost("redeem")]
     [OpenApiOperation(ApiBaseName + nameof(RedeemCouponCode))]
     public async Task<ActionResult<CouponCode>> RedeemCouponCode(string couponCode)
@@ -62,7 +62,7 @@ public class GiftCardController(IGiftCardService GfitCardService) : ControllerBa
         var result = await GfitCardService.RedeemCouponCodeAsync(couponCode);
         return result == null ? NotFound() : Ok(result);
     }
-    
+
     [HttpGet("coupon-codes")]
     [OpenApiOperation(ApiBaseName + nameof(GetCouponCodes))]
     public async Task<ActionResult<IEnumerable<CouponCodeDto>>> GetCouponCodes()
@@ -70,7 +70,7 @@ public class GiftCardController(IGiftCardService GfitCardService) : ControllerBa
         var result = await GfitCardService.GetCouponCodesAsync();
         return Ok(result);
     }
-    
+
     [HttpGet("coupon-codes/{couponCode}")]
     [OpenApiOperation(ApiBaseName + nameof(GetCouponCode))]
     public async Task<ActionResult<CouponCodeDto>> GetCouponCode(string couponCode)

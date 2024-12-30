@@ -106,7 +106,7 @@ public static class DataInitializer
 
         return faker.Generate(1000);
     }
-    
+
     private static (List<GiftCard>, List<CouponCode>) GenerateGiftCardsWithCouponCodes()
     {
         var giftCardIds = 1;
@@ -117,7 +117,7 @@ public static class DataInitializer
             .RuleFor(gc => gc.CouponsCount, f => f.Random.Int(1, 10));
 
         var giftCards = faker.Generate(50);
-        
+
         // for each giftcard generate appropriate ammount of coupons
         var couponCodes = new List<CouponCode>();
         var couponCodesIds = 1;
@@ -132,7 +132,7 @@ public static class DataInitializer
 
             couponCodes.AddRange(couponCodesFaker.Generate(giftCard.CouponsCount));
         }
-        
+
         return (giftCards, couponCodes);
     }
 

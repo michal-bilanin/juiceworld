@@ -10,12 +10,12 @@ public interface IGiftCardService
     Task<GiftCardDetailDto?> GetGfitCardByIdAsync(int id);
     Task<GiftCardDetailDto?> UpdateGfitCardAsync(GiftCardEditDto GfitCardDto);
     Task<bool> DeleteGfitCardByIdAsync(int id);
-    
+
     Task<CouponCodeDto?> RedeemCouponCodeAsync(string couponCode);
-    
+
     Task<IEnumerable<CouponCodeDto>> GetCouponCodesAsync();
-    
+
     Task<CouponCodeDto?> GetCouponCodeByIdAsync(int id);
-    
+
     Task<CouponCodeDto?> GetCouponByCodeAsync(string code);
 }
