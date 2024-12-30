@@ -99,6 +99,6 @@ public class ProductController(ISearchablesFacade searchablesFacade, IProductSer
             return BadRequest();
         }
 
-        return Ok();
+        return RedirectToAction(nameof(Details), new { id = review.ProductId });
     }
 }
