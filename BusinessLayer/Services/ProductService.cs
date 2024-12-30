@@ -138,13 +138,11 @@ public class ProductService(
                 (productFilter.Category == null || p.Category == categoryEnum) &&
                 (productFilter.PriceMax == null || p.Price <= productFilter.PriceMax) &&
                 (productFilter.PriceMin == null || p.Price >= productFilter.PriceMin) &&
-                (productFilter.ManufacturerName == null || p.Manufacturer == null ||
-                 p.Manufacturer.Name.ToLower()
-                     .Contains(productFilter.ManufacturerName.ToLower())) ||
-                (productFilter.Name == null ||
-                 p.Name.ToLower().Contains(productFilter.Name.ToLower())) ||
-                (productFilter.Description == null ||
-                 p.Description.ToLower().Contains(productFilter.Description.ToLower())))
+                (productFilter.ManufacturerId == null || p.ManufacturerId == productFilter.ManufacturerId) &&
+                (productFilter.TagId == null || p.Tags.Any(t => t.Id == productFilter.TagId)) &&
+                (p.Manufacturer == null || productFilter.NameQuery == null ||
+                 p.Name.ToLower().Contains(productFilter.NameQuery.ToLower()) ||
+                 p.Description.ToLower().Contains(productFilter.NameQuery.ToLower())))
             .OrderBy(p => p.Id)
             .Paginate(productFilter.PageIndex, productFilter.PageSize);
     }

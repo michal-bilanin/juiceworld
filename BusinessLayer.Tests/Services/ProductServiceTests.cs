@@ -93,8 +93,7 @@ public class ProductServiceTests
         // Arrange
         var productFilter = new ProductFilterDto
         {
-            Name = "Anastrozole",
-            Description = "30 tablets, each 1mg",
+            NameQuery = "Anastrozole",
             PriceMax = 2399,
             PriceMin = 2399,
             PageIndex = 1,
@@ -109,8 +108,7 @@ public class ProductServiceTests
         Assert.Single(productDtos);
         Assert.All(productDtos, product =>
         {
-            Assert.Equal(productFilter.Name, product.Name);
-            Assert.Equal(productFilter.Description, product.Description);
+            Assert.Equal(productFilter.NameQuery, product.Name);
             Assert.True(product.Price <= productFilter.PriceMax);
             Assert.True(product.Price >= productFilter.PriceMin);
         });

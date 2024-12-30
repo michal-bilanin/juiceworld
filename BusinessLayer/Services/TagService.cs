@@ -24,8 +24,7 @@ public class TagService(IRepository<Tag> tagRepository, IQueryObject<Tag> tagQue
     public async Task<FilteredResult<TagDto>> GetTagsAsync(TagFilterDto tagFilterDto)
     {
         var query = tagQueryObject
-            .Filter(t => tagFilterDto.Name == null || t.Name.ToLower().Contains(tagFilterDto.Name.ToLower())
-                && tagFilterDto.Id == null || t.Id == tagFilterDto.Id)
+            .Filter(t => tagFilterDto.Name == null || t.Name.ToLower().Contains(tagFilterDto.Name.ToLower()))
             .Paginate(tagFilterDto.PageIndex, tagFilterDto.PageSize)
             .OrderBy(m => m.Id);
 

@@ -1,115 +1,170 @@
 @using PresentationLayer.Mvc
+@using Commons.Enums
 @model PresentationLayer.Mvc.Models.SearchablesFilterResultViewModel
 
 @{
     ViewData[Constants.Keys.Title] = "Shop";
 }
 
-<h2>Tags</h2>
-<div class="tag-list">
-    @foreach (var tag in Model.Tags.Entities)
-    {
-        <div class="tag-card" style="color: @tag.ColorHex;">
-            <p>@tag.Name</p>
-        </div>
-    }
-</div>
-@if (Model.Tags.TotalPages > 1)
+<form method="get" action="@Url.Action("Index")" class="form-group mr-2 d-flex flex-row gap-2">
+    <input type="text" name="NameQuery" value="@ViewContext.HttpContext.Request.Query["NameQuery"].ToString()" class="form-control" placeholder="Search by name..." />
+    <input type="hidden" name="TagPageIndex" value="@Model.Tags.PageIndex" />
+    <input type="hidden" name="ProductPageIndex" value="@Model.Products.PageIndex" />
+    <input type="hidden" name="ManufacturerPageIndex" value="@Model.Manufacturers.PageIndex" />
+    <input type="number" name="ProductPriceMin" placeholder="Min Price" value="@ViewContext.HttpContext.Request.Query["ProductPriceMin"]" />
+    <input type="number" name="ProductPriceMax" placeholder="Max Price" value="@ViewContext.HttpContext.Request.Query["ProductPriceMax"]" />
+
+    <select name="ProductCategory" asp-items="Html.GetEnumSelectList<ProductCategory>()">
+        <option value="">Select Category</option>
+    </select>
+
+    <button type="button" class="btn-secondary" onclick="window.location.href='@Url.Action("Index")'">Clear</button>
+    <button type="submit" class="btn-primary">Search</button>
+</form>
+
+@if (Model.Tags.Entities.Any())
 {
-    <div class="pagination">
-        @if (Model.Tags.PageIndex > 1)
+    <h2>Tags</h2>
+    <div class="tag-list">
+        @foreach (var tag in Model.Tags.Entities)
         {
-            <a href="@Url.Action("Index", new { TagPageIndex = Model.Tags.PageIndex - 1 })">Previous</a>
-        }
-
-        @for (int i = 1; i <= Model.Tags.TotalPages; i++)
-        {
-            <a href="@Url.Action("Index", new { TagPageIndex = i })" class="@(i == Model.Tags.PageIndex ? "active" : "")">@i</a>
-        }
-
-        @if (Model.Tags.PageIndex < Model.Tags.TotalPages)
-        {
-            <a href="@Url.Action("Index", new { TagPageIndex = Model.Tags.PageIndex + 1 })">Next</a>
+            <div class="tag-card" style="color: @tag.ColorHex;" onclick="setTagId(@tag.Id)">
+                <p>@tag.Name</p>
+            </div>
         }
     </div>
+    @if (Model.Tags.TotalPages > 1)
+    {
+        <div class="pagination">
+            @if (Model.Tags.PageIndex > 1)
+            {
+                <a href="javascript:void(0);" onclick="setPageIndex('Tag', @Model.Tags.PageIndex - 1)">Previous</a>
+            }
+
+            @for (int i = 1; i <= Model.Tags.TotalPages; i++)
+            {
+                <a href="javascript:void(0);" onclick="setPageIndex('Tag', @i)" class="@(i == Model.Tags.PageIndex ? "active" : "")">@i</a>
+            }
+
+            @if (Model.Tags.PageIndex < Model.Tags.TotalPages)
+            {
+                <a href="javascript:void(0);" onclick="setPageIndex('Tag', @Model.Tags.PageIndex + 1)">Next</a>
+            }
+        </div>
+    }
 }
 
-<h2 class="section-title">Products</h2>
-<div class="product-list">
-    @foreach (var product in Model.Products.Entities)
-    {
-        <div class="product-card">
-            <a href="@Url.Action("Details", new { id = product.Id })">
-                <div class="product-image">
-                    <img src="@(string.IsNullOrEmpty(product.Image) ? "/images/product_placeholder.jpg" : $"data:image/png;base64,{product.Image}")" alt="@product.Name" />
-                </div>
-                <div class="product-info">
-                    <h3>@product.Name</h3>
-                    <p>@product.Price.ToString("C")</p>
-                    <p>Manufacturer: @product.Manufacturer.Name</p>
-                    <div class="product-tags">
-                        @foreach (var tag in product.Tags)
-                        {
-                            <span class="tag-chip" style="background-color: @tag.ColorHex;">@tag.Name</span>
-                        }
+@if (Model.Products.Entities.Any())
+{
+    <h2 class="section-title">Products</h2>
+    <div class="product-list">
+        @foreach (var product in Model.Products.Entities)
+        {
+            <div class="product-card">
+                <a href="@Url.Action("Details", new { id = product.Id })">
+                    <div class="product-image">
+                        <img src="@(string.IsNullOrEmpty(product.Image) ? "/images/product_placeholder.jpg" : $"data:image/png;base64,{product.Image}")" alt="@product.Name" />
                     </div>
-                </div>
-            </a>
-        </div>
-    }
-</div>
-@if (Model.Products.TotalPages > 1)
-{
-    <div class="pagination">
-        @if (Model.Products.PageIndex > 1)
-        {
-            <a href="@Url.Action("Index", new { ProductPageIndex = Model.Products.PageIndex - 1 })">Previous</a>
-        }
-
-        @for (int i = 1; i <= Model.Products.TotalPages; i++)
-        {
-            <a href="@Url.Action("Index", new { ProductPageIndex = i })" class="@(i == Model.Products.PageIndex ? "active" : "")">@i</a>
-        }
-
-        @if (Model.Products.PageIndex < Model.Products.TotalPages)
-        {
-            <a href="@Url.Action("Index", new { ProductPageIndex = Model.Products.PageIndex + 1 })">Next</a>
+                    <div class="product-info">
+                        <h3>@product.Name</h3>
+                        <p>@product.Price.ToString("C")</p>
+                        <div class="product-category">
+                            <span>Category: </span>
+                            <span class="category-chip">@product.Category</span>
+                        </div>
+                        <p>Manufacturer: @product.Manufacturer.Name</p>
+                        <div class="product-tags">
+                            @foreach (var tag in product.Tags)
+                            {
+                                <span class="tag-chip" style="background-color: @tag.ColorHex;" onclick="setTagId(@tag.Id)">@tag.Name</span>
+                            }
+                        </div>
+                    </div>
+                </a>
+            </div>
         }
     </div>
-}
-
-<h2 class="section-title">Manufacturers</h2>
-<div class="manufacturer-list">
-    @foreach (var manufacturer in Model.Manufacturers.Entities)
+    @if (Model.Products.TotalPages > 1)
     {
-        <div class="manufacturer-card">
-            <p>@manufacturer.Name</p>
+        <div class="pagination">
+            @if (Model.Products.PageIndex > 1)
+            {
+                <a href="javascript:void(0);" onclick="setPageIndex('Product', @Model.Products.PageIndex - 1)">Previous</a>
+            }
+
+            @for (int i = 1; i <= Model.Products.TotalPages; i++)
+            {
+                <a href="javascript:void(0);" onclick="setPageIndex('Product', @i)" class="@(i == Model.Products.PageIndex ? "active" : "")">@i</a>
+            }
+
+            @if (Model.Products.PageIndex < Model.Products.TotalPages)
+            {
+                <a href="javascript:void(0);" onclick="setPageIndex('Product', @Model.Products.PageIndex + 1)">Next</a>
+            }
         </div>
     }
-</div>
-@if (Model.Manufacturers.TotalPages > 1)
+}
+
+@if (Model.Manufacturers.Entities.Any())
 {
-    <div class="pagination">
-        @if (Model.Manufacturers.PageIndex > 1)
+    <h2 class="section-title">Manufacturers</h2>
+    <div class="manufacturer-list">
+        @foreach (var manufacturer in Model.Manufacturers.Entities)
         {
-            <a href="@Url.Action("Index", new { ManufacturerPageIndex = Model.Manufacturers.PageIndex - 1 })">Previous</a>
-        }
-
-        @for (int i = 1; i <= Model.Manufacturers.TotalPages; i++)
-        {
-            <a href="@Url.Action("Index", new { ManufacturerPageIndex = i })" class="@(i == Model.Manufacturers.PageIndex ? "active" : "")">@i</a>
-        }
-
-        @if (Model.Manufacturers.PageIndex < Model.Manufacturers.TotalPages)
-        {
-            <a href="@Url.Action("Index", new { ManufacturerPageIndex = Model.Manufacturers.PageIndex + 1 })">Next</a>
+            <div class="manufacturer-card" onclick="setManufacturerId(@manufacturer.Id)">
+                <p>@manufacturer.Name</p>
+            </div>
         }
     </div>
+    @if (Model.Manufacturers.TotalPages > 1)
+    {
+        <div class="pagination">
+            @if (Model.Manufacturers.PageIndex > 1)
+            {
+                <a href="javascript:void(0);" onclick="setPageIndex('Manufacturer', @Model.Manufacturers.PageIndex - 1)">Previous</a>
+            }
+
+            @for (int i = 1; i <= Model.Manufacturers.TotalPages; i++)
+            {
+                <a href="javascript:void(0);" onclick="setPageIndex('Manufacturer', @i)" class="@(i == Model.Manufacturers.PageIndex ? "active" : "")">@i</a>
+            }
+
+            @if (Model.Manufacturers.PageIndex < Model.Manufacturers.TotalPages)
+            {
+                <a href="javascript:void(0);" onclick="setPageIndex('Manufacturer', @Model.Manufacturers.PageIndex + 1)">Next</a>
+            }
+        </div>
+    }
 }
+
+<script>
+    function updateSearchParam(key, value) {
+        const url = new URL(window.location.href);
+        url.searchParams.set(key, value);
+        window.location.href = url.toString();
+    }
+
+    function setTagId(tagId) {
+        updateSearchParam('TagId', tagId);
+    }
+
+    function setManufacturerId(manufacturerId) {
+        updateSearchParam('ManufacturerId', manufacturerId);
+    }
+
+    function setPageIndex(pageType, pageIndex) {
+        updateSearchParam(pageType + 'PageIndex', pageIndex);
+    }
+
+    function setNameQuery(nameQuery) {
+        updateSearchParam('NameQuery', nameQuery);
+    }
+</script>
 
 <style>
     h1, h2 {
         margin-bottom: 20px;
+        margin-top: 20px;
     }
     .section-title {
         margin-top: 40px;
@@ -133,9 +188,11 @@
         padding: 5px 10px;
         transition: background-color 0.3s ease;
         height: 50px;
+        cursor: pointer;
     }
     .tag-card p, .manufacturer-card p {
         margin: 0;
+        padding: 5px;
     }
     .product-card {
         display: flex;
@@ -195,5 +252,16 @@
     }
     .pagination a.active {
         font-weight: bold;
+    }
+    .product-category {
+        margin-top: 10px;
+    }
+    .category-chip {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 15px;
+        background-color: #6c757d; 
+        color: #fff;
+        font-size: 0.8em;
     }
 </style>
