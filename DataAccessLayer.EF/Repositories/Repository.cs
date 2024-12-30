@@ -2,12 +2,13 @@ using System.Linq.Expressions;
 using Infrastructure.Repositories;
 using JuiceWorld.Data;
 using JuiceWorld.Entities;
+using JuiceWorld.Entities.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace JuiceWorld.Repositories;
 
 public class Repository<TEntity>(JuiceWorldDbContext context) : IRepository<TEntity>
-    where TEntity : BaseEntity
+    where TEntity : class, IBaseEntity
 {
     private readonly DbSet<TEntity> _dbSet = context.Set<TEntity>();
 

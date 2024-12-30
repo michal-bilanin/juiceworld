@@ -16,11 +16,11 @@ public static class DataInstaller
 {
     public static IServiceCollection DalInstall(this IServiceCollection services)
     {
-        services.AddScoped<IQueryObject<User>, UserQueryObject>();
+        services.AddScoped<IQueryObject<User>, QueryObject<User>>();
         services.AddScoped<IQueryObject<Product>, QueryObject<Product>>();
         services.AddScoped<IQueryObject<AuditTrail>, QueryObject<AuditTrail>>();
 
-        services.AddScoped<IRepository<User>, UserRepository>();
+        services.AddScoped<IRepository<User>, Repository<User>>();
         services.AddScoped<IRepository<Address>, Repository<Address>>();
         services.AddScoped<IRepository<CartItem>, Repository<CartItem>>();
         services.AddScoped<IRepository<Manufacturer>, Repository<Manufacturer>>();
