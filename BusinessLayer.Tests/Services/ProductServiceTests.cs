@@ -27,9 +27,7 @@ public class ProductServiceTests
         var config = new MapperConfiguration(cfg => cfg.AddProfile<MapperProfileInstaller>());
         var mapper = config.CreateMapper();
         var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-        var logger = new Logger<ProductService>(loggerFactory);
-        var productUnitOfWork = new ProductUnitOfWork(dbContext);
-        _productService = new ProductService(productRepository, mapper, logger, productUnitOfWork, new QueryObject<Product>(dbContext));
+        _productService = new ProductService(productRepository, mapper, new QueryObject<Product>(dbContext));
     }
 
     [Fact]

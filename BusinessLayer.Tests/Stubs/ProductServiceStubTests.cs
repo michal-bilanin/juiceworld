@@ -7,8 +7,6 @@ using Commons.Enums;
 using Infrastructure.QueryObjects;
 using Infrastructure.Repositories;
 using JuiceWorld.Entities;
-using JuiceWorld.UnitOfWork;
-using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 using Assert = Xunit.Assert;
@@ -53,11 +51,8 @@ namespace BusinessLayer.Tests.Stubs
             var config = new MapperConfiguration(cfg => cfg.AddProfile<MapperProfileInstaller>());
             _mapper = config.CreateMapper();
 
-            var logger = new Mock<ILogger<ProductService>>();
-            var productUnitOfWork = new Mock<ProductUnitOfWork>();
-
             // Initialize the service
-            _productService = new ProductService(_productRepositoryMock.Object, _mapper, logger.Object, productUnitOfWork.Object, queryObjectMock.Object);
+            _productService = new ProductService(_productRepositoryMock.Object, _mapper, queryObjectMock.Object);
         }
 
         [Fact]

@@ -13,8 +13,6 @@ namespace BusinessLayer.Services;
 public class ProductService(
     IRepository<Product> productRepository,
     IMapper mapper,
-    ILogger<ProductService> logger,
-    ProductUnitOfWork productUnitOfWork,
     IQueryObject<Product> queryObject) : IProductService
 {
     public async Task<ProductDto?> CreateProductAsync(ProductDto productDto)

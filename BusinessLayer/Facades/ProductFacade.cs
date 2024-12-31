@@ -46,7 +46,7 @@ public class ProductFacade(IProductService _productService, IImageService _image
     {
         var prod = await _productService.GetProductDetailByIdAsync(id);
         var ret = _mapper.Map<ProductDetailDto>(prod);
-        ret.ImageValue = await _imageService.GetImageAsync(ret.Image);
+        ret.ImageValue = await _imageService.GetImageAsync(ret.Image ?? string.Empty);
         return ret;
     }
 

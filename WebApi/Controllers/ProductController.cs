@@ -12,7 +12,7 @@ namespace WebApi.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize(Roles = nameof(UserRole.Admin) + "," + nameof(UserRole.Customer))]
-public class ProductController(IProductService productService, ProductUnitOfWork productUnitOfWork, IProductFacade productFacade) : ControllerBase
+public class ProductController(IProductFacade productFacade) : ControllerBase
 {
     private const string ApiBaseName = "Product";
 
