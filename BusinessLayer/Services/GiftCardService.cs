@@ -57,7 +57,7 @@ public class GiftCardService(IRepository<GiftCard> giftCardRepository,
 
     public async Task<CouponCodeDto?> RedeemCouponCodeAsync(string couponCode)
     {
-        var redeemedCoupon = (await couponCodeQueryObject.Filter(c => c.Code == couponCode).ExecuteAsync()).FirstOrDefault();
+        var redeemedCoupon = (await couponCodeQueryObject.Filter(c => c.Code == couponCode).ExecuteAsync()).Entities.FirstOrDefault();
 
         if (redeemedCoupon == null)
             return null;
@@ -83,7 +83,7 @@ public class GiftCardService(IRepository<GiftCard> giftCardRepository,
 
     public async Task<CouponCodeDto?> GetCouponByCodeAsync(string code)
     {
-        var coupon = (await couponCodeQueryObject.Filter(c => c.Code == code).ExecuteAsync()).FirstOrDefault();
+        var coupon = (await couponCodeQueryObject.Filter(c => c.Code == code).ExecuteAsync()).Entities.FirstOrDefault();
         return coupon is null ? null : mapper.Map<CouponCodeDto>(coupon);
     }
 }

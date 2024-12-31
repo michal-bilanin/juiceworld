@@ -24,19 +24,19 @@ public static class MockedDbContext
 
     public static void PrepareData(JuiceWorldDbContext dbContext)
     {
+        var tags = TestDataHelper.GetTestTags();
         var manufacturers = TestDataHelper.GetTestManufacturers();
         var users = TestDataHelper.GetTestUsers();
-        var addresses = TestDataHelper.GetTestAddresses(users);
         var orders = TestDataHelper.GetTestOrders(users);
-        var products = TestDataHelper.GetTestProducts();
+        var products = TestDataHelper.GetTestProducts(tags);
         var cartItems = TestDataHelper.GetTestCartItems(users, products);
         var orderProducts = TestDataHelper.GetTestOrderProducts(orders, products);
         var reviews = TestDataHelper.GetTestReviews(users, products);
         var wishListItems = TestDataHelper.GetTestWishListItems(users, products);
 
+        dbContext.AddRange(tags);
         dbContext.AddRange(manufacturers);
         dbContext.AddRange(users);
-        dbContext.AddRange(addresses);
         dbContext.AddRange(orders);
         dbContext.AddRange(products);
         dbContext.AddRange(cartItems);
@@ -49,19 +49,19 @@ public static class MockedDbContext
 
     public static async Task PrepareDataAsync(JuiceWorldDbContext dbContext)
     {
+        var tags = TestDataHelper.GetTestTags();
         var manufacturers = TestDataHelper.GetTestManufacturers();
         var users = TestDataHelper.GetTestUsers();
-        var addresses = TestDataHelper.GetTestAddresses(users);
         var orders = TestDataHelper.GetTestOrders(users);
-        var products = TestDataHelper.GetTestProducts();
+        var products = TestDataHelper.GetTestProducts(tags);
         var cartItems = TestDataHelper.GetTestCartItems(users, products);
         var orderProducts = TestDataHelper.GetTestOrderProducts(orders, products);
         var reviews = TestDataHelper.GetTestReviews(users, products);
         var wishListItems = TestDataHelper.GetTestWishListItems(users, products);
 
+        await dbContext.AddRangeAsync(tags);
         await dbContext.AddRangeAsync(manufacturers);
         await dbContext.AddRangeAsync(users);
-        await dbContext.AddRangeAsync(addresses);
         await dbContext.AddRangeAsync(orders);
         await dbContext.AddRangeAsync(products);
         await dbContext.AddRangeAsync(cartItems);

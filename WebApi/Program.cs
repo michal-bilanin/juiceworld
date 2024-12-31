@@ -2,6 +2,8 @@ using System.Diagnostics;
 using System.Text.Json;
 using BusinessLayer.Installers;
 using Commons.Constants;
+using JuiceWorld.Entities;
+using Commons.Middleware;
 using JuiceWorld.Installers;
 using Microsoft.AspNetCore.Diagnostics;
 using WebApi.Installers;
@@ -57,10 +59,11 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseMiddleware<ResponseFormatMiddleware>();
-app.UseMiddleware<RequestLoggingMiddleware>();
+app.UseMiddleware<RequestLoggingMiddleware>("WebAPI");
 
 // use this instead of RequestLoggingMiddleware, if compliant with the course policy
 // app.UseSerilogRequestLogging();
+
 
 app.MapControllers();
 app.Run();

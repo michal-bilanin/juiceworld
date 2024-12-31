@@ -5,7 +5,7 @@ namespace JuiceWorld.Data;
 
 public static class ProductsSeedData
 {
-    public static List<Product> Products =
+    public static readonly List<Product> Products =
     [
         new()
         {
@@ -14,8 +14,10 @@ public static class ProductsSeedData
             ManufacturerId = 1,
             Price = 4199,
             Description = "100 tablets, each 50mg",
-            UsageType = ProductUsageType.Oral
+            UsageType = ProductUsageType.Oral,
+            Category = ProductCategory.Testosterone
         },
+
         new()
         {
             Id = 2,
@@ -23,8 +25,10 @@ public static class ProductsSeedData
             ManufacturerId = 1,
             Price = 2399,
             Description = "30 tablets, each 1mg",
-            UsageType = ProductUsageType.Oral
+            UsageType = ProductUsageType.Oral,
+            Category = ProductCategory.Unknown
         },
+
         new()
         {
             Id = 3,
@@ -32,8 +36,10 @@ public static class ProductsSeedData
             ManufacturerId = 2,
             Price = 1899,
             Description = "30 tablets, each 1mg",
-            UsageType = ProductUsageType.Oral
+            UsageType = ProductUsageType.Oral,
+            Category = ProductCategory.Unknown
         },
+
         new()
         {
             Id = 4,
@@ -41,8 +47,10 @@ public static class ProductsSeedData
             ManufacturerId = 4,
             Price = 2399,
             Description = "100 tablets, each 10mg",
-            UsageType = ProductUsageType.Oral
+            UsageType = ProductUsageType.Oral,
+            Category = ProductCategory.Dihydrotestosterone
         },
+
         new()
         {
             Id = 5,
@@ -50,8 +58,10 @@ public static class ProductsSeedData
             ManufacturerId = 3,
             Price = 2099,
             Description = "250mg/ml - 10ml",
-            UsageType = ProductUsageType.Injectable
+            UsageType = ProductUsageType.Injectable,
+            Category = ProductCategory.Nandrolone
         },
+
         new()
         {
             Id = 6,
@@ -59,8 +69,10 @@ public static class ProductsSeedData
             ManufacturerId = 1,
             Price = 2399,
             Description = "250mg/ml - 10ml",
-            UsageType = ProductUsageType.Injectable
+            UsageType = ProductUsageType.Injectable,
+            Category = ProductCategory.Nandrolone
         },
+
         new()
         {
             Id = 7,
@@ -68,8 +80,10 @@ public static class ProductsSeedData
             ManufacturerId = 1,
             Price = 2599,
             Description = "10mg",
-            UsageType = ProductUsageType.Injectable
+            UsageType = ProductUsageType.Injectable,
+            Category = ProductCategory.Peptide
         },
+
         new()
         {
             Id = 8,
@@ -77,8 +91,10 @@ public static class ProductsSeedData
             ManufacturerId = 14,
             Price = 3299,
             Description = "20 tablets, each 1mg",
-            UsageType = ProductUsageType.Oral
+            UsageType = ProductUsageType.Oral,
+            Category = ProductCategory.Unknown
         },
+
         new()
         {
             Id = 9,
@@ -86,8 +102,10 @@ public static class ProductsSeedData
             ManufacturerId = 15,
             Price = 1899,
             Description = "30 tablets, each 20mg",
-            UsageType = ProductUsageType.Oral
+            UsageType = ProductUsageType.Oral,
+            Category = ProductCategory.Unknown
         },
+
         new()
         {
             Id = 10,
@@ -95,8 +113,10 @@ public static class ProductsSeedData
             ManufacturerId = 1,
             Price = 2899,
             Description = "5mg",
-            UsageType = ProductUsageType.Injectable
+            UsageType = ProductUsageType.Injectable,
+            Category = ProductCategory.Peptide
         },
+
         new()
         {
             Id = 11,
@@ -104,8 +124,10 @@ public static class ProductsSeedData
             ManufacturerId = 5,
             Price = 2399,
             Description = "100 tablets, each 40mcg",
-            UsageType = ProductUsageType.Oral
+            UsageType = ProductUsageType.Oral,
+            Category = ProductCategory.Unknown
         },
+
         new()
         {
             Id = 12,
@@ -113,8 +135,10 @@ public static class ProductsSeedData
             ManufacturerId = 6,
             Price = 1799,
             Description = "24 tablets, each 50mg",
-            UsageType = ProductUsageType.Oral
+            UsageType = ProductUsageType.Oral,
+            Category = ProductCategory.Unknown
         },
+
         new()
         {
             Id = 13,
@@ -122,8 +146,10 @@ public static class ProductsSeedData
             ManufacturerId = 1,
             Price = 2199,
             Description = "60 tablets, each 50mg",
-            UsageType = ProductUsageType.Oral
+            UsageType = ProductUsageType.Oral,
+            Category = ProductCategory.Unknown
         },
+
         new()
         {
             Id = 14,
@@ -131,8 +157,10 @@ public static class ProductsSeedData
             ManufacturerId = 5,
             Price = 2099,
             Description = "100 tablets, each 10mg",
-            UsageType = ProductUsageType.Oral
+            UsageType = ProductUsageType.Oral,
+            Category = ProductCategory.Testosterone
         },
+
         new()
         {
             Id = 15,
@@ -140,8 +168,10 @@ public static class ProductsSeedData
             ManufacturerId = 13,
             Price = 2599,
             Description = "270g (30 dávek)",
-            UsageType = ProductUsageType.Oral
+            UsageType = ProductUsageType.Oral,
+            Category = ProductCategory.Unknown
         },
+
         new()
         {
             Id = 16,
@@ -149,8 +179,10 @@ public static class ProductsSeedData
             ManufacturerId = 3,
             Price = 2199,
             Description = "200mg/ml - 10ml",
-            UsageType = ProductUsageType.Injectable
+            UsageType = ProductUsageType.Injectable,
+            Category = ProductCategory.Dihydrotestosterone
         },
+
         new()
         {
             Id = 17,
@@ -158,8 +190,10 @@ public static class ProductsSeedData
             ManufacturerId = 3,
             Price = 2099,
             Description = "100mg/ml - 10ml",
-            UsageType = ProductUsageType.Injectable
+            UsageType = ProductUsageType.Injectable,
+            Category = ProductCategory.Dihydrotestosterone
         },
+
         new()
         {
             Id = 18,
@@ -167,8 +201,10 @@ public static class ProductsSeedData
             ManufacturerId = 1,
             Price = 2399,
             Description = "30 tablets, each 25mg",
-            UsageType = ProductUsageType.Oral
+            UsageType = ProductUsageType.Oral,
+            Category = ProductCategory.Unknown
         },
+
         new()
         {
             Id = 19,
@@ -176,8 +212,10 @@ public static class ProductsSeedData
             ManufacturerId = 2,
             Price = 2099,
             Description = "30 tablets, each 25mg",
-            UsageType = ProductUsageType.Oral
+            UsageType = ProductUsageType.Oral,
+            Category = ProductCategory.Unknown
         },
+
         new()
         {
             Id = 20,
@@ -185,8 +223,10 @@ public static class ProductsSeedData
             ManufacturerId = 1,
             Price = 2899,
             Description = "1mg",
-            UsageType = ProductUsageType.Injectable
+            UsageType = ProductUsageType.Injectable,
+            Category = ProductCategory.Peptide
         },
+
         new()
         {
             Id = 21,
@@ -194,8 +234,10 @@ public static class ProductsSeedData
             ManufacturerId = 1,
             Price = 2199,
             Description = "10mg",
-            UsageType = ProductUsageType.Injectable
+            UsageType = ProductUsageType.Injectable,
+            Category = ProductCategory.Peptide
         },
+
         new()
         {
             Id = 22,
@@ -203,8 +245,10 @@ public static class ProductsSeedData
             ManufacturerId = 15,
             Price = 1999,
             Description = "5000iu",
-            UsageType = ProductUsageType.Injectable
+            UsageType = ProductUsageType.Injectable,
+            Category = ProductCategory.Unknown
         },
+
         new()
         {
             Id = 23,
@@ -212,8 +256,10 @@ public static class ProductsSeedData
             ManufacturerId = 1,
             Price = 2199,
             Description = "5000iu",
-            UsageType = ProductUsageType.Injectable
+            UsageType = ProductUsageType.Injectable,
+            Category = ProductCategory.Unknown
         },
+
         new()
         {
             Id = 24,
@@ -221,8 +267,10 @@ public static class ProductsSeedData
             ManufacturerId = 1,
             Price = 2399,
             Description = "5mg",
-            UsageType = ProductUsageType.Injectable
+            UsageType = ProductUsageType.Injectable,
+            Category = ProductCategory.GrowthHormone
         },
+
         new()
         {
             Id = 25,
@@ -230,8 +278,10 @@ public static class ProductsSeedData
             ManufacturerId = 1,
             Price = 12999,
             Description = "100iu",
-            UsageType = ProductUsageType.Injectable
+            UsageType = ProductUsageType.Injectable,
+            Category = ProductCategory.GrowthHormone
         },
+
         new()
         {
             Id = 26,
@@ -239,8 +289,10 @@ public static class ProductsSeedData
             ManufacturerId = 1,
             Price = 2899,
             Description = "1mg",
-            UsageType = ProductUsageType.Injectable
+            UsageType = ProductUsageType.Injectable,
+            Category = ProductCategory.Peptide
         },
+
         new()
         {
             Id = 27,
@@ -248,8 +300,10 @@ public static class ProductsSeedData
             ManufacturerId = 2,
             Price = 1999,
             Description = "30 tablets, each 20mg",
-            UsageType = ProductUsageType.Oral
+            UsageType = ProductUsageType.Oral,
+            Category = ProductCategory.Unknown
         },
+
         new()
         {
             Id = 28,
@@ -257,8 +311,10 @@ public static class ProductsSeedData
             ManufacturerId = 1,
             Price = 3299,
             Description = "400mg/ml - 10ml",
-            UsageType = ProductUsageType.Injectable
+            UsageType = ProductUsageType.Injectable,
+            Category = ProductCategory.Testosterone
         },
+
         new()
         {
             Id = 29,
@@ -266,8 +322,10 @@ public static class ProductsSeedData
             ManufacturerId = 2,
             Price = 2099,
             Description = "100mg/ml - 10ml",
-            UsageType = ProductUsageType.Injectable
+            UsageType = ProductUsageType.Injectable,
+            Category = ProductCategory.Dihydrotestosterone
         },
+
         new()
         {
             Id = 30,
@@ -275,8 +333,10 @@ public static class ProductsSeedData
             ManufacturerId = 1,
             Price = 3899,
             Description = "200mg/ml - 10ml",
-            UsageType = ProductUsageType.Injectable
+            UsageType = ProductUsageType.Injectable,
+            Category = ProductCategory.Dihydrotestosterone
         },
+
         new()
         {
             Id = 31,
@@ -284,8 +344,10 @@ public static class ProductsSeedData
             ManufacturerId = 1,
             Price = 2399,
             Description = "10mg",
-            UsageType = ProductUsageType.Injectable
+            UsageType = ProductUsageType.Injectable,
+            Category = ProductCategory.Peptide
         },
+
         new()
         {
             Id = 32,
@@ -293,8 +355,10 @@ public static class ProductsSeedData
             ManufacturerId = 3,
             Price = 2099,
             Description = "250mg/ml - 10ml",
-            UsageType = ProductUsageType.Injectable
+            UsageType = ProductUsageType.Injectable,
+            Category = ProductCategory.Nandrolone
         },
+
         new()
         {
             Id = 33,
@@ -302,8 +366,10 @@ public static class ProductsSeedData
             ManufacturerId = 1,
             Price = 3899,
             Description = "100mg/ml - 10ml",
-            UsageType = ProductUsageType.Injectable
+            UsageType = ProductUsageType.Injectable,
+            Category = ProductCategory.Dihydrotestosterone
         },
+
         new()
         {
             Id = 34,
@@ -311,8 +377,10 @@ public static class ProductsSeedData
             ManufacturerId = 2,
             Price = 2099,
             Description = "100 tablets, each 25mg",
-            UsageType = ProductUsageType.Oral
+            UsageType = ProductUsageType.Oral,
+            Category = ProductCategory.Dihydrotestosterone
         },
+
         new()
         {
             Id = 35,
@@ -320,8 +388,10 @@ public static class ProductsSeedData
             ManufacturerId = 12,
             Price = 2099,
             Description = "30 tablets, each 100mg",
-            UsageType = ProductUsageType.Oral
+            UsageType = ProductUsageType.Oral,
+            Category = ProductCategory.Unknown
         },
+
         new()
         {
             Id = 36,
@@ -329,8 +399,10 @@ public static class ProductsSeedData
             ManufacturerId = 1,
             Price = 2899,
             Description = "250mg/ml - 10ml",
-            UsageType = ProductUsageType.Injectable
+            UsageType = ProductUsageType.Injectable,
+            Category = ProductCategory.Testosterone
         },
+
         new()
         {
             Id = 37,
@@ -338,8 +410,10 @@ public static class ProductsSeedData
             ManufacturerId = 1,
             Price = 2099,
             Description = "60 tablets, each 20mg",
-            UsageType = ProductUsageType.Oral
+            UsageType = ProductUsageType.Oral,
+            Category = ProductCategory.Unknown
         },
+
         new()
         {
             Id = 38,
@@ -347,8 +421,10 @@ public static class ProductsSeedData
             ManufacturerId = 2,
             Price = 1799,
             Description = "60 tablets, each 20mg",
-            UsageType = ProductUsageType.Oral
+            UsageType = ProductUsageType.Oral,
+            Category = ProductCategory.Unknown
         },
+
         new()
         {
             Id = 39,
@@ -356,8 +432,10 @@ public static class ProductsSeedData
             ManufacturerId = 2,
             Price = 1999,
             Description = "100 tablets, each 25mcg",
-            UsageType = ProductUsageType.Oral
+            UsageType = ProductUsageType.Oral,
+            Category = ProductCategory.Unknown
         },
+
         new()
         {
             Id = 40,
@@ -365,8 +443,10 @@ public static class ProductsSeedData
             ManufacturerId = 1,
             Price = 1799,
             Description = "30 tablets, each 20mg",
-            UsageType = ProductUsageType.Oral
+            UsageType = ProductUsageType.Oral,
+            Category = ProductCategory.Unknown
         },
+
         new()
         {
             Id = 41,
@@ -374,8 +454,10 @@ public static class ProductsSeedData
             ManufacturerId = 1,
             Price = 2399,
             Description = "250mg/ml - 10ml",
-            UsageType = ProductUsageType.Injectable
+            UsageType = ProductUsageType.Injectable,
+            Category = ProductCategory.Testosterone
         },
+
         new()
         {
             Id = 42,
@@ -383,8 +465,10 @@ public static class ProductsSeedData
             ManufacturerId = 1,
             Price = 2399,
             Description = "250mg/ml - 10ml",
-            UsageType = ProductUsageType.Injectable
+            UsageType = ProductUsageType.Injectable,
+            Category = ProductCategory.Testosterone
         },
+
         new()
         {
             Id = 43,
@@ -392,8 +476,10 @@ public static class ProductsSeedData
             ManufacturerId = 1,
             Price = 2899,
             Description = "250mg/ml - 10ml",
-            UsageType = ProductUsageType.Injectable
+            UsageType = ProductUsageType.Injectable,
+            Category = ProductCategory.Testosterone
         },
+
         new()
         {
             Id = 44,
@@ -401,8 +487,10 @@ public static class ProductsSeedData
             ManufacturerId = 3,
             Price = 2399,
             Description = "100mg/ml - 10ml",
-            UsageType = ProductUsageType.Injectable
+            UsageType = ProductUsageType.Injectable,
+            Category = ProductCategory.Nandrolone
         },
+
         new()
         {
             Id = 45,
@@ -410,8 +498,10 @@ public static class ProductsSeedData
             ManufacturerId = 1,
             Price = 2599,
             Description = "200mg/ml - 10ml",
-            UsageType = ProductUsageType.Injectable
+            UsageType = ProductUsageType.Injectable,
+            Category = ProductCategory.Nandrolone
         },
+
         new()
         {
             Id = 46,
@@ -419,8 +509,10 @@ public static class ProductsSeedData
             ManufacturerId = 1,
             Price = 2599,
             Description = "200mg/ml - 10ml",
-            UsageType = ProductUsageType.Injectable
+            UsageType = ProductUsageType.Injectable,
+            Category = ProductCategory.Nandrolone
         },
+
         new()
         {
             Id = 47,
@@ -428,7 +520,8 @@ public static class ProductsSeedData
             ManufacturerId = 1,
             Price = 1999,
             Description = "100 tablets, each 10mg",
-            UsageType = ProductUsageType.Oral
-        },
+            UsageType = ProductUsageType.Oral,
+            Category = ProductCategory.Testosterone
+        }
     ];
 }

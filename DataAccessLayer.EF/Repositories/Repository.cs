@@ -2,12 +2,13 @@ using System.Linq.Expressions;
 using Infrastructure.Repositories;
 using JuiceWorld.Data;
 using JuiceWorld.Entities;
+using JuiceWorld.Entities.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace JuiceWorld.Repositories;
 
 public class Repository<TEntity>(JuiceWorldDbContext context) : IRepository<TEntity>
-    where TEntity : BaseEntity
+    where TEntity : class, IBaseEntity
 {
     private readonly DbSet<TEntity> _dbSet = context.Set<TEntity>();
 
@@ -27,6 +28,22 @@ public class Repository<TEntity>(JuiceWorldDbContext context) : IRepository<TEnt
         return result.Entity;
     }
 
+    public async Task<bool> CreateRangeAsync(IEnumerable<TEntity> entities, object? userId = null)
+    {
+        await _dbSet.AddRangeAsync(entities);
+
+        if (userId is null)
+        {
+            await context.SaveChangesAsync();
+        }
+        else
+        {
+            await context.SaveChangesAsync((int)userId);
+        }
+
+        return true;
+    }
+
     public async Task<TEntity?> GetByIdAsync(object id, params string[] includes)
     {
         var query = includes.Aggregate(_dbSet.AsQueryable(), (current, include) => current.Include(include));
@@ -37,6 +54,17 @@ public class Repository<TEntity>(JuiceWorldDbContext context) : IRepository<TEnt
     {
         var query = includes.Aggregate(_dbSet.AsQueryable(), (current, include) => current.Include(include));
         return await query.ToListAsync();
+    }
+
+    public async Task<IEnumerable<TEntity>> GetByConditionAsync(Expression<Func<TEntity, bool>> predicate, params string[] includes)
+    {
+        var query = includes.Aggregate(_dbSet.AsQueryable(), (current, include) => current.Include(include));
+        return await query.Where(predicate).ToListAsync();
+    }
+
+    public async Task<IEnumerable<TEntity>> GetByIdRangeAsync(IEnumerable<object> ids)
+    {
+        return await _dbSet.Where(e => ids.Contains(e.Id)).ToListAsync();
     }
 
     public async Task<TEntity?> UpdateAsync(TEntity entity, object? userId = null)

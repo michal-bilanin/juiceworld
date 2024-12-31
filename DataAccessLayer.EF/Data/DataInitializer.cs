@@ -2,6 +2,7 @@
 using Commons.Enums;
 using Commons.Utils;
 using JuiceWorld.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace JuiceWorld.Data;
@@ -12,6 +13,18 @@ namespace JuiceWorld.Data;
 public static class DataInitializer
 {
     private const int SeedNumber = 69420;
+
+    private static readonly List<Tag> Tags =
+    [
+        new() { Id = 1, Name = "Sale", ColorHex = "#ff0000" },
+        new() { Id = 2, Name = "New", ColorHex = "#00ff00" },
+        new() { Id = 3, Name = "Bestseller", ColorHex = "#0000ff" },
+        new() { Id = 4, Name = "Top Rated", ColorHex = "#ffff00" },
+        new() { Id = 5, Name = "Recommended", ColorHex = "#00ffff" },
+        new() { Id = 6, Name = "Popular", ColorHex = "#ff00ff" },
+        new() { Id = 7, Name = "Trending", ColorHex = "#000000" },
+        new() { Id = 8, Name = "Hot", ColorHex = "#ffffff" }
+    ];
 
     private static readonly List<Manufacturer> Manufacturers =
     [
@@ -47,15 +60,33 @@ public static class DataInitializer
             UserName = userName,
             Bio = bio,
             UserRole = role,
-            PasswordSalt = AuthUtils.GenerateSalt(),
-            PasswordHashRounds = 10,
-            PasswordHash = ""
+            NormalizedEmail = email.ToUpperInvariant(),
+            NormalizedUserName = userName.ToUpperInvariant(),
+            EmailConfirmed = true,
+            PhoneNumberConfirmed = true,
+            SecurityStamp = Guid.NewGuid().ToString("D"),
+            LockoutEnabled = true
         };
 
-        user.PasswordHash = AuthUtils.HashPassword(password, user.PasswordSalt, user.PasswordHashRounds);
+
+        // Use PasswordHasher to hash the password
+        var passwordHasher = new PasswordHasher<User>();
+        user.PasswordHash = passwordHasher.HashPassword(user, password);
+
         return user;
     }
 
+    private static List<object> GenerateProductTags(List<Product> products, List<Tag> tags)
+    {
+        var productTags = new List<object>();
+        foreach (var product in products)
+        {
+            var tag = tags[new Random().Next(3)];
+            productTags.Add(new { ProductsId = product.Id, TagsId = tag.Id });
+        }
+
+        return productTags;
+    }
 
     private static List<User> GenerateUsers()
     {
@@ -67,42 +98,40 @@ public static class DataInitializer
             .RuleFor(u => u.UserName, f => f.Internet.UserName())
             .RuleFor(u => u.Bio, f => f.Lorem.Sentence())
             .RuleFor(u => u.UserRole, f => f.PickRandom<UserRole>())
-            .RuleFor(u => u.PasswordSalt, _ => AuthUtils.GenerateSalt())
-            .RuleFor(u => u.PasswordHashRounds, _ => 10)
-            .RuleFor(u => u.PasswordHash,
-                (_, u) => AuthUtils.HashPassword("password", u.PasswordSalt, u.PasswordHashRounds));
+            .RuleFor(u => u.NormalizedEmail, (_, u) => u.Email?.ToUpperInvariant())
+            .RuleFor(u => u.NormalizedUserName, (_, u) => u.UserName?.ToUpperInvariant())
+            .RuleFor(u => u.EmailConfirmed, true)
+            .RuleFor(u => u.PhoneNumberConfirmed, true)
+            .RuleFor(u => u.SecurityStamp, f => Guid.NewGuid().ToString("D"))
+            .RuleFor(u => u.LockoutEnabled, true);
 
-        return faker.Generate(100);
+        var users = faker.Generate(100);
+
+        // Assign passwords using PasswordHasher
+        var passwordHasher = new PasswordHasher<User>();
+        foreach (var user in users)
+        {
+            user.PasswordHash = passwordHasher.HashPassword(user, "Password123!");
+        }
+
+        return users;
     }
 
-    private static List<Address> GenerateAddresses(List<User> users)
-    {
-        var addressIds = 1;
-        var faker = new Faker<Address>()
-            .UseSeed(SeedNumber)
-            .RuleFor(a => a.Id, _ => addressIds++)
-            .RuleFor(a => a.Name, f => f.Name.FullName())
-            .RuleFor(a => a.City, f => f.Address.City())
-            .RuleFor(a => a.Street, f => f.Address.StreetName())
-            .RuleFor(a => a.HouseNumber, f => f.Address.BuildingNumber())
-            .RuleFor(a => a.ZipCode, f => f.Address.ZipCode())
-            .RuleFor(a => a.Country, f => f.Address.Country())
-            .RuleFor(a => a.Type, f => f.PickRandom<AddressType>())
-            .RuleFor(a => a.UserId, f => f.PickRandom(users).Id);
-
-        return faker.Generate(150);
-    }
-
-    private static List<Order> GenerateOrders(List<User> users, List<Address> addresses)
+    private static List<Order> GenerateOrders(List<User> users)
     {
         var orderIds = 1;
         var faker = new Faker<Order>()
             .UseSeed(SeedNumber)
             .RuleFor(o => o.Id, _ => orderIds++)
             .RuleFor(o => o.DeliveryType, f => f.PickRandom<DeliveryType>())
+            .RuleFor(o => o.PaymentMethodType, f => f.PickRandom<PaymentMethodType>())
             .RuleFor(o => o.Status, f => f.PickRandom<OrderStatus>())
             .RuleFor(o => o.UserId, f => f.PickRandom(users).Id)
-            .RuleFor(o => o.AddressId, f => f.PickRandom(addresses).Id);
+            .RuleFor(o => o.City, f => f.Address.City())
+            .RuleFor(o => o.Street, f => f.Address.StreetName())
+            .RuleFor(o => o.HouseNumber, f => f.Address.BuildingNumber())
+            .RuleFor(o => o.ZipCode, f => f.Address.ZipCode())
+            .RuleFor(o => o.Country, f => f.Address.Country());
 
         return faker.Generate(1000);
     }
@@ -157,7 +186,8 @@ public static class DataInitializer
             .RuleFor(op => op.Id, _ => orderProductIds++)
             .RuleFor(op => op.OrderId, f => f.PickRandom(orders).Id)
             .RuleFor(op => op.ProductId, f => f.Random.Int(1, 47))
-            .RuleFor(op => op.Quantity, f => f.Random.Int(1, 10));
+            .RuleFor(op => op.Quantity, f => f.Random.Int(1, 10))
+            .RuleFor(op => op.Price, f => f.Random.Decimal(1, 1000));
 
         return faker.Generate(2000);
     }
@@ -191,24 +221,29 @@ public static class DataInitializer
     public static void Seed(this ModelBuilder modelBuilder)
     {
         var users = GenerateUsers();
-        var addresses = GenerateAddresses(users);
-        var orders = GenerateOrders(users, addresses);
+        var orders = GenerateOrders(users);
         var cartItems = GenerateCartItems(users);
         var orderProducts = GenerateOrderProducts(orders);
         var reviews = GenerateReviews(users);
         var wishListItems = GenerateWishListItems(users);
+        var productTags = GenerateProductTags(ProductsSeedData.Products, Tags);
         var (giftCards, couponCodes) = GenerateGiftCardsWithCouponCodes();
 
-        // Not generated (authentic) manufacturer and product data
+        // Not generated (authentic) tags, manufacturer and product data
+        modelBuilder.Entity<Tag>().HasData(Tags);
         modelBuilder.Entity<Manufacturer>().HasData(Manufacturers);
         modelBuilder.Entity<Product>().HasData(ProductsSeedData.Products);
+
+        modelBuilder.Entity<Product>()
+            .HasMany(p => p.Tags)
+            .WithMany(t => t.Products)
+            .UsingEntity(j => j.HasData(productTags));
 
         // Fixed users for testing
         modelBuilder.Entity<User>().HasData(Users);
 
         // Generated data
         modelBuilder.Entity<User>().HasData(users);
-        modelBuilder.Entity<Address>().HasData(addresses);
         modelBuilder.Entity<Order>().HasData(orders);
         modelBuilder.Entity<CartItem>().HasData(cartItems);
         modelBuilder.Entity<OrderProduct>().HasData(orderProducts);

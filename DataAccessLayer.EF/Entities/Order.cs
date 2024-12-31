@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Commons.Enums;
 using JuiceWorld.Entities.Interfaces;
 
@@ -11,15 +12,25 @@ public class Order : BaseEntity, IAuditableEntity
     public DateTime? Departure { get; set; }
     public DateTime? Arrival { get; set; }
     public PaymentMethodType PaymentMethodType { get; set; } = PaymentMethodType.Unknown;
+
+    [MaxLength(100)]
+    public required string City { get; set; }
+
+    [MaxLength(100)]
+    public required string Street { get; set; }
+
+    [MaxLength(10)]
+    public required string HouseNumber { get; set; }
+
+    [MaxLength(10)]
+    public required string ZipCode { get; set; }
+
+    [MaxLength(100)]
+    public required string Country { get; set; }
     public int UserId { get; set; }
 
     [ForeignKey(nameof(UserId))]
     public virtual User? User { get; set; }
-
-    public int AddressId { get; set; }
-
-    [ForeignKey(nameof(AddressId))]
-    public virtual Address? Address { get; set; }
 
     public virtual List<CartItem> CartItems { get; set; } = [];
     public virtual List<OrderProduct> OrderProducts { get; set; } = [];
