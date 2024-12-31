@@ -29,4 +29,5 @@ public class Product : BaseEntity, IAuditableEntity
     public virtual List<CartItem> CartItems { get; set; } = [];
     public virtual List<WishListItem> WishListItems { get; set; } = [];
     public virtual List<OrderProduct> OrdersProducts { get; set; } = [];
+    public virtual List<Tag> Tags { get; set; } = [];
 }

@@ -22,6 +22,5 @@ public class User : IdentityUser<int>, IAuditableEntity, IBaseEntity
     public virtual List<WishListItem> WishListItems { get; set; } = [];
     public virtual List<Review> Reviews { get; set; } = [];
     public virtual List<Order> Orders { get; set; } = [];
-    public virtual List<Address> Addresses { get; set; } = [];
     public virtual List<AuditTrail> AuditTrails { get; set; } = [];
 }

@@ -40,9 +40,16 @@ public class UserController(IUserService userService) : ControllerBase
 
     [HttpPut]
     [OpenApiOperation(ApiBaseName + nameof(UpdateUser))]
-    public async Task<ActionResult<UserDto>> UpdateUser(UserDto user)
+    public async Task<ActionResult<UserDto>> UpdateUser(UserUpdateDto user)
     {
-        var result = await userService.UpdateUserAsync(user);
+        var result = await userService.UpdateUserAsync(new UserUpdateDto
+        {
+            Id = user.Id,
+            Bio = user.Bio,
+            Password = user.Password,
+            ConfirmPassword = user.ConfirmPassword,
+            UserRole = user.UserRole
+        });
         return result == null ? NotFound() : Ok(result);
     }
 

@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using MongoDB.Driver;
+using PresentationLayer.Mvc.Facades;
+using PresentationLayer.Mvc.Facades.Interfaces;
 using Serilog.Events;
 
 namespace PresentationLayer.Mvc.Installers;
@@ -19,6 +21,7 @@ public static class MvcInstaller
         services.AddControllers();
         services.AddAutoMapper(typeof(MvcMapperInstaller));
 
+        services.AddScoped<ISearchablesFacade, SearchablesFacade>();
 
         var secret = Environment.GetEnvironmentVariable(EnvironmentConstants.JwtSecret);
         if (secret == null)

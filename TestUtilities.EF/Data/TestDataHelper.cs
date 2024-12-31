@@ -6,6 +6,18 @@ namespace TestUtilities.Data;
 
 public static class TestDataHelper
 {
+    public static List<Tag> GetTestTags()
+    {
+        return
+        [
+            new Tag { Id = 1, Name = "Hot", ColorHex = "#FF0000" },
+            new Tag { Id = 2, Name = "Sale", ColorHex = "#00FF00" },
+            new Tag { Id = 3, Name = "New", ColorHex = "#0000FF" },
+            new Tag { Id = 4, Name = "Recommended", ColorHex = "#FFFF00" },
+            new Tag { Id = 5, Name = "Best Seller", ColorHex = "#00FFFF" }
+        ];
+    }
+
     public static List<User> GetTestUsers()
     {
         return
@@ -27,7 +39,7 @@ public static class TestDataHelper
         ];
     }
 
-    public static List<Product> GetTestProducts()
+    public static List<Product> GetTestProducts(List<Tag> tags)
     {
         return
         [
@@ -79,61 +91,6 @@ public static class TestDataHelper
         ];
     }
 
-    public static List<Address> GetTestAddresses(List<User> users)
-    {
-        return
-        [
-            new Address
-            {
-                Id = 1,
-                UserId = users[0].Id,
-                Name = "John Pork",
-                HouseNumber = "123",
-                Street = "Main Street",
-                City = "New York",
-                ZipCode = "10001",
-                Country = "USA",
-                Type = AddressType.Shipping
-            },
-            new Address
-            {
-                Id = 2,
-                UserId = users[0].Id,
-                Name = "John Pork",
-                HouseNumber = "123",
-                Street = "Main Street",
-                City = "New York",
-                ZipCode = "10001",
-                Country = "USA",
-                Type = AddressType.Billing
-            },
-            new Address
-            {
-                Id = 3,
-                UserId = users[1].Id,
-                Name = "Freakbob",
-                HouseNumber = "321",
-                Street = "Broadway",
-                City = "New York",
-                ZipCode = "10002",
-                Country = "USA",
-                Type = AddressType.Billing
-            },
-            new Address
-            {
-                Id = 4,
-                UserId = users[1].Id,
-                Name = "Freakbob",
-                HouseNumber = "69",
-                Street = "Bronx",
-                City = "New York",
-                ZipCode = "104",
-                Country = "USA",
-                Type = AddressType.Shipping
-            }
-        ];
-    }
-
     public static List<Order> GetTestOrders(List<User> users)
     {
         return
@@ -142,43 +99,59 @@ public static class TestDataHelper
             {
                 Id = 1,
                 UserId = users[0].Id,
-                AddressId = 1,
                 CreatedAt = DateTime.Now,
                 Status = OrderStatus.Processing,
                 DeliveryType = DeliveryType.Express,
-                PaymentMethodType = PaymentMethodType.Bitcoin
+                PaymentMethodType = PaymentMethodType.Bitcoin,
+                City = "New York",
+                Street = "Broadway",
+                HouseNumber = "1",
+                ZipCode = "10001",
+                Country = "USA"
             },
             new Order
             {
                 Id = 2,
                 UserId = users[0].Id,
-                AddressId = 1,
                 CreatedAt = DateTime.Now,
                 Status = OrderStatus.Cancelled,
                 DeliveryType = DeliveryType.Standard,
-                PaymentMethodType = PaymentMethodType.Bitcoin
+                PaymentMethodType = PaymentMethodType.Bitcoin,
+                City = "Los Angeles",
+                Street = "Hollywood",
+                HouseNumber = "2",
+                ZipCode = "90001",
+                Country = "USA"
             },
             new Order
             {
                 Id = 3,
                 UserId = users[1].Id,
-                AddressId = 4,
                 CreatedAt = DateTime.Now.AddDays(-3),
                 Status = OrderStatus.Delivered,
                 DeliveryType = DeliveryType.Standard,
                 PaymentMethodType = PaymentMethodType.Bitcoin,
                 Departure = DateTime.Now.AddDays(-2),
-                Arrival = DateTime.Now.AddDays(-1)
+                Arrival = DateTime.Now.AddDays(-1),
+                City = "Chicago",
+                Street = "Michigan Avenue",
+                HouseNumber = "3",
+                ZipCode = "60601",
+                Country = "USA"
             },
             new Order
             {
                 Id = 4,
                 UserId = users[1].Id,
-                AddressId = 4,
                 CreatedAt = DateTime.Now,
                 Status = OrderStatus.Pending,
                 DeliveryType = DeliveryType.Express,
-                PaymentMethodType = PaymentMethodType.Monero
+                PaymentMethodType = PaymentMethodType.Monero,
+                City = "Miami",
+                Street = "Ocean Drive",
+                HouseNumber = "4",
+                ZipCode = "33139",
+                Country = "USA"
             }
         ];
     }
