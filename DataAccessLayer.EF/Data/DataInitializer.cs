@@ -143,7 +143,8 @@ public static class DataInitializer
             .UseSeed(SeedNumber)
             .RuleFor(gc => gc.Id, _ => giftCardIds++)
             .RuleFor(gc => gc.Discount, f => f.Random.Int(10, 1000))
-            .RuleFor(gc => gc.CouponsCount, f => f.Random.Int(1, 10));
+            .RuleFor(gc => gc.CouponsCount, f => f.Random.Int(1, 10))
+            .RuleFor(gc => gc.Name, f => f.Commerce.ProductName());
 
         var giftCards = faker.Generate(50);
 
@@ -156,7 +157,7 @@ public static class DataInitializer
                 .UseSeed(SeedNumber)
                 .RuleFor(cc => cc.Id, _ => couponCodesIds++)
                 .RuleFor(cc => cc.GiftCardId, giftCard.Id)
-                .RuleFor(cc => cc.Code, f => f.Random.AlphaNumeric(10))
+                .RuleFor(cc => cc.Code, f => Guid.NewGuid().ToString())
                 .RuleFor(cc => cc.RedeemedAt, f => f.Random.Bool(0.5f) ? f.Date.Past().ToUniversalTime() : null);
 
             couponCodes.AddRange(couponCodesFaker.Generate(giftCard.CouponsCount));

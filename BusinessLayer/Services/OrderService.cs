@@ -16,10 +16,11 @@ public class OrderService(
     OrderUnitOfWork orderUnitOfWork,
     IMapper mapper) : IOrderService
 {
-    public async Task<OrderDto?> ExecuteOrderAsync(CreateOrderDto orderDto)
+    public async Task<OrderDto?> ExecuteOrderAsync(CreateOrderDto orderDto, int? couponId)
     {
         var order = mapper.Map<Order>(orderDto);
         order.Status = OrderStatus.Pending;
+        order.CouponId = couponId;
         var newOrder = await orderUnitOfWork.OrderRepository.CreateAsync(order, order.UserId);
 
         if (newOrder is null)

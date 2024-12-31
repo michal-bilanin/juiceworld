@@ -1,4 +1,5 @@
 using Commons.Enums;
+using JuiceWorld.Entities;
 
 namespace BusinessLayer.DTOs;
 
@@ -18,6 +19,7 @@ public class OrderDetailDto
     public UserDto? User { get; set; }
     public int UserId { get; set; }
 
+    public CouponCode? CouponCode { get; set; }
     public int AddressId { get; set; }
     public List<OrderProductDetailDto> OrderProducts { get; set; } = [];
 }

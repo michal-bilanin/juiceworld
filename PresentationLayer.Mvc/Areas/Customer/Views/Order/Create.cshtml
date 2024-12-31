@@ -46,6 +46,11 @@
         <input asp-for="Country" class="form-control" />
         <span asp-validation-for="Country" class="text-danger"></span>
     </div>
+    <div class="form-group">
+        <label asp-for="CouponCodeString" class="control-label"></label>
+        <input asp-for="CouponCodeString" class="form-control" />
+        <span asp-validation-for="CouponCodeString" class="text-danger"></span>
+    </div>
 
     <div class="form-group">
         <label asp-for="CartItems" class="control-label">Order Products</label>
@@ -70,7 +75,7 @@
             }
             <tr>
                 <td colspan="3"><strong>Grand Total:</strong></td>
-                <td><strong>@Model.CartItems.Sum(p => p.Product.Price * p.Quantity).ToString("C")</strong></td>
+                <td><strong>@Model.TotalPrice</strong></td>
             </tr>
             </tbody>
         </table>
@@ -82,6 +87,9 @@
     </div>
 </form>
 
+<div class="text-right mt-3">
+    <a href="@Url.Action("Create", "Order", new { area = Constants.Areas.Customer })" class="btn btn-success">Checkout</a>
+</div>
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

@@ -1,26 +1,23 @@
 ﻿using AutoMapper;
 using BusinessLayer.DTOs;
+using BusinessLayer.Installers;
 using BusinessLayer.Services;
+using BusinessLayer.Services.Interfaces;
 using Infrastructure.Repositories;
 using JuiceWorld.Entities;
-using Moq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using BusinessLayer.Installers;
-using BusinessLayer.Services.Interfaces;
-using Infrastructure.QueryObjects;
 using JuiceWorld.UnitOfWork;
+using Moq;
 using Xunit;
 using Assert = Xunit.Assert;
 
-namespace BusinessLayer.Tests.Services
+namespace BusinessLayer.Tests.Stubs
 {
     public class CartItemServiceStubTests
     {
         private readonly ICartItemService _cartItemService;
         private readonly Mock<IRepository<CartItem>> _cartItemRepositoryMock;
         private readonly IMapper _mapper;
-        private readonly List<CartItem> cartItems = new List<CartItem>
+        private readonly List<CartItem> _cartItems = new List<CartItem>
         {
             new CartItem { Id = 1, ProductId = 1, Quantity = 2 },
             new CartItem { Id = 2, ProductId = 2, Quantity = 1 }
@@ -39,17 +36,17 @@ namespace BusinessLayer.Tests.Services
         [Fact]
         public async Task GetAllCartItemsAsync_ExactMatch()
         {
-            _cartItemRepositoryMock.Setup(repo => repo.GetAllAsync()).ReturnsAsync(cartItems);
-            var result = await _cartItemService.GetAllCartItemsAsync();
-            Assert.Equal(cartItems.Count, result.Count());
-            Assert.All(cartItems, cartItem => Assert.Contains(result, dto => dto.Id == cartItem.Id));
+            _cartItemRepositoryMock.Setup(repo => repo.GetAllAsync()).ReturnsAsync(_cartItems);
+            var result = (await _cartItemService.GetAllCartItemsAsync()).ToList();
+            Assert.Equal(_cartItems.Count, result.Count());
+            Assert.All(_cartItems, cartItem => Assert.Contains(result, dto => dto.Id == cartItem.Id));
         }
 
         [Fact]
         public async Task GetCartItemByIdAsync_ExactMatch()
         {
             var cartItemId = 1;
-            _cartItemRepositoryMock.Setup(repo => repo.GetByIdAsync(cartItemId)).ReturnsAsync(cartItems[0]);
+            _cartItemRepositoryMock.Setup(repo => repo.GetByIdAsync(cartItemId)).ReturnsAsync(_cartItems[0]);
             var result = await _cartItemService.GetCartItemByIdAsync(cartItemId);
             Assert.NotNull(result);
             Assert.Equal(cartItemId, result.Id);

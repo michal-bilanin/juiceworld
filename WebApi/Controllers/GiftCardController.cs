@@ -11,52 +11,52 @@ namespace WebApi.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize(Roles = nameof(UserRole.Customer))]
-public class GiftCardController(IGiftCardService GfitCardService) : ControllerBase
+public class GiftCardController(IGiftCardService giftCardService) : ControllerBase
 {
-    private const string ApiBaseName = "GfitCard";
+    private const string ApiBaseName = "giftCard";
 
     [HttpPost]
     [Authorize(Roles = nameof(UserRole.Admin))]
-    [OpenApiOperation(ApiBaseName + nameof(CreateGfitCard))]
-    public async Task<ActionResult<GiftCardDetailDto>> CreateGfitCard(GiftCardCreateDto gfitCardCreate)
+    [OpenApiOperation(ApiBaseName + nameof(CreategiftCard))]
+    public async Task<ActionResult<GiftCardDetailDto>> CreategiftCard(GiftCardCreateDto giftCardCreate)
     {
-        var result = await GfitCardService.CreateGfitCardAsync(gfitCardCreate);
+        var result = await giftCardService.CreateGiftCardAsync(giftCardCreate);
         return result == null ? Problem() : Ok(result);
     }
 
     [HttpGet]
-    [OpenApiOperation(ApiBaseName + nameof(GetAllGfitCards))]
+    [OpenApiOperation(ApiBaseName + nameof(GetAllgiftCards))]
     [Authorize(Roles = nameof(UserRole.Admin))]
-    public async Task<ActionResult<IEnumerable<GiftCardEditDto>>> GetAllGfitCards()
+    public async Task<ActionResult<IEnumerable<GiftCardEditDto>>> GetAllgiftCards(GiftCardFilterDto giftCardFilter)
     {
-        var result = await GfitCardService.GetAllGfitCardsAsync();
+        var result = await giftCardService.GetAllGiftCardsAsync(giftCardFilter);
         return Ok(result);
     }
 
-    [HttpGet("{GfitCardId:int}")]
-    [OpenApiOperation(ApiBaseName + nameof(GetGfitCard))]
+    [HttpGet("{giftCardId:int}")]
+    [OpenApiOperation(ApiBaseName + nameof(GetgiftCard))]
     [Authorize(Roles = nameof(UserRole.Admin))]
-    public async Task<ActionResult<GiftCardDetailDto>> GetGfitCard(int GfitCardId)
+    public async Task<ActionResult<GiftCardDetailDto>> GetgiftCard(int giftCardId)
     {
-        var result = await GfitCardService.GetGfitCardByIdAsync(GfitCardId);
+        var result = await giftCardService.GetGiftCardByIdAsync(giftCardId);
         return result == null ? NotFound() : Ok(result);
     }
 
     [HttpPut]
-    [OpenApiOperation(ApiBaseName + nameof(UpdateGfitCard))]
+    [OpenApiOperation(ApiBaseName + nameof(UpdategiftCard))]
     [Authorize(Roles = nameof(UserRole.Admin))]
-    public async Task<ActionResult<GiftCardDetailDto>> UpdateGfitCard(GiftCardEditDto gfitCard)
+    public async Task<ActionResult<GiftCardDetailDto>> UpdategiftCard(GiftCardEditDto giftCard)
     {
-        var result = await GfitCardService.UpdateGfitCardAsync(gfitCard);
+        var result = await giftCardService.UpdateGiftCardAsync(giftCard);
         return result == null ? NotFound() : Ok(result);
     }
 
-    [HttpDelete("{GfitCardId:int}")]
-    [OpenApiOperation(ApiBaseName + nameof(DeleteGfitCard))]
+    [HttpDelete("{giftCardId:int}")]
+    [OpenApiOperation(ApiBaseName + nameof(DeletegiftCard))]
     [Authorize(Roles = nameof(UserRole.Admin))]
-    public async Task<ActionResult<bool>> DeleteGfitCard(int GfitCardId)
+    public async Task<ActionResult<bool>> DeletegiftCard(int giftCardId)
     {
-        var result = await GfitCardService.DeleteGfitCardByIdAsync(GfitCardId);
+        var result = await giftCardService.DeleteGiftCardByIdAsync(giftCardId);
         return result ? Ok() : NotFound();
     }
 
@@ -65,7 +65,7 @@ public class GiftCardController(IGiftCardService GfitCardService) : ControllerBa
     [Authorize(Roles = nameof(UserRole.Customer) + "," + nameof(UserRole.Admin))]
     public async Task<ActionResult<CouponCode>> RedeemCouponCode(string couponCode)
     {
-        var result = await GfitCardService.RedeemCouponCodeAsync(couponCode);
+        var result = await giftCardService.RedeemCouponAsync(couponCode);
         return result == null ? NotFound() : Ok(result);
     }
 
@@ -74,7 +74,7 @@ public class GiftCardController(IGiftCardService GfitCardService) : ControllerBa
     [Authorize(Roles = nameof(UserRole.Admin))]
     public async Task<ActionResult<IEnumerable<CouponCodeDto>>> GetCouponCodes()
     {
-        var result = await GfitCardService.GetCouponCodesAsync();
+        var result = await giftCardService.GetCouponCodesAsync();
         return Ok(result);
     }
 
@@ -83,7 +83,7 @@ public class GiftCardController(IGiftCardService GfitCardService) : ControllerBa
     [Authorize(Roles = nameof(UserRole.Admin))]
     public async Task<ActionResult<CouponCodeDto>> GetCouponCode(string couponCode)
     {
-        var result = await GfitCardService.GetCouponByCodeAsync(couponCode);
+        var result = await giftCardService.GetCouponByCodeAsync(couponCode);
         return result == null ? NotFound() : Ok(result);
     }
 }

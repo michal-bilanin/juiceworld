@@ -27,6 +27,12 @@ public class Order : BaseEntity, IAuditableEntity
 
     [MaxLength(100)]
     public required string Country { get; set; }
+
+    public int? CouponId { get; set; }
+
+    [ForeignKey(nameof(CouponId))]
+    public virtual CouponCode? CouponCode { get; set; }
+
     public int UserId { get; set; }
 
     [ForeignKey(nameof(UserId))]
