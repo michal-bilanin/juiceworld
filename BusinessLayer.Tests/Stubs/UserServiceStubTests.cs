@@ -23,29 +23,32 @@ public class UserServiceStubTests
     private readonly Mock<IRepository<User>> _userRepositoryMock;
     private readonly Mock<IQueryObject<User>> _userQueryObjectMock;
     private readonly IMapper _mapper;
-    private readonly List<User> users = new List<User>
+    private readonly FilteredResult<User> users = new FilteredResult<User>
     {
-        new User
+        Entities = new List<User>
         {
-            Id = 1,
-            UserName = "JohnDoe",
-            Email = "john.doe@example.com",
-            PasswordHash = "hashedPassword1",
-            PasswordHashRounds = 10,
-            PasswordSalt = "salt1",
-            UserRole = UserRole.Customer,
-            Bio = "Bio for John Doe"
-        },
-        new User
-        {
-            Id = 2,
-            UserName = "JaneSmith",
-            Email = "jane.smith@example.com",
-            PasswordHash = "hashedPassword2",
-            PasswordHashRounds = 10,
-            PasswordSalt = "salt2",
-            UserRole = UserRole.Admin,
-            Bio = "Bio for Jane Smith"
+            new User
+            {
+                Id = 1,
+                UserName = "JohnDoe",
+                Email = "john.doe@example.com",
+                PasswordHash = "hashedPassword1",
+                PasswordHashRounds = 10,
+                PasswordSalt = "salt1",
+                UserRole = UserRole.Customer,
+                Bio = "Bio for John Doe"
+            },
+            new User
+            {
+                Id = 2,
+                UserName = "JaneSmith",
+                Email = "jane.smith@example.com",
+                PasswordHash = "hashedPassword2",
+                PasswordHashRounds = 10,
+                PasswordSalt = "salt2",
+                UserRole = UserRole.Admin,
+                Bio = "Bio for Jane Smith"
+            }
         }
     };
 
@@ -67,15 +70,15 @@ public class UserServiceStubTests
     public async Task GetAllUsersAsync_ExactMatch()
     {
         // Arrange
-        _userRepositoryMock.Setup(repo => repo.GetAllAsync()).ReturnsAsync(users);
+        _userRepositoryMock.Setup(repo => repo.GetAllAsync()).ReturnsAsync(users.Entities);
 
         // Act
         var result = await _userService.GetAllUsersAsync();
 
         // Assert
         var userDtos = result.ToList();
-        Assert.Equal(users.Count, userDtos.Count);
-        Assert.All(users, user => Assert.Contains(userDtos, dto => dto.Id == user.Id));
+        Assert.Equal(users.Entities.Count(), userDtos.Count);
+        Assert.All(users.Entities, user => Assert.Contains(userDtos, dto => dto.Id == user.Id));
     }
 
     [Fact]
@@ -83,7 +86,7 @@ public class UserServiceStubTests
     {
         // Arrange
         var userId = 1;
-        _userRepositoryMock.Setup(repo => repo.GetByIdAsync(userId)).ReturnsAsync(users[0]);
+        _userRepositoryMock.Setup(repo => repo.GetByIdAsync(userId)).ReturnsAsync(users.Entities.First());
 
         // Act
         var result = await _userService.GetUserByIdAsync(userId);
@@ -101,7 +104,10 @@ public class UserServiceStubTests
         _userQueryObjectMock.Setup(q => q.Filter(It.IsAny<Expression<Func<User, bool>>>()))
             .Returns(_userQueryObjectMock.Object);
         _userQueryObjectMock.Setup(q => q.ExecuteAsync())
-            .ReturnsAsync(users.Where(u => u.Email == email));
+            .ReturnsAsync(new FilteredResult<User>
+            {
+                Entities = users.Entities.Where(u => u.Email == email) 
+            });
 
         // Act
         var result = await _userService.GetUserByEmailAsync(email);

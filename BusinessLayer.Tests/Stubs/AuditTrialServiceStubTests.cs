@@ -54,19 +54,25 @@ namespace BusinessLayer.Tests.Services
                 PageSize = 10
             };
 
-            var auditTrails = new List<AuditTrail>
+            var auditTrails = new FilteredResult<AuditTrail>
             {
-                new AuditTrail
+                Entities = new List<AuditTrail>
                 {
-                    Id = 1,
-                    TrailType = TrailType.Create,
-                    CreatedAt = DateTime.UtcNow,
-                    EntityName = "Product",
-                    PrimaryKey = 123,
-                    UserId = 1,
-                    ChangedColumns = new List<string> { "Name", "Price" }
-                }
+                    new AuditTrail
+                    {
+                        Id = 1,
+                        TrailType = TrailType.Create,
+                        CreatedAt = DateTime.UtcNow,
+                        EntityName = "Product",
+                        PrimaryKey = 123,
+                        UserId = 1,
+                        ChangedColumns = new List<string> { "Name", "Price" }
+                    }
+                },
+                PageIndex = 1,
+                TotalPages = 1
             };
+            
 
             var auditTrailDto = new AuditTrailDto
             {
@@ -92,7 +98,7 @@ namespace BusinessLayer.Tests.Services
             _queryObjectMock.Setup(qo => qo.Paginate(1, 10))
                             .Returns(_queryObjectMock.Object);
 
-            _mapperMock.Setup(m => m.Map<List<AuditTrailDto>>(auditTrails))
+            _mapperMock.Setup(m => m.Map<List<AuditTrailDto>>(auditTrails.Entities))
                        .Returns(new List<AuditTrailDto> { auditTrailDto });
 
             // Act
@@ -101,8 +107,8 @@ namespace BusinessLayer.Tests.Services
             // Assert
             Assert.NotNull(result);
             Assert.Single(result);
-            Assert.Equal(auditTrails[0].Id, result.First().Id);
-            Assert.Equal(auditTrails[0].TrailType, result.First().TrailType);
+            Assert.Equal(auditTrails.Entities.First().Id, result.First().Id);
+            Assert.Equal(auditTrails.Entities.First().TrailType, result.First().TrailType);
         }
 
 
@@ -122,7 +128,7 @@ namespace BusinessLayer.Tests.Services
                             .Returns(_queryObjectMock.Object);
 
             _queryObjectMock.Setup(qo => qo.ExecuteAsync())
-                            .ReturnsAsync(auditTrails);
+                            .ReturnsAsync(new FilteredResult<AuditTrail>());
 
             _queryObjectMock.Setup(qo => qo.OrderBy(It.IsAny<Expression<Func<AuditTrail, DateTime>>>(), false))
                 .Returns(_queryObjectMock.Object);

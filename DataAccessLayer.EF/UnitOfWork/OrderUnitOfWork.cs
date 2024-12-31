@@ -22,6 +22,10 @@ public class OrderUnitOfWork
         ProductRepository = new Repository<Product>(_context);
     }
 
+    public OrderUnitOfWork() //for stub testing
+    {
+    }
+
     public async Task Commit()
     {
         await _context.SaveChangesAsync();
