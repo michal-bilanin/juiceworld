@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using BusinessLayer.DTOs;
 using BusinessLayer.Services.Interfaces;
 using Commons.Enums;
@@ -24,6 +25,7 @@ public class OrderController(IOrderService orderService) : ControllerBase
 
     [HttpGet]
     [OpenApiOperation(ApiBaseName + nameof(GetAllOrders))]
+    [Authorize(Roles = nameof(UserRole.Admin))]
     public async Task<ActionResult<IEnumerable<OrderDto>>> GetAllOrders()
     {
         var result = await orderService.GetAllOrdersAsync();
@@ -31,15 +33,29 @@ public class OrderController(IOrderService orderService) : ControllerBase
     }
 
     [HttpGet("{orderId:int}")]
-    [OpenApiOperation(ApiBaseName + nameof(GetOrder))]
-    public async Task<ActionResult<OrderDto>> GetOrder(int orderId)
+    [OpenApiOperation(ApiBaseName + nameof(GetOrderDetail))]
+    public async Task<ActionResult<OrderDto>> GetOrderDetail(int orderId)
     {
-        var result = await orderService.GetOrderByIdAsync(orderId);
-        return result == null ? NotFound() : Ok(result);
+        var result = await orderService.GetOrderDetailByIdAsync(orderId);
+        if (result == null)
+        {
+            return NotFound();
+        }
+        if (User.IsInRole(UserRole.Admin.ToString()))
+        {
+            return Ok(result);
+        }
+
+        if (!Int32.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? "", out var userId))
+        {
+            return Unauthorized();
+        }
+        return result.UserId != userId ? NotFound() : Ok(result);
     }
 
     [HttpPut]
     [OpenApiOperation(ApiBaseName + nameof(UpdateOrder))]
+    [Authorize(Roles = nameof(UserRole.Admin))]
     public async Task<ActionResult<OrderDto>> UpdateOrder(OrderDto order)
     {
         var result = await orderService.UpdateOrderAsync(order);
@@ -48,6 +64,7 @@ public class OrderController(IOrderService orderService) : ControllerBase
 
     [HttpDelete("{orderId:int}")]
     [OpenApiOperation(ApiBaseName + nameof(DeleteOrder))]
+    [Authorize(Roles = nameof(UserRole.Admin))]
     public async Task<ActionResult<bool>> DeleteOrder(int orderId)
     {
         var result = await orderService.DeleteOrderByIdAsync(orderId);

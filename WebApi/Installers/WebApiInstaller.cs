@@ -1,11 +1,7 @@
-using System.Diagnostics;
-using System.Text;
 using Commons.Constants;
 using JuiceWorld.Data;
 using JuiceWorld.Entities;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
 using Serilog;
@@ -56,44 +52,11 @@ public static class WebApiInstaller
         services.AddSwaggerGen(opt =>
         {
             opt.SwaggerDoc("v1", new OpenApiInfo { Title = "JuiceWorld WebApi", Version = "v1" });
-            opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-            {
-                In = ParameterLocation.Header,
-                Description =
-                    "Please enter the token returned from the auth endpoint (only the token, without the Bearer prefix)",
-                Name = "Authorization",
-                Type = SecuritySchemeType.Http,
-                BearerFormat = "JWT",
-                Scheme = "bearer"
-            });
-
-            opt.AddSecurityRequirement(new OpenApiSecurityRequirement
-            {
-                {
-                    new OpenApiSecurityScheme
-                    {
-                        Reference = new OpenApiReference
-                        {
-                            Type = ReferenceType.SecurityScheme,
-                            Id = "Bearer"
-                        }
-                    },
-                    []
-                }
-            });
         });
 
         services.AddIdentity<User, IdentityRole<int>>()
             .AddEntityFrameworkStores<JuiceWorldDbContext>()
             .AddDefaultTokenProviders();
-
-        // Configure JWT
-        var secret = Environment.GetEnvironmentVariable(EnvironmentConstants.JwtSecret);
-        if (secret == null)
-        {
-            throw new Exception($"JWT secret is null, make sure it is specified " +
-                                $"in the environment variable: JWT_SECRET");
-        }
 
         return services;
     }

@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using BusinessLayer.DTOs;
 using BusinessLayer.Services.Interfaces;
 using Commons.Enums;
@@ -24,6 +25,7 @@ public class UserController(IUserService userService) : ControllerBase
 
     [HttpGet]
     [OpenApiOperation(ApiBaseName + nameof(GetAllUsers))]
+    [Authorize(Roles = nameof(UserRole.Admin))]
     public async Task<ActionResult<IEnumerable<UserDto>>> GetAllUsers()
     {
         var result = await userService.GetAllUsersAsync();
@@ -34,6 +36,15 @@ public class UserController(IUserService userService) : ControllerBase
     [OpenApiOperation(ApiBaseName + nameof(GetUser))]
     public async Task<ActionResult<UserDto>> GetUser(int userId)
     {
+        if (!Int32.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? "", out var userIdParsed))
+        {
+            return Unauthorized();
+        }
+        if (!User.IsInRole(UserRole.Admin.ToString()) &&
+            userIdParsed != userId)
+        {
+            return Unauthorized();
+        }
         var result = await userService.GetUserByIdAsync(userId);
         return result == null ? NotFound() : Ok(result);
     }
@@ -50,11 +61,25 @@ public class UserController(IUserService userService) : ControllerBase
             ConfirmPassword = user.ConfirmPassword,
             UserRole = user.UserRole
         });
-        return result == null ? NotFound() : Ok(result);
+
+        if (result == null)
+            return NotFound();
+
+        if (User.IsInRole(UserRole.Admin.ToString()))
+        {
+            return Ok(result);
+        }
+
+        if (!Int32.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? "", out var userId))
+        {
+            return Unauthorized();
+        }
+        return user.Id != userId ? NotFound() : Ok(result);
     }
 
     [HttpDelete("{userId:int}")]
     [OpenApiOperation(ApiBaseName + nameof(DeleteUser))]
+    [Authorize(Roles = nameof(UserRole.Admin))]
     public async Task<ActionResult> DeleteUser(int userId)
     {
         var result = await userService.DeleteUserByIdAsync(userId);

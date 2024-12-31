@@ -1,5 +1,4 @@
-﻿using BusinessLayer.DTOs;
-using BusinessLayer.Services.Interfaces;
+﻿using BusinessLayer.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 
 namespace BusinessLayer.Services;

@@ -1,19 +1,11 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using AutoMapper;
 using BusinessLayer.DTOs;
 using BusinessLayer.Services.Interfaces;
-using Commons.Constants;
 using Commons.Enums;
-using Commons.Utils;
 using Infrastructure.QueryObjects;
 using Infrastructure.Repositories;
-using JuiceWorld.Data;
 using JuiceWorld.Entities;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 
 namespace BusinessLayer.Services;
 

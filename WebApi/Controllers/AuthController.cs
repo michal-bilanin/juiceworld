@@ -1,6 +1,5 @@
 ﻿using System.Security.Claims;
 using BusinessLayer.DTOs;
-using BusinessLayer.Services.Interfaces;
 using JuiceWorld.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;

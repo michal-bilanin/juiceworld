@@ -1,6 +1,5 @@
 ﻿using BusinessLayer.DTOs;
 using BusinessLayer.Services.Interfaces;
-using JuiceWorld.Entities;
 using PresentationLayer.Mvc.Facades.Interfaces;
 
 namespace PresentationLayer.Mvc.Facades;

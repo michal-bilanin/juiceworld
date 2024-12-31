@@ -1,15 +1,12 @@
 ﻿using System.Diagnostics;
-using System.Text;
 using Commons.Constants;
 using JuiceWorld.Data;
 using JuiceWorld.Entities;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Tokens;
-using Serilog;
 using MongoDB.Driver;
 using PresentationLayer.Mvc.Facades;
 using PresentationLayer.Mvc.Facades.Interfaces;
+using Serilog;
 using Serilog.Events;
 
 namespace PresentationLayer.Mvc.Installers;
@@ -23,13 +20,6 @@ public static class MvcInstaller
 
         services.AddScoped<ISearchablesFacade, SearchablesFacade>();
         services.AddScoped<IOrderCouponFacade, OrderCouponFacade>();
-
-        var secret = Environment.GetEnvironmentVariable(EnvironmentConstants.JwtSecret);
-        if (secret == null)
-        {
-            throw new Exception($"JWT secret is null, make sure it is specified " +
-                                $"in the environment variable: {EnvironmentConstants.JwtSecret}");
-        }
 
         services.AddIdentity<User, IdentityRole<int>>()
             .AddEntityFrameworkStores<JuiceWorldDbContext>()

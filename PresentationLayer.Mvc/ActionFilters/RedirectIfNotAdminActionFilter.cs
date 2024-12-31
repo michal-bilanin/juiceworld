@@ -1,3 +1,4 @@
+using Commons.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
@@ -10,7 +11,7 @@ public class RedirectIfNotAdminActionFilter : ActionFilterAttribute
         var user = context.HttpContext.User;
 
         if (user.Identity is null || !user.Identity.IsAuthenticated ||
-            !user.IsInRole(Commons.Enums.UserRole.Admin.ToString()))
+            !user.IsInRole(UserRole.Admin.ToString()))
         {
             context.Result = new RedirectToActionResult(Constants.DefaultAction, Constants.DefaultController,
                 new { area = Constants.DefaultArea });
