@@ -2,7 +2,6 @@
 using AutoMapper;
 using BusinessLayer.DTOs;
 using BusinessLayer.Services.Interfaces;
-using Commons.Enums;
 using JuiceWorld.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +13,6 @@ namespace PresentationLayer.Mvc.Areas.Customer.Controllers;
 [Area(Constants.Areas.Customer)]
 public class UserController(IUserService userService,
     IMapper mapper,
-    UserManager<User> userManager,
     SignInManager<User> signInManager) : Controller
 {
     // GET: /User/Register
@@ -55,8 +53,8 @@ public class UserController(IUserService userService,
             var ci = new[]
             {
                 new Claim(ClaimTypes.Sid, userDb.Id.ToString()),
-                new Claim(ClaimTypes.Name, userDb.UserName),
-                new Claim(ClaimTypes.Email, userDb.Email),
+                new Claim(ClaimTypes.Name, userDb.UserName ?? string.Empty),
+                new Claim(ClaimTypes.Email, userDb.Email ?? string.Empty),
                 new Claim(ClaimTypes.Role, userDb.UserRole.ToString())
             };
 
@@ -91,7 +89,7 @@ public class UserController(IUserService userService,
         if (user == null)
         {
             ModelState.AddModelError(string.Empty, "User doesn't exist.");
-            return Unauthorized();
+            return View(model);
         }
 
         var result = await signInManager.CheckPasswordSignInAsync(user, model.Password, lockoutOnFailure: false);
@@ -100,8 +98,8 @@ public class UserController(IUserService userService,
             var ci = new[]
             {
                 new Claim(ClaimTypes.Sid, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Name, user.UserName ?? string.Empty),
+                new Claim(ClaimTypes.Email, user.Email ?? string.Empty),
                 new Claim(ClaimTypes.Role, user.UserRole.ToString())
             };
 

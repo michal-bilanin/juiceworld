@@ -11,8 +11,7 @@ namespace WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class AuthController(IUserService userService,
-    UserManager<User> userManager,
+public class AuthController(
     SignInManager<User> signInManager) : ControllerBase
 {
     private const string ApiBaseName = "CartItem";
@@ -30,19 +29,20 @@ public class AuthController(IUserService userService,
         }
 
         var result = await signInManager.CheckPasswordSignInAsync(user, login.Password, lockoutOnFailure: false);
-        if (result.Succeeded)
+        if (!result.Succeeded)
         {
-            var ci = new[]
-            {
-                new Claim(ClaimTypes.Sid, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Role, user.UserRole.ToString())
-            };
-
-            await signInManager.SignInWithClaimsAsync(user, false, ci);
-            return Ok();
+            return Unauthorized();
         }
-        return Unauthorized();
+
+        var ci = new[]
+        {
+            new Claim(ClaimTypes.Sid, user.Id.ToString()),
+            new Claim(ClaimTypes.Name, user.UserName ?? string.Empty),
+            new Claim(ClaimTypes.Email, user.Email ?? string.Empty),
+            new Claim(ClaimTypes.Role, user.UserRole.ToString())
+        };
+
+        await signInManager.SignInWithClaimsAsync(user, false, ci);
+        return Ok();
     }
 }

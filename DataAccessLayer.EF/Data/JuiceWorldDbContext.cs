@@ -18,7 +18,7 @@ public class JuiceWorldDbContext(DbContextOptions<JuiceWorldDbContext> options)
     public DbSet<Product> Products { get; set; }
     public DbSet<Manufacturer> Manufacturers { get; set; }
     public DbSet<CartItem> CartItems { get; set; }
-    public DbSet<User> Users { get; set; }
+    public override DbSet<User> Users { get; set; }
     public DbSet<Review> Reviews { get; set; }
     public DbSet<WishListItem> WishListItems { get; set; }
     public DbSet<Order> Orders { get; set; }

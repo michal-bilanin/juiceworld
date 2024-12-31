@@ -12,7 +12,7 @@ public class User : IdentityUser<int>, IAuditableEntity, IBaseEntity
     public UserRole UserRole { get; set; } = UserRole.Unknown;
 
     [MaxLength(300)]
-    public string Bio { get; set; }
+    public string Bio { get; set; } = "";
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? UpdatedAt { get; set; }

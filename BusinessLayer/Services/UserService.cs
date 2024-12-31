@@ -51,8 +51,8 @@ public class UserService(IRepository<User> userRepository,
     public Task<FilteredResult<UserDto>> GetUsersFilteredAsync(UserFilterDto userFilter)
     {
         var query = userQueryObject
-            .Filter(user => userFilter.Name == null || user.UserName.ToLower().Contains(userFilter.Name.ToLower())
-            || user.Email.ToLower().Contains(userFilter.Name.ToLower()))
+            .Filter(user => user.UserName != null && user.Email != null && (userFilter.Name == null || user.UserName.ToLower().Contains(userFilter.Name.ToLower())
+                || user.Email.ToLower().Contains(userFilter.Name.ToLower())))
             .Paginate(userFilter.PageIndex, userFilter.PageSize)
             .OrderBy(user => user.Id);
 
@@ -109,7 +109,7 @@ public class UserService(IRepository<User> userRepository,
         user.UpdatedAt = DateTime.UtcNow;
 
         // Save changes
-        var result = await userManager.UpdateAsync(user);
+        await userManager.UpdateAsync(user);
 
         if (userDto.Password != null)
         {
