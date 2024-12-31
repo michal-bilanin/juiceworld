@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 using BusinessLayer.Installers;
 using Infrastructure.QueryObjects;
 using Infrastructure.Repositories;
+using JuiceWorld.UnitOfWork;
+using Microsoft.Extensions.Logging;
 using Xunit;
 using Assert = Xunit.Assert;
 
@@ -53,9 +55,12 @@ namespace BusinessLayer.Tests.Services
             // Configure AutoMapper
             var config = new MapperConfiguration(cfg => cfg.AddProfile<MapperProfileInstaller>());
             _mapper = config.CreateMapper();
+            
+            var logger = new Mock<ILogger<ProductService>>();
+            var productUnitOfWork = new Mock<ProductUnitOfWork>();
 
             // Initialize the service
-            _productService = new ProductService(_productRepositoryMock.Object, _mapper, _queryObjectMock.Object);
+            _productService = new ProductService(_productRepositoryMock.Object, _mapper, logger.Object, productUnitOfWork.Object, _queryObjectMock.Object);
         }
 
         [Fact]

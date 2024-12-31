@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using BusinessLayer.Installers;
 using Commons.Enums;
 using JuiceWorld.Data;
+using JuiceWorld.QueryObjects;
 using Microsoft.EntityFrameworkCore;
 using TestUtilities.MockedObjects;
 using Xunit;
@@ -22,8 +23,30 @@ namespace BusinessLayer.Tests.Services
     {
         private readonly List<Order> orders = new List<Order>
         {
-            new Order { Id = 1, UserId = 1, DeliveryType = DeliveryType.Standard, Status = OrderStatus.Pending },
-            new Order { Id = 2, UserId = 2, DeliveryType = DeliveryType.Express, Status = OrderStatus.Delivered }
+            new Order
+            {
+                Id = 1,
+                UserId = 1,
+                DeliveryType = DeliveryType.Standard,
+                Status = OrderStatus.Pending,
+                City = null,
+                Street = null,
+                HouseNumber = null,
+                ZipCode = null,
+                Country = null
+            },
+            new Order
+            {
+                Id = 2,
+                UserId = 2,
+                DeliveryType = DeliveryType.Express,
+                Status = OrderStatus.Delivered,
+                City = null,
+                Street = null,
+                HouseNumber = null,
+                ZipCode = null,
+                Country = null
+            }
         };
 
         private readonly IOrderService _orderService;
@@ -48,8 +71,9 @@ namespace BusinessLayer.Tests.Services
             var config = new MapperConfiguration(cfg => cfg.AddProfile<MapperProfileInstaller>());
             _mapper = config.CreateMapper();
 
+            var orderQueryObject = new QueryObject<Order>(dbContext);
             // Initialize the service with the mocked repositories and unit of work
-            _orderService = new OrderService(_orderRepositoryMock.Object, _orderUnitOfWorkMock.Object, _mapper);
+            _orderService = new OrderService(_orderRepositoryMock.Object, orderQueryObject, _orderUnitOfWorkMock.Object, _mapper);
         }
 
         [Fact]
@@ -94,7 +118,12 @@ namespace BusinessLayer.Tests.Services
                 Arrival = DateTime.Now,
                 PaymentMethodType = PaymentMethodType.Bitcoin,
                 UserId = 1,
-                AddressId = 1
+                AddressId = 1,
+                City = null,
+                Street = null,
+                HouseNumber = null,
+                ZipCode = null,
+                Country = null
             };
             var updatedOrder = _mapper.Map<Order>(orderDto);
             _orderRepositoryMock.Setup(repo => repo.UpdateAsync(It.IsAny<Order>(), null)).ReturnsAsync(updatedOrder);

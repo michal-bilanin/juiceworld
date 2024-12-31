@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using BusinessLayer.Installers;
 using BusinessLayer.Services.Interfaces;
+using Infrastructure.QueryObjects;
+using JuiceWorld.UnitOfWork;
 using Xunit;
 using Assert = Xunit.Assert;
 
@@ -29,7 +31,9 @@ namespace BusinessLayer.Tests.Services
             _cartItemRepositoryMock = new Mock<IRepository<CartItem>>();
             var config = new MapperConfiguration(cfg => cfg.AddProfile<MapperProfileInstaller>());
             _mapper = config.CreateMapper();
-            _cartItemService = new CartItemService(_cartItemRepositoryMock.Object, _mapper);
+            Mock<OrderUnitOfWork> queryObjectMock = new();
+            
+            _cartItemService = new CartItemService(_cartItemRepositoryMock.Object, queryObjectMock.Object, _mapper);
         }
 
         [Fact]

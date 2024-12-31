@@ -8,6 +8,8 @@ using Moq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using BusinessLayer.Installers;
+using JuiceWorld.QueryObjects;
+using TestUtilities.MockedObjects;
 using Xunit;
 using Assert = Xunit.Assert;
 
@@ -34,8 +36,9 @@ namespace BusinessLayer.Tests.Services
             var config = new MapperConfiguration(cfg => cfg.AddProfile<MapperProfileInstaller>());
             _mapper = config.CreateMapper();
 
+            var queryObject = new QueryObject<Manufacturer>(MockedDbContext.CreateFromOptions(MockedDbContext.GetOptions()));
             // Initialize the service with the mocked repository
-            _manufacturerService = new ManufacturerService(_manufacturerRepositoryMock.Object, _mapper);
+            _manufacturerService = new ManufacturerService(_manufacturerRepositoryMock.Object,queryObject, _mapper);
         }
 
         [Fact]

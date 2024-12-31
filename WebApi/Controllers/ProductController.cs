@@ -2,6 +2,7 @@ using BusinessLayer.DTOs;
 using BusinessLayer.Facades.Interfaces;
 using BusinessLayer.Services.Interfaces;
 using Commons.Enums;
+using JuiceWorld.UnitOfWork;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
@@ -11,7 +12,7 @@ namespace WebApi.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize(Roles = nameof(UserRole.Admin) + "," + nameof(UserRole.Customer))]
-public class ProductController(IProductFacade productFacade) : ControllerBase
+public class ProductController(IProductService productService, ProductUnitOfWork productUnitOfWork, IProductFacade productFacade) : ControllerBase
 {
     private const string ApiBaseName = "Product";
 

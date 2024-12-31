@@ -8,10 +8,29 @@ public class MvcMapperInstaller : Profile
 {
     public MvcMapperInstaller()
     {
-        CreateMap<UserRegisterViewModel, UserRegisterDto>()
-            .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Username))
-            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
-            .ForMember(dest => dest.Password, opt => opt.MapFrom(src => src.Password))
-            .ForMember(dest => dest.Bio, opt => opt.MapFrom(src => src.Bio)).ReverseMap();
+        CreateMap<UserProfileViewModel, UserDto>().ReverseMap();
+        CreateMap<UserSimpleViewModel, UserDto>().ReverseMap();
+        CreateMap<UserUpdateRestrictedViewModel, UserDto>().ReverseMap();
+        CreateMap<UserUpdateRestrictedViewModel, UserUpdateDto>().ReverseMap();
+
+        CreateMap<SearchablesFilterViewModel, ProductFilterDto>()
+            .ForMember(dest => dest.NameQuery, opt => opt.MapFrom(src => src.NameQuery))
+            .ForMember(dest => dest.PriceMax, opt => opt.MapFrom(src => src.ProductPriceMax))
+            .ForMember(dest => dest.PriceMin, opt => opt.MapFrom(src => src.ProductPriceMin))
+            .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.ProductCategory))
+            .ForMember(dest => dest.PageIndex, opt => opt.MapFrom(src => src.ProductPageIndex))
+            .ForMember(dest => dest.PageSize, opt => opt.MapFrom(src => src.ProductPageSize))
+            .ForMember(dest => dest.TagId, opt => opt.MapFrom(src => src.TagId))
+            .ForMember(dest => dest.ManufacturerId, opt => opt.MapFrom(src => src.ManufacturerId));
+
+        CreateMap<SearchablesFilterViewModel, ManufacturerFilterDto>()
+            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.NameQuery))
+            .ForMember(dest => dest.PageIndex, opt => opt.MapFrom(src => src.ManufacturerPageIndex))
+            .ForMember(dest => dest.PageSize, opt => opt.MapFrom(src => src.ManufacturerPageSize));
+
+        CreateMap<SearchablesFilterViewModel, TagFilterDto>()
+            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.NameQuery))
+            .ForMember(dest => dest.PageIndex, opt => opt.MapFrom(src => src.TagPageIndex))
+            .ForMember(dest => dest.PageSize, opt => opt.MapFrom(src => src.TagPageSize));
     }
 }

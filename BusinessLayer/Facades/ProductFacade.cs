@@ -2,6 +2,7 @@
 using BusinessLayer.DTOs;
 using BusinessLayer.Facades.Interfaces;
 using BusinessLayer.Services.Interfaces;
+using Infrastructure.QueryObjects;
 
 namespace BusinessLayer.Facades;
 
@@ -31,7 +32,7 @@ public class ProductFacade(IProductService _productService, IImageService _image
         return await _productService.GetAllProductsAsync();
     }
 
-    public async Task<IEnumerable<ProductDto>> GetProductsFilteredAsync(ProductFilterDto productFilter)
+    public async Task<FilteredResult<ProductDto>> GetProductsFilteredAsync(ProductFilterDto productFilter)
     {
         return await _productService.GetProductsFilteredAsync(productFilter);
     }

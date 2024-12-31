@@ -5,6 +5,7 @@ using BusinessLayer.Services;
 using BusinessLayer.Services.Interfaces;
 using JuiceWorld.Entities;
 using JuiceWorld.Repositories;
+using JuiceWorld.UnitOfWork;
 using TestUtilities.MockedObjects;
 using Xunit;
 using Assert = Xunit.Assert;
@@ -13,7 +14,7 @@ namespace BusinessLayer.Tests.Services;
 
 public class CartItemServiceTests
 {
-    private ICartItemService _crtItemService;
+    private ICartItemService _cartItemService;
 
     public CartItemServiceTests()
     {
@@ -22,7 +23,8 @@ public class CartItemServiceTests
         var crtItemRepository = new Repository<CartItem>(dbContext);
         var config = new MapperConfiguration(cfg => cfg.AddProfile<MapperProfileInstaller>());
         var mapper = config.CreateMapper();
-        _crtItemService = new CartItemService(crtItemRepository, mapper);
+        var orderUnitOfWork = new OrderUnitOfWork(dbContext);
+        _cartItemService = new CartItemService(crtItemRepository, orderUnitOfWork, mapper);
     }
 
     [Fact]
@@ -32,7 +34,7 @@ public class CartItemServiceTests
         var crtItemIdsToRetrieve = new[] { 1, 2, 3, 4, 5 };
 
         // Act
-        var result = await _crtItemService.GetAllCartItemsAsync();
+        var result = await _cartItemService.GetAllCartItemsAsync();
 
         // Assert
         var crtItemDtos = result.ToList();
@@ -47,7 +49,7 @@ public class CartItemServiceTests
         var crtItemId = 1;
 
         // Act
-        var result = await _crtItemService.GetCartItemByIdAsync(crtItemId);
+        var result = await _cartItemService.GetCartItemByIdAsync(crtItemId);
 
         // Assert
         Assert.NotNull(result);
@@ -67,7 +69,7 @@ public class CartItemServiceTests
         };
 
         // Act
-        var result = await _crtItemService.CreateCartItemAsync(crtItem);
+        var result = await _cartItemService.CreateCartItemAsync(crtItem);
 
         // Assert
         Assert.NotNull(result);
@@ -88,7 +90,7 @@ public class CartItemServiceTests
         };
 
         // Act
-        var result = await _crtItemService.UpdateCartItemAsync(crtItem);
+        var result = await _cartItemService.UpdateCartItemAsync(crtItem);
 
         // Assert
         Assert.NotNull(result);
@@ -103,7 +105,7 @@ public class CartItemServiceTests
         var crtItemId = 1;
 
         // Act
-        var result = await _crtItemService.DeleteCartItemByIdAsync(crtItemId);
+        var result = await _cartItemService.DeleteCartItemByIdAsync(crtItemId);
 
         // Assert
         Assert.True(result);

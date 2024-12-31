@@ -34,7 +34,7 @@ public class AuditTrailService(
         }
 
         var result = await query.ExecuteAsync();
-        return mapper.Map<List<AuditTrailDto>>(result);
+        return mapper.Map<List<AuditTrailDto>>(result.Entities);
     }
 
     public async Task<AuditTrailDto?> GetAuditTrailByIdAsync(int id)
