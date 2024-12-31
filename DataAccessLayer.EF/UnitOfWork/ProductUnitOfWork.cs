@@ -17,7 +17,7 @@ public class ProductUnitOfWork
         ProductRepository = new Repository<Product>(_context);
         TagRepository = new Repository<Tag>(_context);
     }
-    
+
     public ProductUnitOfWork() //for stub testing
     {
     }
