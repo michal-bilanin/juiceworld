@@ -22,7 +22,10 @@ public static class DataInstaller
         services.AddScoped<IQueryObject<Order>, QueryObject<Order>>();
         services.AddScoped<IQueryObject<Manufacturer>, QueryObject<Manufacturer>>();
         services.AddScoped<IQueryObject<Tag>, QueryObject<Tag>>();
+        services.AddScoped<IQueryObject<CouponCode>, QueryObject<CouponCode>>();
 
+        services.AddScoped<IRepository<GiftCard>, Repository<GiftCard>>();
+        services.AddScoped<IRepository<CouponCode>, Repository<CouponCode>>();
         services.AddScoped<IRepository<User>, Repository<User>>();
         services.AddScoped<IRepository<CartItem>, Repository<CartItem>>();
         services.AddScoped<IRepository<Manufacturer>, Repository<Manufacturer>>();

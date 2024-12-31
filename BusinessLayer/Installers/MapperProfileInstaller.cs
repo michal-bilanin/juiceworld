@@ -31,6 +31,10 @@ public class MapperProfileInstaller : Profile
         CreateMap<WishListItemDto, WishListItem>().ReverseMap();
         CreateMap<WishListItemDetailDto, WishListItem>().ReverseMap();
         CreateMap<AuditTrailDto, AuditTrail>().ReverseMap();
+        CreateMap<GiftCardCreateDto, GiftCard>().ReverseMap();
+        CreateMap<GiftCardDetailDto, GiftCard>().ReverseMap();
+        CreateMap<CouponCodeDto, CouponCode>().ReverseMap();
+        CreateMap<GiftCardEditDto, GiftCard>().ReverseMap();
         CreateMap<TagDto, Tag>().ReverseMap();
     }
 }

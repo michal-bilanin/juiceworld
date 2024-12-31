@@ -12,6 +12,7 @@ public static class BusinessLayerInstaller
     {
         services.AddAutoMapper(typeof(BusinessLayerInstaller));
 
+        services.AddScoped<IGiftCardService, GiftCardService>();
         services.AddScoped<ICartItemService, CartItemService>();
         services.AddScoped<IManufacturerService, ManufacturerService>();
         services.AddScoped<IOrderService, OrderService>();

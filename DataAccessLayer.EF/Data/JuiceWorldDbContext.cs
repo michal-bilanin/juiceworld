@@ -24,6 +24,8 @@ public class JuiceWorldDbContext(DbContextOptions<JuiceWorldDbContext> options)
     public DbSet<Order> Orders { get; set; }
     public DbSet<OrderProduct> OrderProducts { get; set; }
     public DbSet<Tag> Tags { get; set; }
+    public DbSet<CouponCode> CouponCodes { get; set; }
+    public DbSet<GiftCard> GiftCards { get; set; }
 
     private void SetAuditableProperties()
     {
@@ -214,6 +216,12 @@ public class JuiceWorldDbContext(DbContextOptions<JuiceWorldDbContext> options)
         modelBuilder.Entity<AuditTrail>()
             .Property(at => at.TrailType)
             .HasConversion<string>();
+
+        modelBuilder.Entity<CouponCode>()
+            .HasOne(cc => cc.GiftCard)
+            .WithMany(gc => gc.CouponCodes)
+            .HasForeignKey(cc => cc.GiftCardId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         // Global query filter for soft-deleted entities
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
