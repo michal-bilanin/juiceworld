@@ -54,7 +54,7 @@ public class ProductService(
             var query = GetQueryObject(productFilter);
             query.Include(nameof(Product.Tags), nameof(Product.Manufacturer), nameof(Product.Reviews));
             value = await query.ExecuteAsync();
-            
+
             var cacheEntryOptions = new MemoryCacheEntryOptions()
                 .SetAbsoluteExpiration(TimeSpan.FromSeconds(30));
             memoryCache.Set(cacheKey, value, cacheEntryOptions);
@@ -65,7 +65,7 @@ public class ProductService(
             Entities = mapper.Map<List<ProductDto>>(value!.Entities),
             PageIndex = value.PageIndex,
             TotalPages = value.TotalPages
-        };;
+        }; ;
     }
 
     public async Task<FilteredResult<ProductDetailDto>> GetProductDetailsFilteredAsync(ProductFilterDto productFilter)
@@ -75,7 +75,7 @@ public class ProductService(
         {
             var query = GetQueryObject(productFilter);
             value = await query.ExecuteAsync();
-            
+
             var cacheEntryOptions = new MemoryCacheEntryOptions()
                 .SetAbsoluteExpiration(TimeSpan.FromSeconds(30));
             memoryCache.Set(cacheKey, value, cacheEntryOptions);
@@ -95,7 +95,7 @@ public class ProductService(
         if (!memoryCache.TryGetValue(cacheKey, out Product? value))
         {
             value = await productRepository.GetByIdAsync(id, nameof(Product.Tags));
-            
+
             var cacheEntryOptions = new MemoryCacheEntryOptions()
                 .SetAbsoluteExpiration(TimeSpan.FromSeconds(30));
             memoryCache.Set(cacheKey, value, cacheEntryOptions);
@@ -116,7 +116,7 @@ public class ProductService(
             {
                 return null;
             }
-    
+
             value.Reviews = value.Reviews.OrderByDescending(r => r.CreatedAt).ToList();
             var cacheEntryOptions = new MemoryCacheEntryOptions()
                 .SetAbsoluteExpiration(TimeSpan.FromSeconds(30));

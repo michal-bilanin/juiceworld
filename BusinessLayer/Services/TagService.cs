@@ -8,12 +8,12 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace BusinessLayer.Services;
 
-public class TagService(IRepository<Tag> tagRepository, 
-    IQueryObject<Tag> tagQueryObject, 
+public class TagService(IRepository<Tag> tagRepository,
+    IQueryObject<Tag> tagQueryObject,
     IMemoryCache memoryCache,
     IMapper mapper) : ITagService
 {
-    private string _cacheKeyPrefix = nameof(TagService); 
+    private string _cacheKeyPrefix = nameof(TagService);
     public async Task<TagDto?> CreateTagAsync(TagDto tagDto)
     {
         var newTag = await tagRepository.CreateAsync(mapper.Map<Tag>(tagDto));

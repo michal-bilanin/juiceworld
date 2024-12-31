@@ -8,8 +8,8 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace BusinessLayer.Services;
 
-public class CartItemService(IRepository<CartItem> cartItemRepository, 
-    OrderUnitOfWork orderUnitOfWork, 
+public class CartItemService(IRepository<CartItem> cartItemRepository,
+    OrderUnitOfWork orderUnitOfWork,
     IMemoryCache memoryCache,
     IMapper mapper)
     : ICartItemService
@@ -34,7 +34,7 @@ public class CartItemService(IRepository<CartItem> cartItemRepository,
         {
             value =
                 await cartItemRepository.GetByConditionAsync(c => c.UserId == userId, nameof(CartItem.Product));
-            
+
             var cacheEntryOptions = new MemoryCacheEntryOptions()
                 .SetAbsoluteExpiration(TimeSpan.FromSeconds(30));
             memoryCache.Set(cacheKey, value, cacheEntryOptions);
@@ -53,7 +53,7 @@ public class CartItemService(IRepository<CartItem> cartItemRepository,
     {
         string cacheKey = $"{_cacheKeyPrefix}-CartItems{cartItemDto.UserId}";
         memoryCache.Remove(cacheKey);
-        
+
         var updatedCartItem = await cartItemRepository.UpdateAsync(mapper.Map<CartItem>(cartItemDto));
         return updatedCartItem is null ? null : mapper.Map<CartItemDto>(updatedCartItem);
     }
@@ -62,7 +62,7 @@ public class CartItemService(IRepository<CartItem> cartItemRepository,
     {
         string cacheKey = $"{_cacheKeyPrefix}-CartItems{userId}";
         memoryCache.Remove(cacheKey);
-        
+
         var product = await orderUnitOfWork.ProductRepository.GetByIdAsync(addToCartDto.ProductId);
         if (product is null)
         {
@@ -113,7 +113,7 @@ public class CartItemService(IRepository<CartItem> cartItemRepository,
     {
         string cacheKey = $"{_cacheKeyPrefix}-CartItems{userId}";
         memoryCache.Remove(cacheKey);
-        
+
         var cartItem =
             (await orderUnitOfWork.CartItemRepository.GetByConditionAsync(c => c.Id == id && c.UserId == userId)).FirstOrDefault();
         if (cartItem is null)

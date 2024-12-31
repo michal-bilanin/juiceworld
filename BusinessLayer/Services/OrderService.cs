@@ -20,7 +20,7 @@ public class OrderService(
     IMapper mapper) : IOrderService
 {
     private string _cacheKeyPrefix = nameof(OrderService);
-    
+
     public async Task<OrderDto?> ExecuteOrderAsync(CreateOrderDto orderDto, int? couponId)
     {
         var order = mapper.Map<Order>(orderDto);
@@ -107,7 +107,7 @@ public class OrderService(
         string cacheKey = $"{_cacheKeyPrefix}-Orders{userId}{JsonSerializer.Serialize(paginationDto)}";
         if (memoryCache.TryGetValue(cacheKey, out FilteredResult<Order>? value))
         {
-            
+
             var query = orderQueryObject.Filter(o => o.UserId == userId)
                     .OrderBy(
                         new (Expression<Func<Order, object>> KeySelector, bool IsDesc)[]
@@ -116,9 +116,9 @@ public class OrderService(
                             (o => o.Id, false)
                         })
                 .Paginate(paginationDto.PageIndex, paginationDto.PageSize);
-    
+
             value = await query.ExecuteAsync();
-            
+
             var cacheEntryOptions = new MemoryCacheEntryOptions()
                 .SetAbsoluteExpiration(TimeSpan.FromSeconds(30));
             memoryCache.Set(cacheKey, value, cacheEntryOptions);

@@ -49,7 +49,7 @@ public class ManufacturerService(
                 .OrderBy(m => m.Id);
 
             value = await query.ExecuteAsync();
-            
+
             var cacheEntryOptions = new MemoryCacheEntryOptions()
                 .SetAbsoluteExpiration(TimeSpan.FromSeconds(30));
             memoryCache.Set(cacheKey, value, cacheEntryOptions);
@@ -69,7 +69,7 @@ public class ManufacturerService(
         if (!memoryCache.TryGetValue(cacheKey, out Manufacturer? value))
         {
             value = await manufacturerRepository.GetByIdAsync(id);
-            
+
             var cacheEntryOptions = new MemoryCacheEntryOptions()
                 .SetAbsoluteExpiration(TimeSpan.FromSeconds(30));
             memoryCache.Set(cacheKey, value, cacheEntryOptions);
