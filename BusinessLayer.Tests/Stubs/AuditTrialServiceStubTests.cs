@@ -187,7 +187,7 @@ namespace BusinessLayer.Tests.Stubs
         {
             // Arrange
             _auditTrailRepositoryMock.Setup(repo => repo.GetByIdAsync(It.IsAny<int>()))
-                                     .ReturnsAsync((AuditTrail) null);
+                                     .ReturnsAsync((AuditTrail)null);
 
             // Act
             var result = await _auditTrailService.GetAuditTrailByIdAsync(999); // ID that doesn't exist

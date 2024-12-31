@@ -42,7 +42,7 @@ public class OrderController(IOrderService orderService,
         int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId);
 
         var cartItems = await cartItemService.GetCartItemsByUserIdAsync(userId);
- 
+
         return View(new CreateOrderDto { UserId = userId, CartItems = cartItems });
     }
 

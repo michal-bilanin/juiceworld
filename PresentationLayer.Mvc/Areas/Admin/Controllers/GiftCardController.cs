@@ -57,7 +57,7 @@ public class GiftCardController(IGiftCardService giftCardService) : Controller
             return View(new GiftCardEditDto());
         }
 
-        return View(new GiftCardEditDto {Name = giftCard.Name} );
+        return View(new GiftCardEditDto { Name = giftCard.Name });
     }
 
     [HttpPost]
@@ -77,7 +77,7 @@ public class GiftCardController(IGiftCardService giftCardService) : Controller
 
         return RedirectToAction(nameof(Index));
     }
-    
+
     [HttpGet]
     public async Task<IActionResult> Details(int id)
     {

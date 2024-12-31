@@ -8,9 +8,9 @@ namespace PresentationLayer.Mvc.Facades;
 public class OrderCouponFacade(
     IGiftCardService giftCardService,
     IOrderService orderService,
-    IUserService userService): IOrderCouponFacade
+    IUserService userService) : IOrderCouponFacade
 {
-    
+
     public async Task<OrderDto?> CreateOrderWithCouponAsync(int userId, CreateOrderDto orderDto)
     {
         var user = await userService.GetUserByIdAsync(userId);
@@ -23,7 +23,7 @@ public class OrderCouponFacade(
         {
             return null;
         }
-        
+
         var cc = orderDto.CouponCodeString != null ? await giftCardService.RedeemCouponAsync(orderDto.CouponCodeString) : null;
 
         var order = await orderService.ExecuteOrderAsync(orderDto, cc?.Id);
@@ -31,7 +31,7 @@ public class OrderCouponFacade(
         {
             return null;
         }
-        
+
         return order;
     }
 }

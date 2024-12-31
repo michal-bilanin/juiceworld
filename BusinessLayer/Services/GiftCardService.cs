@@ -13,7 +13,7 @@ public class GiftCardService(IRepository<GiftCard> giftCardRepository,
     IQueryObject<GiftCard> giftCardQueryObject,
     IMapper mapper) : IGiftCardService
 {
-    
+
     public async Task<GiftCardDetailDto?> CreateGiftCardAsync(GiftCardCreateDto giftCardCreateDto)
     {
         giftCardCreateDto.ExpiryDateTime = giftCardCreateDto.ExpiryDateTime?.ToUniversalTime();
@@ -39,12 +39,12 @@ public class GiftCardService(IRepository<GiftCard> giftCardRepository,
     public async Task<FilteredResult<GiftCardEditDto>> GetAllGiftCardsAsync(GiftCardFilterDto giftCardFilterDto)
     {
         var filteredGiftCards = await giftCardQueryObject
-            .Filter(g => giftCardFilterDto.Name == null || 
+            .Filter(g => giftCardFilterDto.Name == null ||
                          g.Name.ToLower().Contains(giftCardFilterDto.Name.ToLower()))
             .OrderBy(p => p.Id)
             .Paginate(giftCardFilterDto.PageIndex, giftCardFilterDto.PageSize)
-            .ExecuteAsync();;
-        
+            .ExecuteAsync(); ;
+
         return new FilteredResult<GiftCardEditDto>
         {
             Entities = mapper.Map<List<GiftCardEditDto>>(filteredGiftCards.Entities),
@@ -52,7 +52,7 @@ public class GiftCardService(IRepository<GiftCard> giftCardRepository,
             TotalPages = filteredGiftCards.TotalPages
         };
     }
-    
+
     public async Task<GiftCardDetailDto?> GetGiftCardByIdAsync(int id)
     {
         var giftCard = await giftCardRepository.GetByIdAsync(id);
@@ -73,10 +73,10 @@ public class GiftCardService(IRepository<GiftCard> giftCardRepository,
     {
         var redeemedCoupon = (await couponCodeQueryObject.Filter(c => c.Code == couponCode)
             .ExecuteAsync()).Entities.FirstOrDefault();
-        
+
         if (redeemedCoupon == null)
             return null;
-        
+
         if (redeemedCoupon.GiftCard?.ExpiryDateTime < DateTime.UtcNow)
             return null;
 
