@@ -2,6 +2,8 @@
 using AutoMapper;
 using BusinessLayer.DTOs;
 using BusinessLayer.Services.Interfaces;
+using JuiceWorld.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using PresentationLayer.Mvc.ActionFilters;
 using PresentationLayer.Mvc.Models;
@@ -9,7 +11,9 @@ using PresentationLayer.Mvc.Models;
 namespace PresentationLayer.Mvc.Areas.Customer.Controllers;
 
 [Area(Constants.Areas.Customer)]
-public class UserController(IUserService userService, IMapper mapper) : Controller
+public class UserController(IUserService userService,
+    IMapper mapper,
+    SignInManager<User> signInManager) : Controller
 {
     // GET: /User/Register
     [HttpGet]
@@ -28,19 +32,40 @@ public class UserController(IUserService userService, IMapper mapper) : Controll
             return View(model);
         }
 
-        var token = await userService.RegisterUserAsync(mapper.Map<UserRegisterDto, UserRegisterDto>(model));
-        if (token is null)
+        var result = await userService.RegisterUserAsync(new UserRegisterDto
         {
-            ModelState.AddModelError("Email", "A user with this username or email already exists.");
-            return View(model);
+            UserName = model.UserName,
+            Email = model.Email,
+            Bio = model.Bio,
+            Password = model.Password,
+            ConfirmPassword = model.ConfirmPassword
+        });
+
+        var userDb = await signInManager.UserManager.FindByEmailAsync(model.Email);
+        if (userDb is null)
+        {
+            ModelState.AddModelError(string.Empty, "User doesn't exist.");
+            return Unauthorized();
         }
 
-        Response.Cookies.Append(Constants.JwtToken, token, new CookieOptions
+        if (result.Succeeded)
         {
-            HttpOnly = true,
-            Secure = true,
-            Expires = DateTimeOffset.UtcNow.AddMinutes(30) // or set expiration based on token expiry
-        });
+            var ci = new[]
+            {
+                new Claim(ClaimTypes.Sid, userDb.Id.ToString()),
+                new Claim(ClaimTypes.Name, userDb.UserName ?? string.Empty),
+                new Claim(ClaimTypes.Email, userDb.Email ?? string.Empty),
+                new Claim(ClaimTypes.Role, userDb.UserRole.ToString())
+            };
+
+            await signInManager.SignInWithClaimsAsync(userDb, false, ci);
+            return RedirectToAction(nameof(Index), "Home");
+        }
+
+        foreach (var error in result.Errors)
+        {
+            ModelState.AddModelError(string.Empty, error.Description);
+        }
 
         return RedirectToAction("Index", "Home");
     }
@@ -60,25 +85,29 @@ public class UserController(IUserService userService, IMapper mapper) : Controll
             ModelState.AddModelError("InvalidCredentials", "Invalid username or password.");
             return View(model);
         }
-
-        var token = await userService.LoginAsync(new LoginDto
+        var user = await signInManager.UserManager.FindByEmailAsync(model.Email);
+        if (user == null)
         {
-            Email = model.Email,
-            Password = model.Password,
-        });
-
-        if (token is null)
-        {
-            ModelState.AddModelError("InvalidCredentials", "Invalid username or password.");
+            ModelState.AddModelError(string.Empty, "User doesn't exist.");
             return View(model);
         }
 
-        Response.Cookies.Append(Constants.JwtToken, token, new CookieOptions
+        var result = await signInManager.CheckPasswordSignInAsync(user, model.Password, lockoutOnFailure: false);
+        if (result.Succeeded)
         {
-            HttpOnly = true,
-            Secure = true,
-            Expires = DateTimeOffset.UtcNow.AddMinutes(30) // or set expiration based on token expiry
-        });
+            var ci = new[]
+            {
+                new Claim(ClaimTypes.Sid, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.UserName ?? string.Empty),
+                new Claim(ClaimTypes.Email, user.Email ?? string.Empty),
+                new Claim(ClaimTypes.Role, user.UserRole.ToString())
+            };
+
+            await signInManager.SignInWithClaimsAsync(user, false, ci);
+            return RedirectToAction(nameof(Index), "Home");
+        }
+
+        ModelState.AddModelError(string.Empty, "Invalid login attempt.");
 
         return RedirectToAction(nameof(Index), "Home");
     }
@@ -87,12 +116,7 @@ public class UserController(IUserService userService, IMapper mapper) : Controll
     [HttpGet]
     public ActionResult Logout()
     {
-        Response.Cookies.Append(Constants.JwtToken, "", new CookieOptions
-        {
-            HttpOnly = true,
-            Secure = true,
-            Expires = DateTimeOffset.UtcNow.AddDays(-1) // Expire immediately
-        });
+        signInManager.SignOutAsync();
         return RedirectToAction("Login", "User");
     }
 

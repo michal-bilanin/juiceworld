@@ -2,12 +2,13 @@ using System.Linq.Expressions;
 using Infrastructure.QueryObjects;
 using JuiceWorld.Data;
 using JuiceWorld.Entities;
+using JuiceWorld.Entities.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace JuiceWorld.QueryObjects;
 
 public class QueryObject<TEntity>(JuiceWorldDbContext context) : IQueryObject<TEntity>
-    where TEntity : BaseEntity
+    where TEntity : class, IBaseEntity
 {
     private IQueryable<TEntity> _query = context.Set<TEntity>();
     private bool _pagingEnabled = false;

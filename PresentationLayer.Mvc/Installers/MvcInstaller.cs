@@ -1,7 +1,10 @@
 ﻿using System.Diagnostics;
 using System.Text;
 using Commons.Constants;
+using JuiceWorld.Data;
+using JuiceWorld.Entities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using MongoDB.Driver;
@@ -27,34 +30,14 @@ public static class MvcInstaller
                                 $"in the environment variable: {EnvironmentConstants.JwtSecret}");
         }
 
-        services.AddAuthentication(x =>
-            {
-                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddCookie(options =>
-            {
-                options.Cookie.Name = Constants.JwtToken; // the cookie that stores the JWT
-            })
-            .AddJwtBearer(x =>
-            {
-                x.SaveToken = true;
-                x.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret))
-                };
-                x.Events = new JwtBearerEvents
-                {
-                    OnMessageReceived = context =>
-                    {
-                        context.Token = context.Request.Cookies[Constants.JwtToken];
-                        return Task.CompletedTask;
-                    }
-                };
-            });
+        services.AddIdentity<User, IdentityRole<int>>()
+            .AddEntityFrameworkStores<JuiceWorldDbContext>()
+            .AddDefaultTokenProviders();
+
+        services.ConfigureApplicationCookie(options =>
+        {
+            options.LoginPath = "/Account/Login";
+        });
 
         // Configure Logging
         var connectionString = Environment.GetEnvironmentVariable(EnvironmentConstants.LoggingDbConnectionString);
