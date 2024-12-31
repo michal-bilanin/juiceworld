@@ -6,6 +6,7 @@ using BusinessLayer.Services.Interfaces;
 using JuiceWorld.Entities;
 using JuiceWorld.QueryObjects;
 using JuiceWorld.Repositories;
+using Microsoft.Extensions.Caching.Memory;
 using TestUtilities.MockedObjects;
 using Xunit;
 using Assert = Xunit.Assert;
@@ -24,7 +25,8 @@ public class ManufacturerServiceTests
         var config = new MapperConfiguration(cfg => cfg.AddProfile<MapperProfileInstaller>());
         var mapper = config.CreateMapper();
         var manufacturerQueryObject = new QueryObject<Manufacturer>(dbContext);
-        _manufacturerService = new ManufacturerService(manufacturerRepository, manufacturerQueryObject, mapper);
+        var cache = new MemoryCache(new MemoryCacheOptions());
+        _manufacturerService = new ManufacturerService(manufacturerRepository, manufacturerQueryObject, cache, mapper);
     }
 
     [Fact]

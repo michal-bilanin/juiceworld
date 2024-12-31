@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using System.Text.Json;
 using AutoMapper;
 using BusinessLayer.DTOs;
 using BusinessLayer.Services.Interfaces;
@@ -7,6 +8,7 @@ using Infrastructure.QueryObjects;
 using Infrastructure.Repositories;
 using JuiceWorld.Entities;
 using JuiceWorld.UnitOfWork;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace BusinessLayer.Services;
 
@@ -14,8 +16,11 @@ public class OrderService(
     IRepository<Order> orderRepository,
     IQueryObject<Order> orderQueryObject,
     OrderUnitOfWork orderUnitOfWork,
+    IMemoryCache memoryCache,
     IMapper mapper) : IOrderService
 {
+    private string _cacheKeyPrefix = nameof(OrderService);
+    
     public async Task<OrderDto?> ExecuteOrderAsync(CreateOrderDto orderDto, int? couponId)
     {
         var order = mapper.Map<Order>(orderDto);
@@ -99,22 +104,31 @@ public class OrderService(
 
     public async Task<FilteredResult<OrderDto>> GetOrdersByUserIdAsync(int userId, PaginationDto paginationDto)
     {
-        var query = orderQueryObject.Filter(o => o.UserId == userId)
-                .OrderBy(
-                    new (Expression<Func<Order, object>> KeySelector, bool IsDesc)[]
-                    {
-                        (o => o.Status, false),
-                        (o => o.Id, false)
-                    })
-            .Paginate(paginationDto.PageIndex, paginationDto.PageSize);
-
-        var filteredOrders = await query.ExecuteAsync();
+        string cacheKey = $"{_cacheKeyPrefix}-Orders{userId}{JsonSerializer.Serialize(paginationDto)}";
+        if (memoryCache.TryGetValue(cacheKey, out FilteredResult<Order>? value))
+        {
+            
+            var query = orderQueryObject.Filter(o => o.UserId == userId)
+                    .OrderBy(
+                        new (Expression<Func<Order, object>> KeySelector, bool IsDesc)[]
+                        {
+                            (o => o.Status, false),
+                            (o => o.Id, false)
+                        })
+                .Paginate(paginationDto.PageIndex, paginationDto.PageSize);
+    
+            value = await query.ExecuteAsync();
+            
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+                .SetAbsoluteExpiration(TimeSpan.FromSeconds(30));
+            memoryCache.Set(cacheKey, value, cacheEntryOptions);
+        }
 
         return new FilteredResult<OrderDto>
         {
-            Entities = mapper.Map<List<OrderDto>>(filteredOrders.Entities),
-            PageIndex = filteredOrders.PageIndex,
-            TotalPages = filteredOrders.TotalPages
+            Entities = mapper.Map<List<OrderDto>>(value!.Entities),
+            PageIndex = value.PageIndex,
+            TotalPages = value.TotalPages
         };
     }
 

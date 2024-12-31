@@ -5,6 +5,7 @@ using BusinessLayer.Services;
 using BusinessLayer.Services.Interfaces;
 using Infrastructure.Repositories;
 using JuiceWorld.Entities;
+using Microsoft.Extensions.Caching.Memory;
 using Moq;
 using Xunit;
 using Assert = Xunit.Assert;
@@ -46,7 +47,8 @@ public class ReviewServiceStubTests
         _mapper = config.CreateMapper();
 
         // Initialize the service with the mocked repository and mapper
-        _reviewService = new ReviewService(_reviewRepositoryMock.Object, _mapper);
+        var cache = new MemoryCache(new MemoryCacheOptions());
+        _reviewService = new ReviewService(_reviewRepositoryMock.Object, cache, _mapper);
     }
 
     [Fact]

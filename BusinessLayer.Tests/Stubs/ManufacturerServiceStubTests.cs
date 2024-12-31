@@ -6,6 +6,7 @@ using BusinessLayer.Services.Interfaces;
 using Infrastructure.Repositories;
 using JuiceWorld.Entities;
 using JuiceWorld.QueryObjects;
+using Microsoft.Extensions.Caching.Memory;
 using Moq;
 using TestUtilities.MockedObjects;
 using Xunit;
@@ -36,7 +37,8 @@ namespace BusinessLayer.Tests.Stubs
 
             var queryObject = new QueryObject<Manufacturer>(MockedDbContext.CreateFromOptions(MockedDbContext.GetOptions()));
             // Initialize the service with the mocked repository
-            _manufacturerService = new ManufacturerService(_manufacturerRepositoryMock.Object, queryObject, _mapper);
+            var cache = new MemoryCache(new MemoryCacheOptions());
+            _manufacturerService = new ManufacturerService(_manufacturerRepositoryMock.Object, queryObject, cache, _mapper);
         }
 
         [Fact]

@@ -5,6 +5,7 @@ using BusinessLayer.Services;
 using BusinessLayer.Services.Interfaces;
 using JuiceWorld.Entities;
 using JuiceWorld.Repositories;
+using Microsoft.Extensions.Caching.Memory;
 using TestUtilities.MockedObjects;
 using Xunit;
 using Assert = Xunit.Assert;
@@ -22,7 +23,8 @@ public class ReviewServiceTests
         var reviewRepository = new Repository<Review>(dbContext);
         var config = new MapperConfiguration(cfg => cfg.AddProfile<MapperProfileInstaller>());
         var mapper = config.CreateMapper();
-        _reviewService = new ReviewService(reviewRepository, mapper);
+        var cache = new MemoryCache(new MemoryCacheOptions());
+        _reviewService = new ReviewService(reviewRepository, cache, mapper);
     }
 
     [Fact]

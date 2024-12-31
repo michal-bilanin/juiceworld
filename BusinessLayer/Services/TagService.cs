@@ -4,11 +4,16 @@ using BusinessLayer.Services.Interfaces;
 using Infrastructure.QueryObjects;
 using Infrastructure.Repositories;
 using JuiceWorld.Entities;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace BusinessLayer.Services;
 
-public class TagService(IRepository<Tag> tagRepository, IQueryObject<Tag> tagQueryObject, IMapper mapper) : ITagService
+public class TagService(IRepository<Tag> tagRepository, 
+    IQueryObject<Tag> tagQueryObject, 
+    IMemoryCache memoryCache,
+    IMapper mapper) : ITagService
 {
+    private string _cacheKeyPrefix = nameof(TagService); 
     public async Task<TagDto?> CreateTagAsync(TagDto tagDto)
     {
         var newTag = await tagRepository.CreateAsync(mapper.Map<Tag>(tagDto));
@@ -17,8 +22,16 @@ public class TagService(IRepository<Tag> tagRepository, IQueryObject<Tag> tagQue
 
     public async Task<IEnumerable<TagDto>> GetAllTagsAsync()
     {
-        var tags = await tagRepository.GetAllAsync();
-        return mapper.Map<List<TagDto>>(tags);
+        string cacheKey = $"{_cacheKeyPrefix}-allTags";
+        if (!memoryCache.TryGetValue(cacheKey, out List<Tag>? value))
+        {
+            var tags = await tagRepository.GetAllAsync();
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+                .SetAbsoluteExpiration(TimeSpan.FromSeconds(30));
+            memoryCache.Set(cacheKey, tags.ToList(), cacheEntryOptions);
+            value = tags.ToList();
+        }
+        return mapper.Map<List<TagDto>>(value);
     }
 
     public async Task<FilteredResult<TagDto>> GetTagsAsync(TagFilterDto tagFilterDto)
@@ -40,18 +53,29 @@ public class TagService(IRepository<Tag> tagRepository, IQueryObject<Tag> tagQue
 
     public async Task<TagDto?> GetTagByIdAsync(int id)
     {
-        var tag = await tagRepository.GetByIdAsync(id);
-        return tag is null ? null : mapper.Map<TagDto>(tag);
+        string cacheKey = $"{_cacheKeyPrefix}-tag{id}";
+        if (!memoryCache.TryGetValue(cacheKey, out Tag? value))
+        {
+            value = await tagRepository.GetByIdAsync(id);
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+                .SetAbsoluteExpiration(TimeSpan.FromSeconds(30));
+            memoryCache.Set(cacheKey, value, cacheEntryOptions);
+        }
+        return value is null ? null : mapper.Map<TagDto>(value);
     }
 
     public async Task<TagDto?> UpdateTagAsync(TagDto tagDto)
     {
+        string cacheKey = $"{_cacheKeyPrefix}-tag{tagDto.Id}";
+        memoryCache.Remove(cacheKey);
         var updatedTag = await tagRepository.UpdateAsync(mapper.Map<Tag>(tagDto));
         return updatedTag is null ? null : mapper.Map<TagDto>(updatedTag);
     }
 
     public async Task<bool> DeleteTagByIdAsync(int id)
     {
+        string cacheKey = $"{_cacheKeyPrefix}-tag{id}";
+        memoryCache.Remove(cacheKey);
         return await tagRepository.DeleteAsync(id);
     }
 }

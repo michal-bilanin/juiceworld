@@ -8,6 +8,7 @@ using JuiceWorld.Entities;
 using JuiceWorld.QueryObjects;
 using JuiceWorld.Repositories;
 using JuiceWorld.UnitOfWork;
+using Microsoft.Extensions.Caching.Memory;
 using TestUtilities.MockedObjects;
 using Xunit;
 using Assert = Xunit.Assert;
@@ -27,7 +28,8 @@ public class OrderServiceTests
         var mapper = config.CreateMapper();
         var orderUnitOfWork = new OrderUnitOfWork(dbContext);
         var orderQueryObject = new QueryObject<Order>(dbContext);
-        _orderService = new OrderService(orderRepository, orderQueryObject, orderUnitOfWork, mapper);
+        var cache = new MemoryCache(new MemoryCacheOptions());
+        _orderService = new OrderService(orderRepository, orderQueryObject, orderUnitOfWork, cache, mapper);
     }
 
     [Fact]

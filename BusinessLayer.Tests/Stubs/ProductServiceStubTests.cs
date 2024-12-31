@@ -7,6 +7,7 @@ using Commons.Enums;
 using Infrastructure.QueryObjects;
 using Infrastructure.Repositories;
 using JuiceWorld.Entities;
+using Microsoft.Extensions.Caching.Memory;
 using Moq;
 using Xunit;
 using Assert = Xunit.Assert;
@@ -50,9 +51,9 @@ namespace BusinessLayer.Tests.Stubs
             // Configure AutoMapper
             var config = new MapperConfiguration(cfg => cfg.AddProfile<MapperProfileInstaller>());
             _mapper = config.CreateMapper();
-
+            var cache = new MemoryCache(new MemoryCacheOptions());
             // Initialize the service
-            _productService = new ProductService(_productRepositoryMock.Object, _mapper, queryObjectMock.Object);
+            _productService = new ProductService(_productRepositoryMock.Object, _mapper, cache, queryObjectMock.Object);
         }
 
         [Fact]
