@@ -18,6 +18,10 @@ public class ProductUnitOfWork
         TagRepository = new Repository<Tag>(_context);
     }
 
+    public ProductUnitOfWork() //for stub testing
+    {
+    }
+
     public async Task Commit()
     {
         await _context.SaveChangesAsync();

@@ -1,3 +1,5 @@
+using BusinessLayer.Facades;
+using BusinessLayer.Facades.Interfaces;
 using BusinessLayer.Services;
 using BusinessLayer.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,6 +21,8 @@ public static class BusinessLayerInstaller
         services.AddScoped<IWishListItemService, WishListItemService>();
         services.AddScoped<IAuditTrailService, AuditTrailService>();
         services.AddScoped<ITagService, TagService>();
+        services.AddScoped<IImageService, ImageService>();
+        services.AddScoped<IProductFacade, ProductFacade>();
 
         return services;
     }

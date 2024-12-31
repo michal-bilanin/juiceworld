@@ -22,9 +22,9 @@ public class UserService(IRepository<User> userRepository,
     UserManager<User> userManager,
     IMapper mapper) : IUserService
 {
-
     public async Task<IdentityResult> RegisterUserAsync(UserRegisterDto userRegisterDto, UserRole role)
     {
+
         if (await GetUserByEmailAsync(userRegisterDto.Email) is not null)
         {
             return IdentityResult.Failed();
