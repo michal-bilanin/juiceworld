@@ -83,7 +83,7 @@ namespace BusinessLayer.Tests.Services
         {
             // Arrange
             var productId = 1;
-            _productRepositoryMock.Setup(repo => repo.GetByIdAsync(productId)).ReturnsAsync(products[0]);
+            _productRepositoryMock.Setup(repo => repo.GetByIdAsync(productId, nameof(Product.Tags))).ReturnsAsync(products[0]);
 
             // Act
             var result = await _productService.GetProductByIdAsync(productId);
