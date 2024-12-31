@@ -1,23 +1,21 @@
 ﻿using AutoMapper;
 using BusinessLayer.DTOs;
+using BusinessLayer.Installers;
 using BusinessLayer.Services;
 using BusinessLayer.Services.Interfaces;
 using Infrastructure.Repositories;
 using JuiceWorld.Entities;
-using Moq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using BusinessLayer.Installers;
 using JuiceWorld.QueryObjects;
+using Moq;
 using TestUtilities.MockedObjects;
 using Xunit;
 using Assert = Xunit.Assert;
 
-namespace BusinessLayer.Tests.Services
+namespace BusinessLayer.Tests.Stubs
 {
     public class ManufacturerServiceStubTests
     {
-        private readonly List<Manufacturer> manufacturers = new List<Manufacturer>
+        private readonly List<Manufacturer> _manufacturers = new List<Manufacturer>
         {
             new Manufacturer { Id = 1, Name = "Manufacturer 1" },
             new Manufacturer { Id = 2, Name = "Manufacturer 2" }
@@ -45,14 +43,14 @@ namespace BusinessLayer.Tests.Services
         public async Task GetAllManufacturersAsync_ExactMatch()
         {
             // Arrange
-            _manufacturerRepositoryMock.Setup(repo => repo.GetAllAsync()).ReturnsAsync(manufacturers);
+            _manufacturerRepositoryMock.Setup(repo => repo.GetAllAsync()).ReturnsAsync(_manufacturers);
 
             // Act
-            var result = await _manufacturerService.GetAllManufacturersAsync();
+            var result = (await _manufacturerService.GetAllManufacturersAsync()).ToList();
 
             // Assert
-            Assert.Equal(manufacturers.Count, result.Count());
-            Assert.All(manufacturers, manufacturer => Assert.Contains(result, dto => dto.Name == manufacturer.Name));
+            Assert.Equal(_manufacturers.Count, result.Count());
+            Assert.All(_manufacturers, manufacturer => Assert.Contains(result, dto => dto.Name == manufacturer.Name));
         }
 
         [Fact]
@@ -60,7 +58,7 @@ namespace BusinessLayer.Tests.Services
         {
             // Arrange
             var manufacturerId = 1;
-            _manufacturerRepositoryMock.Setup(repo => repo.GetByIdAsync(manufacturerId)).ReturnsAsync(manufacturers[0]);
+            _manufacturerRepositoryMock.Setup(repo => repo.GetByIdAsync(manufacturerId)).ReturnsAsync(_manufacturers[0]);
 
             // Act
             var result = await _manufacturerService.GetManufacturerByIdAsync(manufacturerId);
@@ -68,7 +66,7 @@ namespace BusinessLayer.Tests.Services
             // Assert
             Assert.NotNull(result);
             Assert.Equal(manufacturerId, result.Id);
-            Assert.Equal(manufacturers[0].Name, result.Name);
+            Assert.Equal(_manufacturers[0].Name, result.Name);
         }
 
         [Fact]

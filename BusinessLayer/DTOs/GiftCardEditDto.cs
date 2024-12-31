@@ -5,6 +5,7 @@ namespace BusinessLayer.DTOs;
 public class GiftCardEditDto
 {
     public int Id { get; set; }
+    public string Name { get; set; }
     public int Discount { get; set; }
     public int CouponsCount { get; set; }
     public DateTime? StartDateTime { get; set; }

@@ -5,7 +5,7 @@ namespace BusinessLayer.Services.Interfaces;
 
 public interface IOrderService
 {
-    Task<OrderDto?> ExecuteOrderAsync(CreateOrderDto orderDto);
+    Task<OrderDto?> ExecuteOrderAsync(CreateOrderDto orderDto, int? couponId);
     Task<OrderDto?> CreateOrderAsync(CreateOrderDto orderDto);
     Task<IEnumerable<OrderDto>> GetAllOrdersAsync();
     Task<FilteredResult<OrderDto>> GetOrdersAsync(PaginationDto orderFilter);

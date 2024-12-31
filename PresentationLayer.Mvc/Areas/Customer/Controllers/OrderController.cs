@@ -3,12 +3,15 @@ using BusinessLayer.DTOs;
 using BusinessLayer.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using PresentationLayer.Mvc.ActionFilters;
+using PresentationLayer.Mvc.Facades.Interfaces;
 
 namespace PresentationLayer.Mvc.Areas.Customer.Controllers;
 
 [Area(Constants.Areas.Customer)]
 [RedirectIfNotAuthenticatedActionFilter]
-public class OrderController(IOrderService orderService, ICartItemService cartItemService) : Controller
+public class OrderController(IOrderService orderService,
+    ICartItemService cartItemService,
+    IOrderCouponFacade orderCouponFacade) : Controller
 {
     [HttpGet]
     public async Task<ActionResult> Index([FromQuery] PaginationDto pagination)
@@ -39,6 +42,7 @@ public class OrderController(IOrderService orderService, ICartItemService cartIt
         int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId);
 
         var cartItems = await cartItemService.GetCartItemsByUserIdAsync(userId);
+ 
         return View(new CreateOrderDto { UserId = userId, CartItems = cartItems });
     }
 
@@ -57,7 +61,7 @@ public class OrderController(IOrderService orderService, ICartItemService cartIt
             return BadRequest();
         }
 
-        var order = await orderService.ExecuteOrderAsync(orderDto);
+        var order = await orderCouponFacade.CreateOrderWithCouponAsync(userId, orderDto);
         if (order is null)
         {
             ModelState.AddModelError("Order", "Failed to create order.");

@@ -23,6 +23,7 @@ public static class DataInstaller
         services.AddScoped<IQueryObject<Manufacturer>, QueryObject<Manufacturer>>();
         services.AddScoped<IQueryObject<Tag>, QueryObject<Tag>>();
         services.AddScoped<IQueryObject<CouponCode>, QueryObject<CouponCode>>();
+        services.AddScoped<IQueryObject<GiftCard>, QueryObject<GiftCard>>();
 
         services.AddScoped<IRepository<GiftCard>, Repository<GiftCard>>();
         services.AddScoped<IRepository<CouponCode>, Repository<CouponCode>>();

@@ -1,30 +1,27 @@
 ﻿using AutoMapper;
 using BusinessLayer.DTOs;
+using BusinessLayer.Installers;
 using BusinessLayer.Services;
 using BusinessLayer.Services.Interfaces;
 using Commons.Enums;
-using JuiceWorld.Entities;
-using Moq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using BusinessLayer.Installers;
 using Infrastructure.QueryObjects;
 using Infrastructure.Repositories;
+using JuiceWorld.Entities;
 using JuiceWorld.UnitOfWork;
 using Microsoft.Extensions.Logging;
+using Moq;
 using Xunit;
 using Assert = Xunit.Assert;
 
-namespace BusinessLayer.Tests.Services
+namespace BusinessLayer.Tests.Stubs
 {
     public class ProductServiceStubTests
     {
         private readonly IProductService _productService;
         private readonly Mock<IRepository<Product>> _productRepositoryMock;
-        private readonly Mock<IQueryObject<Product>> _queryObjectMock;
         private readonly IMapper _mapper;
 
-        private readonly List<Product> products = new List<Product>
+        private readonly List<Product> _products = new List<Product>
         {
             new Product
             {
@@ -50,7 +47,7 @@ namespace BusinessLayer.Tests.Services
         {
             // Initialize mocks
             _productRepositoryMock = new Mock<IRepository<Product>>();
-            _queryObjectMock = new Mock<IQueryObject<Product>>();
+            Mock<IQueryObject<Product>> queryObjectMock = new();
 
             // Configure AutoMapper
             var config = new MapperConfiguration(cfg => cfg.AddProfile<MapperProfileInstaller>());
@@ -60,22 +57,22 @@ namespace BusinessLayer.Tests.Services
             var productUnitOfWork = new Mock<ProductUnitOfWork>();
 
             // Initialize the service
-            _productService = new ProductService(_productRepositoryMock.Object, _mapper, logger.Object, productUnitOfWork.Object, _queryObjectMock.Object);
+            _productService = new ProductService(_productRepositoryMock.Object, _mapper, logger.Object, productUnitOfWork.Object, queryObjectMock.Object);
         }
 
         [Fact]
         public async Task GetAllProductsAsync_ExactMatch()
         {
             // Arrange
-            _productRepositoryMock.Setup(repo => repo.GetAllAsync()).ReturnsAsync(products);
+            _productRepositoryMock.Setup(repo => repo.GetAllAsync()).ReturnsAsync(_products);
 
             // Act
             var result = await _productService.GetAllProductsAsync();
 
             // Assert
             var productDtos = result.ToList();
-            Assert.Equal(products.Count, productDtos.Count);
-            Assert.All(products, product => Assert.Contains(productDtos, dto => dto.Id == product.Id));
+            Assert.Equal(_products.Count, productDtos.Count);
+            Assert.All(_products, product => Assert.Contains(productDtos, dto => dto.Id == product.Id));
         }
 
         [Fact]
@@ -83,7 +80,7 @@ namespace BusinessLayer.Tests.Services
         {
             // Arrange
             var productId = 1;
-            _productRepositoryMock.Setup(repo => repo.GetByIdAsync(productId, nameof(Product.Tags))).ReturnsAsync(products[0]);
+            _productRepositoryMock.Setup(repo => repo.GetByIdAsync(productId, nameof(Product.Tags))).ReturnsAsync(_products[0]);
 
             // Act
             var result = await _productService.GetProductByIdAsync(productId);
@@ -138,7 +135,7 @@ namespace BusinessLayer.Tests.Services
             };
 
             var updatedProduct = _mapper.Map<Product>(productDto);
-            _productRepositoryMock.Setup(repo => repo.GetByIdAsync(productDto.Id)).ReturnsAsync(products[0]);
+            _productRepositoryMock.Setup(repo => repo.GetByIdAsync(productDto.Id)).ReturnsAsync(_products[0]);
             _productRepositoryMock.Setup(repo => repo.UpdateAsync(It.IsAny<Product>(), null)).ReturnsAsync(updatedProduct);
 
             // Act

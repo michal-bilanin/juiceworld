@@ -22,6 +22,7 @@ public static class MvcInstaller
         services.AddAutoMapper(typeof(MvcMapperInstaller));
 
         services.AddScoped<ISearchablesFacade, SearchablesFacade>();
+        services.AddScoped<IOrderCouponFacade, OrderCouponFacade>();
 
         var secret = Environment.GetEnvironmentVariable(EnvironmentConstants.JwtSecret);
         if (secret == null)

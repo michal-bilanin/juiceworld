@@ -1,27 +1,23 @@
 ﻿using BusinessLayer.Services;
 using Microsoft.Extensions.Logging;
 using Moq;
-using System.IO;
-using System.Threading.Tasks;
 using Xunit;
 
-namespace BusinessLayer.Tests.Services
+namespace BusinessLayer.Tests.Stubs
 {
     public class ImageServiceTests
     {
-        private readonly Mock<ILogger<ImageService>> _loggerMock;
         private readonly ImageService _imageService;
         private const string TestImageBase64 = "iVBORw0KGgoAAAANSUhEUgAA"; // Example base64 image string
         private const string TestImageName = "testImage.png";
-        private const string TestImagePath = "Images/testImage.png";
 
         public ImageServiceTests()
         {
             // Mocking ILogger<ImageService>
-            _loggerMock = new Mock<ILogger<ImageService>>();
+            Mock<ILogger<ImageService>> loggerMock = new();
 
             // Initializing ImageService
-            _imageService = new ImageService(_loggerMock.Object);
+            _imageService = new ImageService(loggerMock.Object);
         }
 
         [Fact]

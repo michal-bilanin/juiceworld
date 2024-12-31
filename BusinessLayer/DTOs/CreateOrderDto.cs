@@ -16,4 +16,6 @@ public class CreateOrderDto : BaseEntityDto
     public int UserId { get; set; }
     public int AddressId { get; set; }
     public IEnumerable<CartItemDetailDto> CartItems { get; set; } = [];
+    public string? CouponCodeString { get; set; }
+    public decimal TotalPrice { get; set; }
 }

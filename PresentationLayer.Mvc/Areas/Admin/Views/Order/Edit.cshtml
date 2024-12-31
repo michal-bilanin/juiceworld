@@ -45,6 +45,14 @@
         <label asp-for="Country" class="control-label"></label>
         <input asp-for="Country" class="form-control" />
     </div>
+    <div class="form-group">
+        <label>Coupon code:</label>
+        <span>@(Model.CouponCode?.Code ?? "")</span>
+    </div>
+    <div class="form-group">
+        <label>Discount:</label>
+        <span>@(Model.CouponCode?.GiftCard?.Discount.ToString() ?? "")</span>
+    </div>
 
     <div class="form-group">
         <label asp-for="OrderProducts" class="control-label">Order Products</label>

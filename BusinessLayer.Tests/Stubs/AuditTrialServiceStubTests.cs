@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Linq.Expressions;
+using AutoMapper;
 using BusinessLayer.DTOs;
 using BusinessLayer.Services;
 using BusinessLayer.Services.Interfaces;
@@ -7,14 +8,9 @@ using Infrastructure.QueryObjects;
 using Infrastructure.Repositories;
 using JuiceWorld.Entities;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
 using Xunit;
 
-namespace BusinessLayer.Tests.Services
+namespace BusinessLayer.Tests.Stubs
 {
     public class AuditTrailServiceStubTests
     {
@@ -102,7 +98,7 @@ namespace BusinessLayer.Tests.Services
                        .Returns(new List<AuditTrailDto> { auditTrailDto });
 
             // Act
-            var result = await _auditTrailService.GetAuditTrailsFilteredAsync(filterDto);
+            var result = (await _auditTrailService.GetAuditTrailsFilteredAsync(filterDto)).ToList();
 
             // Assert
             Assert.NotNull(result);
@@ -191,7 +187,7 @@ namespace BusinessLayer.Tests.Services
         {
             // Arrange
             _auditTrailRepositoryMock.Setup(repo => repo.GetByIdAsync(It.IsAny<int>()))
-                                     .ReturnsAsync((AuditTrail)null);
+                                     .ReturnsAsync((AuditTrail) null);
 
             // Act
             var result = await _auditTrailService.GetAuditTrailByIdAsync(999); // ID that doesn't exist

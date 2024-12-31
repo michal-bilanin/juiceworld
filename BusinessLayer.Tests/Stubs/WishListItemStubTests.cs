@@ -1,26 +1,22 @@
 ﻿using AutoMapper;
 using BusinessLayer.DTOs;
+using BusinessLayer.Installers;
 using BusinessLayer.Services;
 using BusinessLayer.Services.Interfaces;
-using Commons.Enums;
+using Infrastructure.Repositories;
 using JuiceWorld.Entities;
 using Moq;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using BusinessLayer.Installers;
-using Infrastructure.Repositories;
 using Xunit;
 using Assert = Xunit.Assert;
 
-namespace BusinessLayer.Tests.Services;
+namespace BusinessLayer.Tests.Stubs;
 
 public class WishListItemServiceStubTests
 {
     private readonly IWishListItemService _wishListItemService;
     private readonly Mock<IRepository<WishListItem>> _wishListItemRepositoryMock;
     private readonly IMapper _mapper;
-    private readonly List<WishListItem> wishListItems = new List<WishListItem>
+    private readonly List<WishListItem> _wishListItems = new List<WishListItem>
     {
         new WishListItem { Id = 1, ProductId = 1, UserId = 1 },
         new WishListItem { Id = 2, ProductId = 2, UserId = 2 }
@@ -43,15 +39,15 @@ public class WishListItemServiceStubTests
     public async Task GetAllWishListItemsAsync_ExactMatch()
     {
         // Arrange
-        _wishListItemRepositoryMock.Setup(repo => repo.GetAllAsync()).ReturnsAsync(wishListItems);
+        _wishListItemRepositoryMock.Setup(repo => repo.GetAllAsync()).ReturnsAsync(_wishListItems);
 
         // Act
         var result = await _wishListItemService.GetAllWishListItemsAsync();
 
         // Assert
         var wishListItemDtos = result.ToList();
-        Assert.Equal(wishListItems.Count, wishListItemDtos.Count);
-        Assert.All(wishListItems, item => Assert.Contains(wishListItemDtos, dto => dto.Id == item.Id));
+        Assert.Equal(_wishListItems.Count, wishListItemDtos.Count);
+        Assert.All(_wishListItems, item => Assert.Contains(wishListItemDtos, dto => dto.Id == item.Id));
     }
 
     [Fact]
@@ -59,7 +55,7 @@ public class WishListItemServiceStubTests
     {
         // Arrange
         var wishListItemId = 1;
-        _wishListItemRepositoryMock.Setup(repo => repo.GetByIdAsync(wishListItemId)).ReturnsAsync(wishListItems[0]);
+        _wishListItemRepositoryMock.Setup(repo => repo.GetByIdAsync(wishListItemId)).ReturnsAsync(_wishListItems[0]);
 
         // Act
         var result = await _wishListItemService.GetWishListItemByIdAsync(wishListItemId);

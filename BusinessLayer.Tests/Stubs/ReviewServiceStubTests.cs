@@ -9,14 +9,14 @@ using Moq;
 using Xunit;
 using Assert = Xunit.Assert;
 
-namespace BusinessLayer.Tests.Services;
+namespace BusinessLayer.Tests.Stubs;
 
 public class ReviewServiceStubTests
 {
     private readonly IReviewService _reviewService;
     private readonly Mock<IRepository<Review>> _reviewRepositoryMock;
     private readonly IMapper _mapper;
-    private readonly List<Review> reviews = new List<Review>
+    private readonly List<Review> _reviews = new List<Review>
     {
         new Review
         {
@@ -53,15 +53,15 @@ public class ReviewServiceStubTests
     public async Task GetAllReviewsAsync_ExactMatch()
     {
         // Arrange
-        _reviewRepositoryMock.Setup(repo => repo.GetAllAsync()).ReturnsAsync(reviews);
+        _reviewRepositoryMock.Setup(repo => repo.GetAllAsync()).ReturnsAsync(_reviews);
 
         // Act
         var result = await _reviewService.GetAllReviewsAsync();
 
         // Assert
         var reviewDtos = result.ToList();
-        Assert.Equal(reviews.Count, reviewDtos.Count);
-        Assert.All(reviews, review => Assert.Contains(reviewDtos, dto => dto.Id == review.Id));
+        Assert.Equal(_reviews.Count, reviewDtos.Count);
+        Assert.All(_reviews, review => Assert.Contains(reviewDtos, dto => dto.Id == review.Id));
     }
 
     [Fact]
@@ -69,7 +69,7 @@ public class ReviewServiceStubTests
     {
         // Arrange
         var reviewId = 1;
-        _reviewRepositoryMock.Setup(repo => repo.GetByIdAsync(reviewId)).ReturnsAsync(reviews[0]);
+        _reviewRepositoryMock.Setup(repo => repo.GetByIdAsync(reviewId)).ReturnsAsync(_reviews[0]);
 
         // Act
         var result = await _reviewService.GetReviewByIdAsync(reviewId);

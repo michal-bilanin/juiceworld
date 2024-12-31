@@ -1,17 +1,17 @@
 ﻿using BusinessLayer.DTOs;
+using Infrastructure.QueryObjects;
 using JuiceWorld.Entities;
 
 namespace BusinessLayer.Services.Interfaces;
 
 public interface IGiftCardService
 {
-    Task<GiftCardDetailDto?> CreateGfitCardAsync(GiftCardCreateDto gfitCardCreateDto);
-    Task<IEnumerable<GiftCardEditDto>> GetAllGfitCardsAsync();
-    Task<GiftCardDetailDto?> GetGfitCardByIdAsync(int id);
-    Task<GiftCardDetailDto?> UpdateGfitCardAsync(GiftCardEditDto GfitCardDto);
-    Task<bool> DeleteGfitCardByIdAsync(int id);
-
-    Task<CouponCodeDto?> RedeemCouponCodeAsync(string couponCode);
+    Task<GiftCardDetailDto?> CreateGiftCardAsync(GiftCardCreateDto giftCardCreateDto);
+    Task<FilteredResult<GiftCardEditDto>> GetAllGiftCardsAsync(GiftCardFilterDto giftCardFilterDto);
+    Task<GiftCardDetailDto?> GetGiftCardByIdAsync(int id);
+    Task<GiftCardDetailDto?> UpdateGiftCardAsync(GiftCardEditDto giftCardDto);
+    Task<bool> DeleteGiftCardByIdAsync(int id);
+    Task<CouponCodeDto?> RedeemCouponAsync(string CouponCode);
 
     Task<IEnumerable<CouponCodeDto>> GetCouponCodesAsync();
 

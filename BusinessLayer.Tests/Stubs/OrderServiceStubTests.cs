@@ -1,27 +1,23 @@
 ﻿using AutoMapper;
 using BusinessLayer.DTOs;
+using BusinessLayer.Installers;
 using BusinessLayer.Services;
 using BusinessLayer.Services.Interfaces;
+using Commons.Enums;
 using Infrastructure.Repositories;
 using JuiceWorld.Entities;
+using JuiceWorld.QueryObjects;
 using JuiceWorld.UnitOfWork;
 using Moq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using BusinessLayer.Installers;
-using Commons.Enums;
-using JuiceWorld.Data;
-using JuiceWorld.QueryObjects;
-using Microsoft.EntityFrameworkCore;
 using TestUtilities.MockedObjects;
 using Xunit;
 using Assert = Xunit.Assert;
 
-namespace BusinessLayer.Tests.Services
+namespace BusinessLayer.Tests.Stubs
 {
     public class OrderServiceStubTests
     {
-        private readonly List<Order> orders = new List<Order>
+        private readonly List<Order> _orders = new List<Order>
         {
             new Order
             {
@@ -29,11 +25,11 @@ namespace BusinessLayer.Tests.Services
                 UserId = 1,
                 DeliveryType = DeliveryType.Standard,
                 Status = OrderStatus.Pending,
-                City = null,
-                Street = null,
-                HouseNumber = null,
-                ZipCode = null,
-                Country = null
+                City = "null",
+                Street = "null",
+                HouseNumber = "null",
+                ZipCode = "null",
+                Country = "null"
             },
             new Order
             {
@@ -41,55 +37,51 @@ namespace BusinessLayer.Tests.Services
                 UserId = 2,
                 DeliveryType = DeliveryType.Express,
                 Status = OrderStatus.Delivered,
-                City = null,
-                Street = null,
-                HouseNumber = null,
-                ZipCode = null,
-                Country = null
+                City = "null",
+                Street = "null",
+                HouseNumber = "null",
+                ZipCode = "null",
+                Country = "null"
             }
         };
 
         private readonly IOrderService _orderService;
         private readonly Mock<IRepository<Order>> _orderRepositoryMock;
-        private readonly Mock<IRepository<CartItem>> _cartItemRepositoryMock;
-        private readonly Mock<OrderUnitOfWork> _orderUnitOfWorkMock;
         private readonly IMapper _mapper;
 
         public OrderServiceStubTests()
         {
             // Mock the repositories
             _orderRepositoryMock = new Mock<IRepository<Order>>();
-            _cartItemRepositoryMock = new Mock<IRepository<CartItem>>();
 
             // Mock the OrderUnitOfWork (this is where we inject the mocked repositories)
             var dbContextOptions = MockedDbContext.GetOptions();
             var dbContext = MockedDbContext.CreateFromOptions(dbContextOptions);
-            _orderUnitOfWorkMock = new Mock<OrderUnitOfWork>(dbContext);
+            Mock<OrderUnitOfWork> orderUnitOfWorkMock = new(dbContext);
             // Mock the Commit method (to prevent actual database calls)
-
             // Configure AutoMapper
             var config = new MapperConfiguration(cfg => cfg.AddProfile<MapperProfileInstaller>());
             _mapper = config.CreateMapper();
 
             var orderQueryObject = new QueryObject<Order>(dbContext);
             // Initialize the service with the mocked repositories and unit of work
-            _orderService = new OrderService(_orderRepositoryMock.Object, orderQueryObject, _orderUnitOfWorkMock.Object, _mapper);
+            _orderService = new OrderService(_orderRepositoryMock.Object, orderQueryObject, orderUnitOfWorkMock.Object, _mapper);
         }
 
         [Fact]
         public async Task GetAllOrdersAsync_ExactMatch()
         {
-            _orderRepositoryMock.Setup(repo => repo.GetAllAsync()).ReturnsAsync(orders);
-            var result = await _orderService.GetAllOrdersAsync();
-            Assert.Equal(orders.Count, result.Count());
-            Assert.All(orders, order => Assert.Contains(result, dto => dto.Id == order.Id));
+            _orderRepositoryMock.Setup(repo => repo.GetAllAsync()).ReturnsAsync(_orders);
+            var result = (await _orderService.GetAllOrdersAsync()).ToList();
+            Assert.Equal(_orders.Count, result.Count());
+            Assert.All(_orders, order => Assert.Contains(result, dto => dto.Id == order.Id));
         }
 
         [Fact]
         public async Task GetOrderByIdAsync_ExactMatch()
         {
             var orderId = 1;
-            _orderRepositoryMock.Setup(repo => repo.GetByIdAsync(orderId)).ReturnsAsync(orders[0]);
+            _orderRepositoryMock.Setup(repo => repo.GetByIdAsync(orderId)).ReturnsAsync(_orders[0]);
             var result = await _orderService.GetOrderByIdAsync(orderId);
             Assert.NotNull(result);
             Assert.Equal(orderId, result.Id);
@@ -119,11 +111,11 @@ namespace BusinessLayer.Tests.Services
                 PaymentMethodType = PaymentMethodType.Bitcoin,
                 UserId = 1,
                 AddressId = 1,
-                City = null,
-                Street = null,
-                HouseNumber = null,
-                ZipCode = null,
-                Country = null
+                City = "null",
+                Street = "null",
+                HouseNumber = "null",
+                ZipCode = "null",
+                Country = "null"
             };
             var updatedOrder = _mapper.Map<Order>(orderDto);
             _orderRepositoryMock.Setup(repo => repo.UpdateAsync(It.IsAny<Order>(), null)).ReturnsAsync(updatedOrder);
