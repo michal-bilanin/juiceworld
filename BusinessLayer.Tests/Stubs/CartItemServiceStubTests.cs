@@ -32,7 +32,7 @@ namespace BusinessLayer.Tests.Services
             var config = new MapperConfiguration(cfg => cfg.AddProfile<MapperProfileInstaller>());
             _mapper = config.CreateMapper();
             Mock<OrderUnitOfWork> queryObjectMock = new();
-            
+
             _cartItemService = new CartItemService(_cartItemRepositoryMock.Object, queryObjectMock.Object, _mapper);
         }
 

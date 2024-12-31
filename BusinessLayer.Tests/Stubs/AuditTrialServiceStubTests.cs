@@ -72,7 +72,7 @@ namespace BusinessLayer.Tests.Services
                 PageIndex = 1,
                 TotalPages = 1
             };
-            
+
 
             var auditTrailDto = new AuditTrailDto
             {

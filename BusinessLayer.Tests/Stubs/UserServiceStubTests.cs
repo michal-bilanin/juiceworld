@@ -106,7 +106,7 @@ public class UserServiceStubTests
         _userQueryObjectMock.Setup(q => q.ExecuteAsync())
             .ReturnsAsync(new FilteredResult<User>
             {
-                Entities = users.Entities.Where(u => u.Email == email) 
+                Entities = users.Entities.Where(u => u.Email == email)
             });
 
         // Act

@@ -38,7 +38,7 @@ namespace BusinessLayer.Tests.Services
 
             var queryObject = new QueryObject<Manufacturer>(MockedDbContext.CreateFromOptions(MockedDbContext.GetOptions()));
             // Initialize the service with the mocked repository
-            _manufacturerService = new ManufacturerService(_manufacturerRepositoryMock.Object,queryObject, _mapper);
+            _manufacturerService = new ManufacturerService(_manufacturerRepositoryMock.Object, queryObject, _mapper);
         }
 
         [Fact]

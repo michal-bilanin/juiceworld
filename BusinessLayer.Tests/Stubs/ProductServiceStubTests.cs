@@ -55,7 +55,7 @@ namespace BusinessLayer.Tests.Services
             // Configure AutoMapper
             var config = new MapperConfiguration(cfg => cfg.AddProfile<MapperProfileInstaller>());
             _mapper = config.CreateMapper();
-            
+
             var logger = new Mock<ILogger<ProductService>>();
             var productUnitOfWork = new Mock<ProductUnitOfWork>();
 
