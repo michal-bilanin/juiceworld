@@ -15,11 +15,11 @@ public class UserController(IUserService userService) : ControllerBase
     private const string ApiBaseName = "User";
 
     [HttpPost]
-    [OpenApiOperation(ApiBaseName + nameof(CreateUser))]
-    public async Task<ActionResult<UserDto>> CreateUser(UserDto user)
+    [OpenApiOperation(ApiBaseName + nameof(RegisterUser))]
+    public async Task<ActionResult<UserDto>> RegisterUser(UserRegisterDto user)
     {
-        var result = await userService.CreateUserAsync(user);
-        return result == null ? Problem() : Ok(result);
+        var result = await userService.RegisterUserAsync(user);
+        return result.Succeeded ? Ok(result) : Problem();
     }
 
     [HttpGet]
@@ -40,9 +40,16 @@ public class UserController(IUserService userService) : ControllerBase
 
     [HttpPut]
     [OpenApiOperation(ApiBaseName + nameof(UpdateUser))]
-    public async Task<ActionResult<UserDto>> UpdateUser(UserDto user)
+    public async Task<ActionResult<UserDto>> UpdateUser(UserUpdateDto user)
     {
-        var result = await userService.UpdateUserAsync(user);
+        var result = await userService.UpdateUserAsync(new UserUpdateDto
+        {
+            Id = user.Id,
+            Bio = user.Bio,
+            Password = user.Password,
+            ConfirmPassword = user.ConfirmPassword,
+            UserRole = user.UserRole
+        });
         return result == null ? NotFound() : Ok(result);
     }
 

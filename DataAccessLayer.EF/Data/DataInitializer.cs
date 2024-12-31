@@ -2,6 +2,7 @@
 using Commons.Enums;
 using Commons.Utils;
 using JuiceWorld.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace JuiceWorld.Data;
@@ -59,12 +60,19 @@ public static class DataInitializer
             UserName = userName,
             Bio = bio,
             UserRole = role,
-            PasswordSalt = AuthUtils.GenerateSalt(),
-            PasswordHashRounds = 10,
-            PasswordHash = ""
+            NormalizedEmail = email.ToUpperInvariant(),
+            NormalizedUserName = userName.ToUpperInvariant(),
+            EmailConfirmed = true,
+            PhoneNumberConfirmed = true,
+            SecurityStamp = Guid.NewGuid().ToString("D"),
+            LockoutEnabled = true
         };
 
-        user.PasswordHash = AuthUtils.HashPassword(password, user.PasswordSalt, user.PasswordHashRounds);
+
+        // Use PasswordHasher to hash the password
+        var passwordHasher = new PasswordHasher<User>();
+        user.PasswordHash = passwordHasher.HashPassword(user, password);
+
         return user;
     }
 
@@ -90,12 +98,23 @@ public static class DataInitializer
             .RuleFor(u => u.UserName, f => f.Internet.UserName())
             .RuleFor(u => u.Bio, f => f.Lorem.Sentence())
             .RuleFor(u => u.UserRole, f => f.PickRandom<UserRole>())
-            .RuleFor(u => u.PasswordSalt, _ => AuthUtils.GenerateSalt())
-            .RuleFor(u => u.PasswordHashRounds, _ => 10)
-            .RuleFor(u => u.PasswordHash,
-                (_, u) => AuthUtils.HashPassword("password", u.PasswordSalt, u.PasswordHashRounds));
+            .RuleFor(u => u.NormalizedEmail, (_, u) => u.Email?.ToUpperInvariant())
+            .RuleFor(u => u.NormalizedUserName, (_, u) => u.UserName?.ToUpperInvariant())
+            .RuleFor(u => u.EmailConfirmed, true)
+            .RuleFor(u => u.PhoneNumberConfirmed, true)
+            .RuleFor(u => u.SecurityStamp, f => Guid.NewGuid().ToString("D"))
+            .RuleFor(u => u.LockoutEnabled, true);
 
-        return faker.Generate(100);
+        var users = faker.Generate(100);
+
+        // Assign passwords using PasswordHasher
+        var passwordHasher = new PasswordHasher<User>();
+        foreach (var user in users)
+        {
+            user.PasswordHash = passwordHasher.HashPassword(user, "Password123!");
+        }
+
+        return users;
     }
 
     private static List<Order> GenerateOrders(List<User> users)
