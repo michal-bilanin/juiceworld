@@ -1,57 +1,53 @@
 ﻿using AutoMapper;
 using BusinessLayer.DTOs;
+using BusinessLayer.Installers;
 using BusinessLayer.Services;
 using BusinessLayer.Services.Interfaces;
+using Commons.Enums;
 using Infrastructure.Repositories;
 using JuiceWorld.Entities;
+using JuiceWorld.QueryObjects;
 using JuiceWorld.UnitOfWork;
 using Moq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using BusinessLayer.Installers;
-using Commons.Enums;
-using JuiceWorld.Data;
-using JuiceWorld.QueryObjects;
-using Microsoft.EntityFrameworkCore;
 using TestUtilities.MockedObjects;
 using Xunit;
 using Assert = Xunit.Assert;
 
-namespace BusinessLayer.Tests.Services
+namespace BusinessLayer.Tests.Stubs
 {
     public class OrderServiceStubTests
     {
-        private readonly List<Order> orders = new List<Order>
-        {
+        private readonly List<Order> _orders =
+        [
             new Order
             {
                 Id = 1,
                 UserId = 1,
                 DeliveryType = DeliveryType.Standard,
                 Status = OrderStatus.Pending,
-                City = null,
-                Street = null,
-                HouseNumber = null,
-                ZipCode = null,
-                Country = null
+                City = "",
+                Street = "",
+                HouseNumber = "",
+                ZipCode = "",
+                Country = ""
             },
+
             new Order
             {
                 Id = 2,
                 UserId = 2,
                 DeliveryType = DeliveryType.Express,
                 Status = OrderStatus.Delivered,
-                City = null,
-                Street = null,
-                HouseNumber = null,
-                ZipCode = null,
-                Country = null
+                City = "",
+                Street = "",
+                HouseNumber = "",
+                ZipCode = "",
+                Country = ""
             }
-        };
+        ];
 
         private readonly IOrderService _orderService;
         private readonly Mock<IRepository<Order>> _orderRepositoryMock;
-        private readonly Mock<IRepository<CartItem>> _cartItemRepositoryMock;
         private readonly Mock<OrderUnitOfWork> _orderUnitOfWorkMock;
         private readonly IMapper _mapper;
 
@@ -59,7 +55,6 @@ namespace BusinessLayer.Tests.Services
         {
             // Mock the repositories
             _orderRepositoryMock = new Mock<IRepository<Order>>();
-            _cartItemRepositoryMock = new Mock<IRepository<CartItem>>();
 
             // Mock the OrderUnitOfWork (this is where we inject the mocked repositories)
             var dbContextOptions = MockedDbContext.GetOptions();
@@ -79,17 +74,17 @@ namespace BusinessLayer.Tests.Services
         [Fact]
         public async Task GetAllOrdersAsync_ExactMatch()
         {
-            _orderRepositoryMock.Setup(repo => repo.GetAllAsync()).ReturnsAsync(orders);
+            _orderRepositoryMock.Setup(repo => repo.GetAllAsync()).ReturnsAsync(_orders);
             var result = await _orderService.GetAllOrdersAsync();
-            Assert.Equal(orders.Count, result.Count());
-            Assert.All(orders, order => Assert.Contains(result, dto => dto.Id == order.Id));
+            Assert.Equal(_orders.Count, result.Count());
+            Assert.All(_orders, order => Assert.Contains(result, dto => dto.Id == order.Id));
         }
 
         [Fact]
         public async Task GetOrderByIdAsync_ExactMatch()
         {
             var orderId = 1;
-            _orderRepositoryMock.Setup(repo => repo.GetByIdAsync(orderId)).ReturnsAsync(orders[0]);
+            _orderRepositoryMock.Setup(repo => repo.GetByIdAsync(orderId)).ReturnsAsync(_orders[0]);
             var result = await _orderService.GetOrderByIdAsync(orderId);
             Assert.NotNull(result);
             Assert.Equal(orderId, result.Id);
@@ -119,11 +114,11 @@ namespace BusinessLayer.Tests.Services
                 PaymentMethodType = PaymentMethodType.Bitcoin,
                 UserId = 1,
                 AddressId = 1,
-                City = null,
-                Street = null,
-                HouseNumber = null,
-                ZipCode = null,
-                Country = null
+                City = "",
+                Street = "",
+                HouseNumber = "",
+                ZipCode = "",
+                Country = ""
             };
             var updatedOrder = _mapper.Map<Order>(orderDto);
             _orderRepositoryMock.Setup(repo => repo.UpdateAsync(It.IsAny<Order>(), null)).ReturnsAsync(updatedOrder);
