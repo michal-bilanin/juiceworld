@@ -61,10 +61,10 @@ public class UserController(IUserService userService) : ControllerBase
             ConfirmPassword = user.ConfirmPassword,
             UserRole = user.UserRole
         });
-        
+
         if (result == null)
             return NotFound();
-        
+
         if (User.IsInRole(UserRole.Admin.ToString()))
         {
             return Ok(result);

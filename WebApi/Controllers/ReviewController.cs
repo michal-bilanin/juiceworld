@@ -44,7 +44,7 @@ public class ReviewController(IReviewService reviewService) : ControllerBase
     public async Task<ActionResult<ReviewDto>> UpdateReview(ReviewDto review)
     {
         var result = await reviewService.UpdateReviewAsync(review);
-        
+
         if (result == null)
             return NotFound();
 
@@ -52,12 +52,12 @@ public class ReviewController(IReviewService reviewService) : ControllerBase
         {
             return Ok(result);
         }
-        
+
         if (!Int32.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? "", out var userId))
         {
             return Unauthorized();
         }
-        
+
         return review.UserId != userId ? NotFound() : Ok(result);
     }
 

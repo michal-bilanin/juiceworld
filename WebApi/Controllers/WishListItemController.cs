@@ -58,11 +58,11 @@ public class WishListItemController(IWishListItemService wishListItemService) : 
     {
         if (!await IsUserAuthorized(wishListItemId))
             return Unauthorized();
-        
+
         var result = await wishListItemService.DeleteWishListItemByIdAsync(wishListItemId);
         return result ? Ok() : NotFound();
     }
-    
+
     private async Task<bool> IsUserAuthorized(int wishListItemId)
     {
         var wishListItem = await wishListItemService.GetWishListItemByIdAsync(wishListItemId);
@@ -71,14 +71,14 @@ public class WishListItemController(IWishListItemService wishListItemService) : 
 
         return IsUserIdAuthorized(wishListItem.UserId);
     }
-    
+
     private bool IsUserIdAuthorized(int userId)
     {
         if (!Int32.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? "", out var currentUserId))
         {
             return false;
         }
-        
+
         if (!User.IsInRole(UserRole.Admin.ToString()) &&
             currentUserId != userId)
         {

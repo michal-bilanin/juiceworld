@@ -32,7 +32,7 @@ public class CartItemController(ICartItemService cartItemService) : ControllerBa
         {
             return Unauthorized();
         }
-        
+
         var result = await cartItemService.CreateCartItemAsync(cartItem);
         return result == null ? Problem() : Ok(result);
     }
@@ -71,7 +71,7 @@ public class CartItemController(ICartItemService cartItemService) : ControllerBa
         {
             return Unauthorized();
         }
-        
+
         if (!User.IsInRole(UserRole.Admin.ToString()) &&
             cartItem.UserId != userId)
         {
@@ -93,7 +93,7 @@ public class CartItemController(ICartItemService cartItemService) : ControllerBa
         var result = await cartItemService.DeleteCartItemByIdAsync(cartItemId);
         return result ? Ok() : NotFound();
     }
-    
+
     private async Task<IActionResult> IsAuthorized(int cartItemId)
     {
         var cartItem = await cartItemService.GetCartItemByIdAsync(cartItemId);
@@ -101,12 +101,12 @@ public class CartItemController(ICartItemService cartItemService) : ControllerBa
         {
             return NotFound();
         }
-        
+
         if (!Int32.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? "", out var userId))
         {
             return Unauthorized();
         }
-        
+
         if (!User.IsInRole(UserRole.Admin.ToString()) &&
             cartItem.UserId != userId)
         {
