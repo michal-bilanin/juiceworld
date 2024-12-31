@@ -1,7 +1,6 @@
 using System.Linq.Expressions;
 using Infrastructure.Repositories;
 using JuiceWorld.Data;
-using JuiceWorld.Entities;
 using JuiceWorld.Entities.Interfaces;
 using Microsoft.EntityFrameworkCore;
 

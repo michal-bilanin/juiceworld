@@ -5,8 +5,6 @@ using Commons.Enums;
 using Infrastructure.QueryObjects;
 using Infrastructure.Repositories;
 using JuiceWorld.Entities;
-using JuiceWorld.UnitOfWork;
-using Microsoft.Extensions.Logging;
 
 namespace BusinessLayer.Services;
 

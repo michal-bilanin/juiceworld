@@ -1,9 +1,10 @@
+@using Commons.Enums
 @using PresentationLayer.Mvc
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
 @{
     var isAuthenticated = User.Identity is { IsAuthenticated: true };
-    var isAdmin = isAuthenticated && User.IsInRole(Commons.Enums.UserRole.Admin.ToString());
+    var isAdmin = isAuthenticated && User.IsInRole(UserRole.Admin.ToString());
 }
 
 <!DOCTYPE html>

@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using BusinessLayer.DTOs;
 using BusinessLayer.Services.Interfaces;
+using Commons.Enums;
 using Microsoft.AspNetCore.Mvc;
 using PresentationLayer.Mvc.ActionFilters;
 using PresentationLayer.Mvc.Facades.Interfaces;
@@ -79,7 +80,7 @@ public class ProductController(ISearchablesFacade searchablesFacade, IProductSer
         int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId);
 
         var review = await reviewService.GetReviewByIdAsync(id);
-        if (review is null || (review.UserId != userId && !User.IsInRole(Commons.Enums.UserRole.Admin.ToString())))
+        if (review is null || (review.UserId != userId && !User.IsInRole(UserRole.Admin.ToString())))
         {
             return Unauthorized();
         }

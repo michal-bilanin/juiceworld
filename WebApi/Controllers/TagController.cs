@@ -16,6 +16,7 @@ public class TagController(ITagService tagService) : ControllerBase
 
     [HttpPost]
     [OpenApiOperation(ApiBaseName + nameof(CreateTag))]
+    [Authorize(Roles = nameof(UserRole.Admin))]
     public async Task<ActionResult<TagDto>> CreateTag(TagDto tag)
     {
         var result = await tagService.CreateTagAsync(tag);
@@ -40,6 +41,7 @@ public class TagController(ITagService tagService) : ControllerBase
 
     [HttpPut]
     [OpenApiOperation(ApiBaseName + nameof(UpdateTag))]
+    [Authorize(Roles = nameof(UserRole.Admin))]
     public async Task<ActionResult<TagDto>> UpdateTag(TagDto tag)
     {
         var result = await tagService.UpdateTagAsync(tag);
@@ -48,6 +50,7 @@ public class TagController(ITagService tagService) : ControllerBase
 
     [HttpDelete("{TagId:int}")]
     [OpenApiOperation(ApiBaseName + nameof(DeleteTag))]
+    [Authorize(Roles = nameof(UserRole.Admin))]
     public async Task<ActionResult<bool>> DeleteTag(int tagId)
     {
         var result = await tagService.DeleteTagByIdAsync(tagId);

@@ -2,7 +2,6 @@ using System.Diagnostics;
 using System.Text.Json;
 using BusinessLayer.Installers;
 using Commons.Constants;
-using JuiceWorld.Entities;
 using Commons.Middleware;
 using JuiceWorld.Installers;
 using Microsoft.AspNetCore.Diagnostics;

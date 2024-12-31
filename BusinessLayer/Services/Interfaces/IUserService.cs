@@ -1,9 +1,7 @@
 using BusinessLayer.DTOs;
-using JuiceWorld.Entities;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Commons.Enums;
 using Infrastructure.QueryObjects;
+using Microsoft.AspNetCore.Identity;
 
 namespace BusinessLayer.Services.Interfaces;
 

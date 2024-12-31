@@ -1,13 +1,9 @@
 using System.Runtime.Serialization.Json;
+using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 
 namespace WebApi.Middleware;
-
-using System.IO;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 
 public class ResponseFormatMiddleware(RequestDelegate next)
 {

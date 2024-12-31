@@ -1,6 +1,5 @@
 ﻿using BusinessLayer.DTOs;
 using Infrastructure.QueryObjects;
-using JuiceWorld.Entities;
 
 namespace BusinessLayer.Services.Interfaces;
 

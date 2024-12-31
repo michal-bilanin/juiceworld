@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using BusinessLayer.DTOs;
 using BusinessLayer.Services.Interfaces;
 using Commons.Enums;
@@ -24,6 +25,7 @@ public class WishListItemController(IWishListItemService wishListItemService) : 
 
     [HttpGet]
     [OpenApiOperation(ApiBaseName + nameof(GetAllWishListItems))]
+    [Authorize(Roles = nameof(UserRole.Admin))]
     public async Task<ActionResult<IEnumerable<WishListItemDto>>> GetAllWishListItems()
     {
         var result = await wishListItemService.GetAllWishListItemsAsync();
@@ -34,6 +36,8 @@ public class WishListItemController(IWishListItemService wishListItemService) : 
     [OpenApiOperation(ApiBaseName + nameof(GetWishListItem))]
     public async Task<ActionResult<WishListItemDto>> GetWishListItem(int wishListItemId)
     {
+        if (!await IsUserAuthorized(wishListItemId))
+            return Unauthorized();
         var result = await wishListItemService.GetWishListItemByIdAsync(wishListItemId);
         return result == null ? NotFound() : Ok(result);
     }
@@ -42,6 +46,8 @@ public class WishListItemController(IWishListItemService wishListItemService) : 
     [OpenApiOperation(ApiBaseName + nameof(UpdateWishListItem))]
     public async Task<ActionResult<WishListItemDto>> UpdateWishListItem(WishListItemDto wishListItem)
     {
+        if (!await IsUserAuthorized(wishListItem.Id))
+            return Unauthorized();
         var result = await wishListItemService.UpdateWishListItemAsync(wishListItem);
         return result == null ? NotFound() : Ok(result);
     }
@@ -50,7 +56,34 @@ public class WishListItemController(IWishListItemService wishListItemService) : 
     [OpenApiOperation(ApiBaseName + nameof(DeleteWishListItem))]
     public async Task<ActionResult<bool>> DeleteWishListItem(int wishListItemId)
     {
+        if (!await IsUserAuthorized(wishListItemId))
+            return Unauthorized();
+        
         var result = await wishListItemService.DeleteWishListItemByIdAsync(wishListItemId);
         return result ? Ok() : NotFound();
+    }
+    
+    private async Task<bool> IsUserAuthorized(int wishListItemId)
+    {
+        var wishListItem = await wishListItemService.GetWishListItemByIdAsync(wishListItemId);
+        if (wishListItem == null)
+            return false;
+
+        return IsUserIdAuthorized(wishListItem.UserId);
+    }
+    
+    private bool IsUserIdAuthorized(int userId)
+    {
+        if (!Int32.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? "", out var currentUserId))
+        {
+            return false;
+        }
+        
+        if (!User.IsInRole(UserRole.Admin.ToString()) &&
+            currentUserId != userId)
+        {
+            return false;
+        }
+        return true;
     }
 }

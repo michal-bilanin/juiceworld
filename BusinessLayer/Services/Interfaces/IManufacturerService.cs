@@ -1,6 +1,5 @@
 using BusinessLayer.DTOs;
 using Infrastructure.QueryObjects;
-using Microsoft.AspNetCore.Mvc;
 
 namespace BusinessLayer.Services.Interfaces;
 

@@ -7,7 +7,6 @@ using Commons.Enums;
 using JuiceWorld.Entities;
 using JuiceWorld.QueryObjects;
 using JuiceWorld.Repositories;
-using JuiceWorld.UnitOfWork;
 using Microsoft.Extensions.Logging;
 using TestUtilities.MockedObjects;
 using Xunit;

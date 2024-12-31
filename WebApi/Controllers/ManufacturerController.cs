@@ -16,6 +16,7 @@ public class ManufacturerController(IManufacturerService manufacturerService) : 
 
     [HttpPost]
     [OpenApiOperation(ApiBaseName + nameof(CreateManufacturer))]
+    [Authorize(Roles = nameof(UserRole.Admin))]
     public async Task<ActionResult<ManufacturerDto>> CreateManufacturer(ManufacturerDto manufacturer)
     {
         var result = await manufacturerService.CreateManufacturerAsync(manufacturer);
@@ -40,6 +41,7 @@ public class ManufacturerController(IManufacturerService manufacturerService) : 
 
     [HttpPut]
     [OpenApiOperation(ApiBaseName + nameof(UpdateManufacturer))]
+    [Authorize(Roles = nameof(UserRole.Admin))]
     public async Task<ActionResult<ManufacturerDto>> UpdateManufacturer(ManufacturerDto manufacturer)
     {
         var result = await manufacturerService.UpdateManufacturerAsync(manufacturer);
@@ -48,6 +50,7 @@ public class ManufacturerController(IManufacturerService manufacturerService) : 
 
     [HttpDelete("{manufacturerId:int}")]
     [OpenApiOperation(ApiBaseName + nameof(DeleteManufacturer))]
+    [Authorize(Roles = nameof(UserRole.Admin))]
     public async Task<ActionResult<bool>> DeleteManufacturer(int manufacturerId)
     {
         var result = await manufacturerService.DeleteManufacturerByIdAsync(manufacturerId);

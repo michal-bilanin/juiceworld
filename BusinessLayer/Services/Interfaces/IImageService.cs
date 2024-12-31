@@ -1,6 +1,4 @@
-﻿using BusinessLayer.DTOs;
-
-namespace BusinessLayer.Services.Interfaces;
+﻿namespace BusinessLayer.Services.Interfaces;
 
 public interface IImageService
 {

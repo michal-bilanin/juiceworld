@@ -1,8 +1,6 @@
 using BusinessLayer.DTOs;
 using BusinessLayer.Facades.Interfaces;
-using BusinessLayer.Services.Interfaces;
 using Commons.Enums;
-using JuiceWorld.UnitOfWork;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
@@ -18,6 +16,7 @@ public class ProductController(IProductFacade productFacade) : ControllerBase
 
     [HttpPost]
     [OpenApiOperation(ApiBaseName + nameof(CreateProduct))]
+    [Authorize(Roles = nameof(UserRole.Admin))]
     public async Task<ActionResult<ProductDto>> CreateProduct(ProductImageDto product)
     {
         var result = await productFacade.CreateProductAsync(product);
@@ -51,6 +50,7 @@ public class ProductController(IProductFacade productFacade) : ControllerBase
 
     [HttpPut]
     [OpenApiOperation(ApiBaseName + nameof(UpdateProduct))]
+    [Authorize(Roles = nameof(UserRole.Admin))]
     public async Task<ActionResult<ProductDto>> UpdateProduct(ProductImageDto product)
     {
         var result = await productFacade.UpdateProductAsync(product);
@@ -59,6 +59,7 @@ public class ProductController(IProductFacade productFacade) : ControllerBase
 
     [HttpDelete("{productId:int}")]
     [OpenApiOperation(ApiBaseName + nameof(DeleteProduct))]
+    [Authorize(Roles = nameof(UserRole.Admin))]
     public async Task<ActionResult<bool>> DeleteProduct(int productId)
     {
         var result = await productFacade.DeleteProductByIdAsync(productId);
