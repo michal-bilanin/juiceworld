@@ -105,7 +105,7 @@ public class OrderService(
     public async Task<FilteredResult<OrderDto>> GetOrdersByUserIdAsync(int userId, PaginationDto paginationDto)
     {
         string cacheKey = $"{_cacheKeyPrefix}-Orders{userId}{JsonSerializer.Serialize(paginationDto)}";
-        if (memoryCache.TryGetValue(cacheKey, out FilteredResult<Order>? value))
+        if (!memoryCache.TryGetValue(cacheKey, out FilteredResult<Order>? value))
         {
 
             var query = orderQueryObject.Filter(o => o.UserId == userId)
