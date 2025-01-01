@@ -50,10 +50,13 @@ public class OrderController(IOrderService orderService,
     public async Task<ActionResult> Create(CreateOrderDto orderDto)
     {
         int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId);
+        var cartItems = await cartItemService.GetCartItemsByUserIdAsync(userId);
+
 
         if (!ModelState.IsValid)
         {
-            return View();
+            orderDto.CartItems = cartItems;
+            return View(orderDto);
         }
 
         if (orderDto.UserId != userId)
@@ -65,7 +68,8 @@ public class OrderController(IOrderService orderService,
         if (order is null)
         {
             ModelState.AddModelError("Order", "Failed to create order.");
-            return View();
+            orderDto.CartItems = cartItems;
+            return View(orderDto);
         }
 
         return RedirectToAction(nameof(Details), new { order.Id });
