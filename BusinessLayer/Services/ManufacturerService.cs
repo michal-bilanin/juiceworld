@@ -39,21 +39,14 @@ public class ManufacturerService(
     public async Task<FilteredResult<ManufacturerDto>> GetManufacturersAsync(
         ManufacturerFilterDto manufacturerFilterDto)
     {
-        string cacheKey = $"{_cacheKeyPrefix}-manufacturers{JsonSerializer.Serialize(manufacturerFilterDto)}";
-        if (!memoryCache.TryGetValue(cacheKey, out FilteredResult<Manufacturer>? value))
-        {
-            var query = manufacturerQueryObject
-                .Filter(m => manufacturerFilterDto.Name == null ||
-                             m.Name.ToLower().Contains(manufacturerFilterDto.Name.ToLower()))
-                .Paginate(manufacturerFilterDto.PageIndex, manufacturerFilterDto.PageSize)
-                .OrderBy(m => m.Id);
+        var query = manufacturerQueryObject
+            .Filter(m => manufacturerFilterDto.Name == null ||
+                         m.Name.ToLower().Contains(manufacturerFilterDto.Name.ToLower()))
+            .Paginate(manufacturerFilterDto.PageIndex, manufacturerFilterDto.PageSize)
+            .OrderBy(m => m.Id);
 
-            value = await query.ExecuteAsync();
+        var value = await query.ExecuteAsync();
 
-            var cacheEntryOptions = new MemoryCacheEntryOptions()
-                .SetAbsoluteExpiration(TimeSpan.FromSeconds(30));
-            memoryCache.Set(cacheKey, value, cacheEntryOptions);
-        }
 
         return new FilteredResult<ManufacturerDto>
         {

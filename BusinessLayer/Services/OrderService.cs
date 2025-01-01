@@ -104,25 +104,16 @@ public class OrderService(
 
     public async Task<FilteredResult<OrderDto>> GetOrdersByUserIdAsync(int userId, PaginationDto paginationDto)
     {
-        string cacheKey = $"{_cacheKeyPrefix}-Orders{userId}{JsonSerializer.Serialize(paginationDto)}";
-        if (memoryCache.TryGetValue(cacheKey, out FilteredResult<Order>? value))
-        {
+        var query = orderQueryObject.Filter(o => o.UserId == userId)
+                .OrderBy(
+                    new (Expression<Func<Order, object>> KeySelector, bool IsDesc)[]
+                    {
+                        (o => o.Status, false),
+                        (o => o.Id, false)
+                    })
+            .Paginate(paginationDto.PageIndex, paginationDto.PageSize);
 
-            var query = orderQueryObject.Filter(o => o.UserId == userId)
-                    .OrderBy(
-                        new (Expression<Func<Order, object>> KeySelector, bool IsDesc)[]
-                        {
-                            (o => o.Status, false),
-                            (o => o.Id, false)
-                        })
-                .Paginate(paginationDto.PageIndex, paginationDto.PageSize);
-
-            value = await query.ExecuteAsync();
-
-            var cacheEntryOptions = new MemoryCacheEntryOptions()
-                .SetAbsoluteExpiration(TimeSpan.FromSeconds(30));
-            memoryCache.Set(cacheKey, value, cacheEntryOptions);
-        }
+        var value = await query.ExecuteAsync();
 
         return new FilteredResult<OrderDto>
         {
@@ -140,19 +131,36 @@ public class OrderService(
 
     public async Task<OrderDetailDto?> GetOrderDetailByIdAsync(int id)
     {
-        var order = await orderRepository.GetByIdAsync(id,
-            nameof(Order.OrderProducts), $"{nameof(Order.OrderProducts)}.{nameof(OrderProduct.Product)}", nameof(User));
-        return order is null ? null : mapper.Map<OrderDetailDto>(order);
+        string cacheKey = $"{_cacheKeyPrefix}-OrderDetail{id}";
+        if (!memoryCache.TryGetValue(cacheKey, out Order? value))
+        {
+            value = await orderRepository.GetByIdAsync(id,
+                nameof(Order.OrderProducts), $"{nameof(Order.OrderProducts)}.{nameof(OrderProduct.Product)}",
+                nameof(User));
+
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+                .SetAbsoluteExpiration(TimeSpan.FromSeconds(30));
+            memoryCache.Set(cacheKey, value, cacheEntryOptions);
+        }
+
+        return value is null ? null : mapper.Map<OrderDetailDto>(value);
     }
 
     public async Task<OrderDto?> UpdateOrderAsync(OrderDto orderDto)
     {
+        string cacheKey = $"{_cacheKeyPrefix}-OrderDetail{orderDto.Id}";
+        memoryCache.Remove(cacheKey);
+
+
         var updatedOrder = await orderRepository.UpdateAsync(mapper.Map<Order>(orderDto));
         return updatedOrder is null ? null : mapper.Map<OrderDto>(updatedOrder);
     }
 
     public async Task<OrderDto?> UpdateOrderAsync(OrderDetailDto orderDto)
     {
+        string cacheKey = $"{_cacheKeyPrefix}-OrderDetail{orderDto.Id}";
+        memoryCache.Remove(cacheKey);
+
         var order = mapper.Map<Order>(orderDto);
         order.OrderProducts = [];
         var updatedOrder = await orderUnitOfWork.OrderRepository.UpdateAsync(order);
@@ -199,6 +207,8 @@ public class OrderService(
 
     public Task<bool> DeleteOrderByIdAsync(int id)
     {
+        string cacheKey = $"{_cacheKeyPrefix}-OrderDetail{id}";
+        memoryCache.Remove(cacheKey);
         return orderRepository.DeleteAsync(id);
     }
 }

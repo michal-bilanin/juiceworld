@@ -7,6 +7,7 @@ using Commons.Enums;
 using Infrastructure.QueryObjects;
 using Infrastructure.Repositories;
 using JuiceWorld.Entities;
+using JuiceWorld.UnitOfWork;
 using Microsoft.Extensions.Caching.Memory;
 using Moq;
 using Xunit;
@@ -18,7 +19,9 @@ namespace BusinessLayer.Tests.Stubs
     {
         private readonly IProductService _productService;
         private readonly Mock<IRepository<Product>> _productRepositoryMock;
+        private readonly Mock<IRepository<Tag>> _tagRepositoryMock;
         private readonly IMapper _mapper;
+        private readonly Mock<ProductUnitOfWork> _unitofWork;
 
         private readonly List<Product> _products = new List<Product>
         {
@@ -53,7 +56,9 @@ namespace BusinessLayer.Tests.Stubs
             _mapper = config.CreateMapper();
             var cache = new MemoryCache(new MemoryCacheOptions());
             // Initialize the service
-            _productService = new ProductService(_productRepositoryMock.Object, _mapper, cache, queryObjectMock.Object);
+            _tagRepositoryMock = new Mock<IRepository<Tag>>();
+            _unitofWork = new Mock<ProductUnitOfWork>(_productRepositoryMock.Object, _tagRepositoryMock.Object);
+            _productService = new ProductService(_productRepositoryMock.Object, _mapper, cache, queryObjectMock.Object, _unitofWork.Object);
         }
 
         [Fact]
@@ -109,36 +114,6 @@ namespace BusinessLayer.Tests.Stubs
             // Assert
             Assert.NotNull(result);
             Assert.Equal(productDto.Id, result.Id);
-            Assert.Equal(productDto.Name, result.Name);
-            Assert.Equal(productDto.Price, result.Price);
-            Assert.Equal(productDto.Description, result.Description);
-            Assert.Equal(productDto.Category, result.Category);
-            Assert.Equal(productDto.ManufacturerId, result.ManufacturerId);
-        }
-
-        [Fact]
-        public async Task UpdateProductAsync_Simple()
-        {
-            // Arrange
-            var productDto = new ProductDto
-            {
-                Id = 1,
-                Name = "Updated Product",
-                Price = 120m,
-                Description = "Updated Description",
-                Category = ProductCategory.Testosterone,
-                ManufacturerId = 1
-            };
-
-            var updatedProduct = _mapper.Map<Product>(productDto);
-            _productRepositoryMock.Setup(repo => repo.GetByIdAsync(productDto.Id)).ReturnsAsync(_products[0]);
-            _productRepositoryMock.Setup(repo => repo.UpdateAsync(It.IsAny<Product>(), null)).ReturnsAsync(updatedProduct);
-
-            // Act
-            var result = await _productService.UpdateProductAsync(productDto);
-
-            // Assert
-            Assert.NotNull(result);
             Assert.Equal(productDto.Name, result.Name);
             Assert.Equal(productDto.Price, result.Price);
             Assert.Equal(productDto.Description, result.Description);

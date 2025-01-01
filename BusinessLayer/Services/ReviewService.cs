@@ -40,12 +40,16 @@ public class ReviewService(IRepository<Review> reviewRepository,
 
     public async Task<ReviewDto?> UpdateReviewAsync(ReviewDto reviewDto)
     {
+        string cacheKey = $"{_cacheKeyPrefix}-Review{reviewDto.Id}";
+        memoryCache.Remove(cacheKey);
         var updatedReview = await reviewRepository.UpdateAsync(mapper.Map<Review>(reviewDto));
         return updatedReview is null ? null : mapper.Map<ReviewDto>(updatedReview);
     }
 
     public async Task<bool> DeleteReviewByIdAsync(int id)
     {
+        string cacheKey = $"{_cacheKeyPrefix}-Review{id}";
+        memoryCache.Remove(cacheKey);
         return await reviewRepository.DeleteAsync(id);
     }
 }

@@ -68,6 +68,8 @@ public class TagService(IRepository<Tag> tagRepository,
     {
         string cacheKey = $"{_cacheKeyPrefix}-tag{tagDto.Id}";
         memoryCache.Remove(cacheKey);
+        string cacheKeyAll = $"{_cacheKeyPrefix}-allTags";
+        memoryCache.Remove(cacheKeyAll);
         var updatedTag = await tagRepository.UpdateAsync(mapper.Map<Tag>(tagDto));
         return updatedTag is null ? null : mapper.Map<TagDto>(updatedTag);
     }
@@ -76,6 +78,8 @@ public class TagService(IRepository<Tag> tagRepository,
     {
         string cacheKey = $"{_cacheKeyPrefix}-tag{id}";
         memoryCache.Remove(cacheKey);
+        string cacheKeyAll = $"{_cacheKeyPrefix}-allTags";
+        memoryCache.Remove(cacheKeyAll);
         return await tagRepository.DeleteAsync(id);
     }
 }

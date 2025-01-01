@@ -6,6 +6,7 @@ using Commons.Enums;
 using Infrastructure.QueryObjects;
 using Infrastructure.Repositories;
 using JuiceWorld.Entities;
+using JuiceWorld.UnitOfWork;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace BusinessLayer.Services;
@@ -14,7 +15,9 @@ public class ProductService(
     IRepository<Product> productRepository,
     IMapper mapper,
     IMemoryCache memoryCache,
-    IQueryObject<Product> queryObject) : IProductService
+    IQueryObject<Product> queryObject,
+    ProductUnitOfWork productUnitOfWork
+    ) : IProductService
 {
     private string _cacheKeyPrefix = nameof(ProductService);
     public async Task<ProductDto?> CreateProductAsync(ProductDto productDto)
@@ -127,13 +130,24 @@ public class ProductService(
 
     public async Task<ProductDto?> UpdateProductAsync(ProductDto productDto)
     {
-        var oldProduct = await productRepository.GetByIdAsync(productDto.Id);
+        string cacheKeyDetail = $"{_cacheKeyPrefix}-productDetail{productDto.Id}";
+        memoryCache.Remove(cacheKeyDetail);
+        string cacheKey1 = $"{_cacheKeyPrefix}-product{productDto.Id}";
+        memoryCache.Remove(cacheKey1);
+        var oldProduct = await productUnitOfWork.ProductRepository.GetByIdAsync(productDto.Id);
         if (oldProduct is null)
         {
             return null;
         }
 
-        var updatedProduct = await productRepository.UpdateAsync(mapper.Map<Product>(productDto));
+        var product = mapper.Map<Product>(productDto);
+        oldProduct.Tags.Clear();
+
+        var tags = await productUnitOfWork.TagRepository.GetByIdRangeAsync(productDto.TagIds.Cast<object>());
+        product.Tags = tags.ToList();
+
+        var updatedProduct = await productUnitOfWork.ProductRepository.UpdateAsync(product);
+        await productUnitOfWork.Commit();
         return updatedProduct is null ? null : mapper.Map<ProductDto>(updatedProduct);
     }
 
