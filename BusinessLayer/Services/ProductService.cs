@@ -153,8 +153,10 @@ public class ProductService(
 
     public async Task<bool> DeleteProductByIdAsync(int id)
     {
-        string cacheKey = $"{_cacheKeyPrefix}-productDetail{id}";
-        memoryCache.Remove(cacheKey);
+        string cacheKeyDetail = $"{_cacheKeyPrefix}-productDetail{id}";
+        memoryCache.Remove(cacheKeyDetail);
+        string cacheKey1 = $"{_cacheKeyPrefix}-product{id}";
+        memoryCache.Remove(cacheKey1);
         return await productRepository.DeleteAsync(id);
     }
 }
