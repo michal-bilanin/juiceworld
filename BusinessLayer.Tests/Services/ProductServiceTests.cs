@@ -7,6 +7,7 @@ using Commons.Enums;
 using JuiceWorld.Entities;
 using JuiceWorld.QueryObjects;
 using JuiceWorld.Repositories;
+using JuiceWorld.UnitOfWork;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using TestUtilities.MockedObjects;
@@ -28,7 +29,8 @@ public class ProductServiceTests
         var mapper = config.CreateMapper();
         var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
         var cache = new MemoryCache(new MemoryCacheOptions());
-        _productService = new ProductService(productRepository, mapper, cache, new QueryObject<Product>(dbContext));
+        var unitOfwork = new ProductUnitOfWork(dbContext);
+        _productService = new ProductService(productRepository, mapper, cache, new QueryObject<Product>(dbContext), unitOfwork);
     }
 
     [Fact]

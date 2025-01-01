@@ -18,8 +18,10 @@ public class ProductUnitOfWork
         TagRepository = new Repository<Tag>(_context);
     }
 
-    public ProductUnitOfWork() //for stub testing
+    public ProductUnitOfWork(IRepository<Product> productRepository, IRepository<Tag> tagRepository) //for stub testing
     {
+        ProductRepository = productRepository;
+        TagRepository = tagRepository;
     }
 
     public async Task Commit()
