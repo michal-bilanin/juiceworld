@@ -76,7 +76,7 @@
             }
             <tr>
                 <td colspan="3"><strong>Grand Total:</strong></td>
-                <td><strong>@Model.TotalPrice</strong></td>
+                <td><strong>@Model.CartItems.Sum(x => x.Product.Price * x.Quantity).ToString("C")</strong></td>
             </tr>
             </tbody>
         </table>
@@ -87,10 +87,6 @@
         <button type="submit" class="btn btn-primary" @(Model.CartItems.Any() ? "" : "disabled")>Checkout</button>
     </div>
 </form>
-
-<div class="text-right mt-3">
-    <a href="@Url.Action("Create", "Order", new { area = Constants.Areas.Customer })" class="btn btn-success">Checkout</a>
-</div>
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
