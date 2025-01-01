@@ -1,3 +1,4 @@
+using System.Text.Json;
 using AutoMapper;
 using BusinessLayer.DTOs;
 using BusinessLayer.Services.Interfaces;
@@ -5,14 +6,17 @@ using Commons.Enums;
 using Infrastructure.QueryObjects;
 using Infrastructure.Repositories;
 using JuiceWorld.Entities;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace BusinessLayer.Services;
 
 public class ProductService(
     IRepository<Product> productRepository,
     IMapper mapper,
+    IMemoryCache memoryCache,
     IQueryObject<Product> queryObject) : IProductService
 {
+    private string _cacheKeyPrefix = nameof(ProductService);
     public async Task<ProductDto?> CreateProductAsync(ProductDto productDto)
     {
         var newProduct = await productRepository.CreateAsync(mapper.Map<Product>(productDto));
@@ -44,48 +48,81 @@ public class ProductService(
 
     public async Task<FilteredResult<ProductDto>> GetProductsFilteredAsync(ProductFilterDto productFilter)
     {
-        var query = GetQueryObject(productFilter);
-        query.Include(nameof(Product.Tags), nameof(Product.Manufacturer), nameof(Product.Reviews));
-        var filteredProducts = await query.ExecuteAsync();
+        string cacheKey = $"{_cacheKeyPrefix}-product{JsonSerializer.Serialize(productFilter)}";
+        if (!memoryCache.TryGetValue(cacheKey, out FilteredResult<Product>? value))
+        {
+            var query = GetQueryObject(productFilter);
+            query.Include(nameof(Product.Tags), nameof(Product.Manufacturer), nameof(Product.Reviews));
+            value = await query.ExecuteAsync();
+
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+                .SetAbsoluteExpiration(TimeSpan.FromSeconds(30));
+            memoryCache.Set(cacheKey, value, cacheEntryOptions);
+        }
 
         return new FilteredResult<ProductDto>
         {
-            Entities = mapper.Map<List<ProductDto>>(filteredProducts.Entities),
-            PageIndex = filteredProducts.PageIndex,
-            TotalPages = filteredProducts.TotalPages
-        };
+            Entities = mapper.Map<List<ProductDto>>(value!.Entities),
+            PageIndex = value.PageIndex,
+            TotalPages = value.TotalPages
+        }; ;
     }
 
     public async Task<FilteredResult<ProductDetailDto>> GetProductDetailsFilteredAsync(ProductFilterDto productFilter)
     {
-        var query = GetQueryObject(productFilter);
-        var filteredProducts = await query.ExecuteAsync();
+        string cacheKey = $"{_cacheKeyPrefix}-productDetail{JsonSerializer.Serialize(productFilter)}";
+        if (!memoryCache.TryGetValue(cacheKey, out FilteredResult<Product>? value))
+        {
+            var query = GetQueryObject(productFilter);
+            value = await query.ExecuteAsync();
+
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+                .SetAbsoluteExpiration(TimeSpan.FromSeconds(30));
+            memoryCache.Set(cacheKey, value, cacheEntryOptions);
+        }
+
         return new FilteredResult<ProductDetailDto>
         {
-            Entities = mapper.Map<List<ProductDetailDto>>(filteredProducts.Entities),
-            PageIndex = filteredProducts.PageIndex,
-            TotalPages = filteredProducts.TotalPages
+            Entities = mapper.Map<List<ProductDetailDto>>(value!.Entities),
+            PageIndex = value.PageIndex,
+            TotalPages = value.TotalPages
         };
     }
 
     public async Task<ProductDto?> GetProductByIdAsync(int id)
     {
-        var product = await productRepository.GetByIdAsync(id, nameof(Product.Tags));
-        return product is null ? null : mapper.Map<ProductDto>(product);
+        string cacheKey = $"{_cacheKeyPrefix}-product{id}";
+        if (!memoryCache.TryGetValue(cacheKey, out Product? value))
+        {
+            value = await productRepository.GetByIdAsync(id, nameof(Product.Tags));
+
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+                .SetAbsoluteExpiration(TimeSpan.FromSeconds(30));
+            memoryCache.Set(cacheKey, value, cacheEntryOptions);
+        }
+
+        return value is null ? null : mapper.Map<ProductDto>(value);
     }
 
     public async Task<ProductDetailDto?> GetProductDetailByIdAsync(int id)
     {
-        var product = await productRepository.GetByIdAsync(id, nameof(Product.Manufacturer),
-            nameof(Product.Reviews), $"{nameof(Product.Reviews)}.{nameof(Review.User)}", nameof(Product.Tags));
-
-        if (product is null)
+        string cacheKey = $"{_cacheKeyPrefix}-productDetail{id}";
+        if (!memoryCache.TryGetValue(cacheKey, out Product? value))
         {
-            return null;
-        }
+            value = await productRepository.GetByIdAsync(id, nameof(Product.Manufacturer),
+                nameof(Product.Reviews), $"{nameof(Product.Reviews)}.{nameof(Review.User)}", nameof(Product.Tags));
 
-        product.Reviews = product.Reviews.OrderByDescending(r => r.CreatedAt).ToList();
-        return mapper.Map<ProductDetailDto>(product);
+            if (value is null)
+            {
+                return null;
+            }
+
+            value.Reviews = value.Reviews.OrderByDescending(r => r.CreatedAt).ToList();
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+                .SetAbsoluteExpiration(TimeSpan.FromSeconds(30));
+            memoryCache.Set(cacheKey, value, cacheEntryOptions);
+        }
+        return mapper.Map<ProductDetailDto>(value);
     }
 
     public async Task<ProductDto?> UpdateProductAsync(ProductDto productDto)
@@ -102,6 +139,8 @@ public class ProductService(
 
     public async Task<bool> DeleteProductByIdAsync(int id)
     {
+        string cacheKey = $"{_cacheKeyPrefix}-productDetail{id}";
+        memoryCache.Remove(cacheKey);
         return await productRepository.DeleteAsync(id);
     }
 }

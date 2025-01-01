@@ -6,6 +6,7 @@ using BusinessLayer.Services.Interfaces;
 using Infrastructure.Repositories;
 using JuiceWorld.Entities;
 using JuiceWorld.UnitOfWork;
+using Microsoft.Extensions.Caching.Memory;
 using Moq;
 using Xunit;
 using Assert = Xunit.Assert;
@@ -29,8 +30,8 @@ namespace BusinessLayer.Tests.Stubs
             var config = new MapperConfiguration(cfg => cfg.AddProfile<MapperProfileInstaller>());
             _mapper = config.CreateMapper();
             Mock<OrderUnitOfWork> queryObjectMock = new();
-
-            _cartItemService = new CartItemService(_cartItemRepositoryMock.Object, queryObjectMock.Object, _mapper);
+            var cache = new MemoryCache(new MemoryCacheOptions());
+            _cartItemService = new CartItemService(_cartItemRepositoryMock.Object, queryObjectMock.Object, cache, _mapper);
         }
 
         [Fact]

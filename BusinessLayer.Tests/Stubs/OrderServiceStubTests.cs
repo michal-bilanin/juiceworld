@@ -8,6 +8,7 @@ using Infrastructure.Repositories;
 using JuiceWorld.Entities;
 using JuiceWorld.QueryObjects;
 using JuiceWorld.UnitOfWork;
+using Microsoft.Extensions.Caching.Memory;
 using Moq;
 using TestUtilities.MockedObjects;
 using Xunit;
@@ -68,7 +69,8 @@ namespace BusinessLayer.Tests.Stubs
 
             var orderQueryObject = new QueryObject<Order>(dbContext);
             // Initialize the service with the mocked repositories and unit of work
-            _orderService = new OrderService(_orderRepositoryMock.Object, orderQueryObject, _orderUnitOfWorkMock.Object, _mapper);
+            var cache = new MemoryCache(new MemoryCacheOptions());
+            _orderService = new OrderService(_orderRepositoryMock.Object, orderQueryObject, _orderUnitOfWorkMock.Object, cache, _mapper);
         }
 
         [Fact]

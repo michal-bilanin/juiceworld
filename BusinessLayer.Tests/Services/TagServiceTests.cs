@@ -6,6 +6,7 @@ using BusinessLayer.Services.Interfaces;
 using JuiceWorld.Entities;
 using JuiceWorld.QueryObjects;
 using JuiceWorld.Repositories;
+using Microsoft.Extensions.Caching.Memory;
 using TestUtilities.MockedObjects;
 using Xunit;
 using Assert = Xunit.Assert;
@@ -24,7 +25,8 @@ public class TagServiceTests
         var config = new MapperConfiguration(cfg => cfg.AddProfile<MapperProfileInstaller>());
         var mapper = config.CreateMapper();
         var tagQueryObject = new QueryObject<Tag>(dbContext);
-        _tagService = new TagService(tagRepository, tagQueryObject, mapper);
+        var cache = new MemoryCache(new MemoryCacheOptions());
+        _tagService = new TagService(tagRepository, tagQueryObject, cache, mapper);
     }
 
     [Fact]
