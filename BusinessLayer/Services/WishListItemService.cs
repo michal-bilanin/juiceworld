@@ -20,6 +20,12 @@ public class WishListItemService(IRepository<WishListItem> wishListItemRepositor
         return mapper.Map<List<WishListItemDto>>(wishListItems);
     }
 
+    public async Task<IEnumerable<WishListItemDetailDto>> GetWishListItemsByUserIdAsync(int userId)
+    {
+        var wishListItems = await wishListItemRepository.GetByConditionAsync(wli => wli.UserId == userId, nameof(WishListItem.Product));
+        return mapper.Map<List<WishListItemDetailDto>>(wishListItems);
+    }
+
     public async Task<WishListItemDto?> GetWishListItemByIdAsync(int id)
     {
         var wishListItem = await wishListItemRepository.GetByIdAsync(id);
@@ -30,6 +36,12 @@ public class WishListItemService(IRepository<WishListItem> wishListItemRepositor
     {
         var wishListItem = await wishListItemRepository.GetByIdAsync(id, nameof(WishListItem.Product), nameof(WishListItem.User));
         return wishListItem is null ? null : mapper.Map<WishListItemDetailDto>(wishListItem);
+    }
+
+    public async Task<bool> IsProductInWishListAsync(int productId, int userId)
+    {
+        var wishListItem = await wishListItemRepository.GetByConditionAsync(wli => wli.ProductId == productId && wli.UserId == userId);
+        return wishListItem.Any();
     }
 
     public async Task<WishListItemDto?> UpdateWishListItemAsync(WishListItemDto wishListItemDto)
