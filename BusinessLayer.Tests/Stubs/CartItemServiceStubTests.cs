@@ -30,8 +30,7 @@ namespace BusinessLayer.Tests.Stubs
             var config = new MapperConfiguration(cfg => cfg.AddProfile<MapperProfileInstaller>());
             _mapper = config.CreateMapper();
             Mock<OrderUnitOfWork> queryObjectMock = new();
-            var cache = new MemoryCache(new MemoryCacheOptions());
-            _cartItemService = new CartItemService(_cartItemRepositoryMock.Object, queryObjectMock.Object, cache, _mapper);
+            _cartItemService = new CartItemService(_cartItemRepositoryMock.Object, queryObjectMock.Object, _mapper);
         }
 
         [Fact]

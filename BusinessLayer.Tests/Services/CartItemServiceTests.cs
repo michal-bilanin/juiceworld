@@ -25,8 +25,7 @@ public class CartItemServiceTests
         var config = new MapperConfiguration(cfg => cfg.AddProfile<MapperProfileInstaller>());
         var mapper = config.CreateMapper();
         var orderUnitOfWork = new OrderUnitOfWork(dbContext);
-        var memorycache = new MemoryCache(new MemoryCacheOptions());
-        _cartItemService = new CartItemService(crtItemRepository, orderUnitOfWork, memorycache, mapper);
+        _cartItemService = new CartItemService(crtItemRepository, orderUnitOfWork, mapper);
     }
 
     [Fact]
