@@ -22,10 +22,7 @@ public class WishlistController(IWishListItemService wishListItemService, ICartI
     public async Task<IActionResult> Delete(int id)
     {
         var success = await wishListItemService.DeleteWishListItemByIdAsync(id);
-        if (!success)
-        {
-            ViewData[Constants.Keys.ErrorMessage] = "Failed to delete item from wishlist.";
-        }
+        if (!success) ViewData[Constants.Keys.ErrorMessage] = "Failed to delete item from wishlist.";
 
         return RedirectToAction(nameof(Index));
     }
@@ -41,10 +38,7 @@ public class WishlistController(IWishListItemService wishListItemService, ICartI
         };
 
         var success = await cartItemService.AddToCartAsync(addToCartDto, userId);
-        if (!success)
-        {
-            ViewData[Constants.Keys.ErrorMessage] = "Failed to add item to cart.";
-        }
+        if (!success) ViewData[Constants.Keys.ErrorMessage] = "Failed to add item to cart.";
 
         return RedirectToAction(nameof(Index));
     }

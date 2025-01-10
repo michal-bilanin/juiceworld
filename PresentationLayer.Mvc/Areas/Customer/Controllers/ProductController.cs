@@ -30,10 +30,7 @@ public class ProductController(
         int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId);
         var product = await productService.GetProductDetailByIdAsync(id);
 
-        if (product is null)
-        {
-            return NotFound();
-        }
+        if (product is null) return NotFound();
 
         var isInWishlist = await wishListItemService.IsProductInWishListAsync(id, userId);
 
@@ -52,15 +49,9 @@ public class ProductController(
 
         var success = await cartItemService.AddToCartAsync(addToCartDto, userId);
         var product = await productService.GetProductDetailByIdAsync(addToCartDto.ProductId);
-        if (product is null)
-        {
-            return NotFound();
-        }
+        if (product is null) return NotFound();
 
-        if (!success)
-        {
-            ViewData[Constants.Keys.ErrorMessage] = "Failed to add the product to the cart.";
-        }
+        if (!success) ViewData[Constants.Keys.ErrorMessage] = "Failed to add the product to the cart.";
 
         return RedirectToAction(nameof(Details), new { id = product.Id });
     }
@@ -84,19 +75,13 @@ public class ProductController(
     [RedirectIfNotAuthenticatedActionFilter]
     public async Task<IActionResult> AddReview(ReviewDto reviewDto)
     {
-        if (!ModelState.IsValid)
-        {
-            return RedirectToAction(nameof(Details), new { id = reviewDto.ProductId });
-        }
+        if (!ModelState.IsValid) return RedirectToAction(nameof(Details), new { id = reviewDto.ProductId });
 
         int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId);
 
         reviewDto.UserId = userId;
         var review = await reviewService.CreateReviewAsync(reviewDto);
-        if (review is null)
-        {
-            return BadRequest();
-        }
+        if (review is null) return BadRequest();
 
         return RedirectToAction(nameof(Details), new { id = review.ProductId });
     }
@@ -109,15 +94,10 @@ public class ProductController(
 
         var review = await reviewService.GetReviewByIdAsync(id);
         if (review is null || (review.UserId != userId && !User.IsInRole(UserRole.Admin.ToString())))
-        {
             return Unauthorized();
-        }
 
         var success = await reviewService.DeleteReviewByIdAsync(id);
-        if (!success)
-        {
-            return BadRequest();
-        }
+        if (!success) return BadRequest();
 
         return RedirectToAction(nameof(Details), new { id = review.ProductId });
     }

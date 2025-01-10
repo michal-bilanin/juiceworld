@@ -11,7 +11,8 @@
     @if (!Model.Any())
     {
         <div class="alert alert-info">
-            Your wishlist is empty. <a href="@Url.Action("Index", "Product", new { area = Constants.Areas.Customer })">Browse products</a>
+            Your wishlist is empty. <a href="@Url.Action("Index", "Product", new { area = Constants.Areas.Customer })">Browse
+                products</a>
         </div>
     }
     else
@@ -30,11 +31,11 @@
                     <td>@wishListItem.Product.Name</td>
                     <td>
                         <form asp-controller="Wishlist" asp-action="Delete" method="POST" style="display:inline;">
-                            <input type="hidden" name="id" value="@wishListItem.Id" />
+                            <input type="hidden" name="id" value="@wishListItem.Id"/>
                             <button type="submit" class="btn btn-danger btn-sm">Remove</button>
                         </form>
                         <form asp-controller="Wishlist" asp-action="AddToCart" method="POST" style="display:inline;">
-                            <input type="hidden" name="ProductId" value="@wishListItem.Product.Id" />
+                            <input type="hidden" name="ProductId" value="@wishListItem.Product.Id"/>
                             <button type="submit" class="btn btn-primary btn-sm">Add to Cart</button>
                         </form>
                     </td>

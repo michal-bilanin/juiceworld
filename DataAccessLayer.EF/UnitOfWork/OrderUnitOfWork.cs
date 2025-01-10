@@ -9,8 +9,8 @@ public class OrderUnitOfWork
 {
     private readonly JuiceWorldDbContext _context;
     public readonly IRepository<CartItem> CartItemRepository;
-    public readonly IRepository<Order> OrderRepository;
     public readonly IRepository<OrderProduct> OrderProductRepository;
+    public readonly IRepository<Order> OrderRepository;
     public readonly IRepository<Product> ProductRepository;
     public readonly IRepository<WishListItem> WishListItemRepository;
 

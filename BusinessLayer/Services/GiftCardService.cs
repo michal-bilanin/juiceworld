@@ -7,13 +7,13 @@ using JuiceWorld.Entities;
 
 namespace BusinessLayer.Services;
 
-public class GiftCardService(IRepository<GiftCard> giftCardRepository,
+public class GiftCardService(
+    IRepository<GiftCard> giftCardRepository,
     IRepository<CouponCode> couponCodeRepository,
     IQueryObject<CouponCode> couponCodeQueryObject,
     IQueryObject<GiftCard> giftCardQueryObject,
     IMapper mapper) : IGiftCardService
 {
-
     public async Task<GiftCardDetailDto?> CreateGiftCardAsync(GiftCardCreateDto giftCardCreateDto)
     {
         giftCardCreateDto.ExpiryDateTime = giftCardCreateDto.ExpiryDateTime?.ToUniversalTime();
@@ -24,13 +24,11 @@ public class GiftCardService(IRepository<GiftCard> giftCardRepository,
             return null;
 
         foreach (var coupon in Enumerable.Range(0, giftCardCreateDto.CouponsCount))
-        {
             await couponCodeRepository.CreateAsync(new CouponCode
             {
                 Code = Guid.NewGuid().ToString(),
                 GiftCardId = newGiftCard.Id
             });
-        }
 
         var newGiftCardAfterInsert = await giftCardRepository.GetByIdAsync(newGiftCard.Id);
         return mapper.Map<GiftCardDetailDto?>(newGiftCardAfterInsert);
@@ -43,7 +41,8 @@ public class GiftCardService(IRepository<GiftCard> giftCardRepository,
                          g.Name.ToLower().Contains(giftCardFilterDto.Name.ToLower()))
             .OrderBy(p => p.Id)
             .Paginate(giftCardFilterDto.PageIndex, giftCardFilterDto.PageSize)
-            .ExecuteAsync(); ;
+            .ExecuteAsync();
+        ;
 
         return new FilteredResult<GiftCardEditDto>
         {
@@ -69,6 +68,7 @@ public class GiftCardService(IRepository<GiftCard> giftCardRepository,
     {
         return await giftCardRepository.DeleteAsync(id);
     }
+
     public async Task<CouponCodeDto?> RedeemCouponAsync(string couponCode)
     {
         var redeemedCoupon = (await couponCodeQueryObject.Filter(c => c.Code == couponCode)
@@ -90,7 +90,8 @@ public class GiftCardService(IRepository<GiftCard> giftCardRepository,
 
     public async Task<IEnumerable<CouponCodeDto>> GetCouponCodesAsync()
     {
-        return await couponCodeRepository.GetAllAsync().ContinueWith(task => mapper.Map<List<CouponCodeDto>>(task.Result));
+        return await couponCodeRepository.GetAllAsync()
+            .ContinueWith(task => mapper.Map<List<CouponCodeDto>>(task.Result));
     }
 
     public async Task<CouponCodeDto?> GetCouponCodeByIdAsync(int id)

@@ -7,5 +7,5 @@ public enum ProductCategory
     Nandrolone,
     Dihydrotestosterone,
     GrowthHormone,
-    Peptide,
+    Peptide
 }

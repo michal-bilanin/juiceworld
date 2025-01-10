@@ -14,10 +14,10 @@ namespace BusinessLayer.Tests.Stubs;
 
 public class ReviewServiceStubTests
 {
-    private readonly IReviewService _reviewService;
-    private readonly Mock<IRepository<Review>> _reviewRepositoryMock;
     private readonly IMapper _mapper;
-    private readonly List<Review> _reviews = new List<Review>
+    private readonly Mock<IRepository<Review>> _reviewRepositoryMock;
+
+    private readonly List<Review> _reviews = new()
     {
         new Review
         {
@@ -36,6 +36,8 @@ public class ReviewServiceStubTests
             UserId = 2
         }
     };
+
+    private readonly IReviewService _reviewService;
 
     public ReviewServiceStubTests()
     {

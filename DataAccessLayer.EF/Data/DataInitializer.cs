@@ -108,10 +108,7 @@ public static class DataInitializer
 
         // Assign passwords using PasswordHasher
         var passwordHasher = new PasswordHasher<User>();
-        foreach (var user in users)
-        {
-            user.PasswordHash = passwordHasher.HashPassword(user, "Password123!");
-        }
+        foreach (var user in users) user.PasswordHash = passwordHasher.HashPassword(user, "Password123!");
 
         return users;
     }

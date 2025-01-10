@@ -14,13 +14,13 @@ public class User : IdentityUser<int>, IAuditableEntity, IBaseEntity
     [MaxLength(300)]
     public string Bio { get; set; } = "";
 
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public DateTime? UpdatedAt { get; set; }
-    public DateTime? DeletedAt { get; set; }
-
     public virtual List<CartItem> CartItems { get; set; } = [];
     public virtual List<WishListItem> WishListItems { get; set; } = [];
     public virtual List<Review> Reviews { get; set; } = [];
     public virtual List<Order> Orders { get; set; } = [];
     public virtual List<AuditTrail> AuditTrails { get; set; } = [];
+
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? UpdatedAt { get; set; }
+    public DateTime? DeletedAt { get; set; }
 }

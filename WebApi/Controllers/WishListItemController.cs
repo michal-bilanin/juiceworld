@@ -74,16 +74,11 @@ public class WishListItemController(IWishListItemService wishListItemService) : 
 
     private bool IsUserIdAuthorized(int userId)
     {
-        if (!Int32.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? "", out var currentUserId))
-        {
-            return false;
-        }
+        if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? "", out var currentUserId)) return false;
 
         if (!User.IsInRole(UserRole.Admin.ToString()) &&
             currentUserId != userId)
-        {
             return false;
-        }
         return true;
     }
 }

@@ -9,11 +9,11 @@ namespace JuiceWorld.QueryObjects;
 public class QueryObject<TEntity>(JuiceWorldDbContext context) : IQueryObject<TEntity>
     where TEntity : class, IBaseEntity
 {
-    private IQueryable<TEntity> _query = context.Set<TEntity>();
-    private bool _pagingEnabled = false;
-    private bool _orderingEnabled = false;
+    private bool _orderingEnabled;
     private int _pageIndex = 1;
     private int _pageSize = 10;
+    private bool _pagingEnabled;
+    private IQueryable<TEntity> _query = context.Set<TEntity>();
 
     public IQueryObject<TEntity> Filter(Expression<Func<TEntity, bool>> filter)
     {
@@ -26,20 +26,22 @@ public class QueryObject<TEntity>(JuiceWorldDbContext context) : IQueryObject<TE
         return OrderBy((keySelector, isDesc));
     }
 
-    public IQueryObject<TEntity> OrderBy<TKey>(params (Expression<Func<TEntity, TKey>> KeySelector, bool IsDesc)[] keySelectors)
+    public IQueryObject<TEntity> OrderBy<TKey>(
+        params (Expression<Func<TEntity, TKey>> KeySelector, bool IsDesc)[] keySelectors)
     {
         foreach (var (keySelector, isDesc) in keySelectors)
-        {
             if (_orderingEnabled)
             {
-                _query = isDesc ? ((IOrderedQueryable<TEntity>)_query).ThenByDescending(keySelector) : ((IOrderedQueryable<TEntity>)_query).ThenBy(keySelector);
+                _query = isDesc
+                    ? ((IOrderedQueryable<TEntity>)_query).ThenByDescending(keySelector)
+                    : ((IOrderedQueryable<TEntity>)_query).ThenBy(keySelector);
             }
             else
             {
                 _query = isDesc ? _query.OrderByDescending(keySelector) : _query.OrderBy(keySelector);
                 _orderingEnabled = true;
             }
-        }
+
         return this;
     }
 
@@ -68,7 +70,7 @@ public class QueryObject<TEntity>(JuiceWorldDbContext context) : IQueryObject<TE
         {
             Entities = entities,
             PageIndex = (_pageIndex - 1) * _pageSize > totalEntities ? 1 : _pageIndex,
-            TotalPages = (int)Math.Ceiling(totalEntities / (double)_pageSize),
+            TotalPages = (int)Math.Ceiling(totalEntities / (double)_pageSize)
         };
     }
 }

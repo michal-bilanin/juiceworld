@@ -25,10 +25,7 @@ public class TagController(ITagService tagService) : Controller
     [HttpPost]
     public async Task<IActionResult> Create(TagDto viewModel)
     {
-        if (!ModelState.IsValid)
-        {
-            return View(viewModel);
-        }
+        if (!ModelState.IsValid) return View(viewModel);
 
         var createdTag = await tagService.CreateTagAsync(viewModel);
         if (createdTag == null)
@@ -56,10 +53,7 @@ public class TagController(ITagService tagService) : Controller
     [HttpPost]
     public async Task<IActionResult> Edit(TagDto viewModel)
     {
-        if (!ModelState.IsValid)
-        {
-            return View(viewModel);
-        }
+        if (!ModelState.IsValid) return View(viewModel);
 
         var updatedTag = await tagService.UpdateTagAsync(viewModel);
         if (updatedTag == null)

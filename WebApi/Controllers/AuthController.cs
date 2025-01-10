@@ -27,11 +27,8 @@ public class AuthController(
             return Unauthorized();
         }
 
-        var result = await signInManager.CheckPasswordSignInAsync(user, login.Password, lockoutOnFailure: false);
-        if (!result.Succeeded)
-        {
-            return Unauthorized();
-        }
+        var result = await signInManager.CheckPasswordSignInAsync(user, login.Password, false);
+        if (!result.Succeeded) return Unauthorized();
 
         var ci = new[]
         {
