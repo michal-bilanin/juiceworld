@@ -25,7 +25,7 @@ if (apiPort == null)
     return;
 }
 
-app.Urls.Add($"https://localhost:{apiPort}");
+app.Urls.Add($"https://+{apiPort}");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

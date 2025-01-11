@@ -1,4 +1,6 @@
+using System.Diagnostics;
 using BusinessLayer.Installers;
+using Commons.Constants;
 using Commons.Middleware;
 using JuiceWorld.Installers;
 using PresentationLayer.Mvc.Installers;
@@ -12,6 +14,17 @@ builder.Services.DalInstall();
 builder.Services.MvcInstall();
 
 var app = builder.Build();
+
+var mvcPort = Environment.GetEnvironmentVariable(EnvironmentConstants.MvcPort);
+if (mvcPort == null)
+{
+    Debug.Fail(
+        $"MVC port is null, make sure it is specified " +
+        $"in the environment variable: {EnvironmentConstants.MvcPort}");
+    return;
+}
+
+app.Urls.Add($"https://+:{mvcPort}");
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
