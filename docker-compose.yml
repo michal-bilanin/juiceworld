@@ -30,6 +30,8 @@ services:
       - ${MVC_PORT:-7137}:${MVC_PORT:-7137}
     environment:
       - MVC_PORT=${MVC_PORT:-7137}
+      - DB_CONNECTION_STRING=${DB_CONNECTION_STRING}
+      - JWT_SECRET=${JWT_SECRET}
 
   postgres:
     image: postgres:alpine3.19

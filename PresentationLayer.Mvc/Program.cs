@@ -24,7 +24,7 @@ if (mvcPort == null)
     return;
 }
 
-app.Urls.Add($"https://+:{mvcPort}");
+app.Urls.Add($"http://+:{mvcPort}");
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
