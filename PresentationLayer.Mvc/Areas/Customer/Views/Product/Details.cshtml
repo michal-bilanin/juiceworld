@@ -7,7 +7,7 @@
 
 @{
     ViewData[Constants.Keys.Title] = Model.ProductDetail.Name;
-    var userId = int.Parse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty);
+    int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId);
     var isAuthenticated = User.Identity is { IsAuthenticated: true };
     var isAdmin = User.IsInRole(UserRole.Admin.ToString());
 }
