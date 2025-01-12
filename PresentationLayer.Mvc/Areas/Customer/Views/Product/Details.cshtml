@@ -8,6 +8,7 @@
 @{
     ViewData[Constants.Keys.Title] = Model.ProductDetail.Name;
     var userId = int.Parse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty);
+    var isAuthenticated = User.Identity is { IsAuthenticated: true };
     var isAdmin = User.IsInRole(UserRole.Admin.ToString());
 }
 
@@ -15,22 +16,28 @@
 
 <div class="product-detail">
     <div class="product-image">
-        <img src="@(string.IsNullOrEmpty(Model.ProductDetail.Image) ? "/images/product_placeholder.jpg" : $"/{ImageService.ImgFolderPath}/{Model.ProductDetail.Image}")" alt="@Model.ProductDetail.Image" />    </div>
+        <img
+            src="@(string.IsNullOrEmpty(Model.ProductDetail.Image) ? "/images/product_placeholder.jpg" : $"/{ImageService.ImgFolderPath}/{Model.ProductDetail.Image}")"
+            alt="@Model.ProductDetail.Image"/></div>
     <div class="product-info">
         <p><strong>Manufacturer:</strong> @Model.ProductDetail.Manufacturer.Name</p>
         <p><strong>Price:</strong> @Model.ProductDetail.Price.ToString("C")</p>
-        @if (!Model.IsInWishList)
+        @if (isAuthenticated)
         {
-            <form id="add-to-wishlist-form" asp-controller="Product" asp-action="AddToWishlist" method="post">
-                <input type="hidden" id="WishlistItemId" name="ProductId" value="@Model.ProductDetail.Id"/>
-                <button type="submit" id="add-to-wishlist-button" class="btn-secondary">Add to Wishlist</button>
+            @if (!Model.IsInWishList)
+            {
+                <form id="add-to-wishlist-form" asp-controller="Product" asp-action="AddToWishlist" method="post">
+                    <input type="hidden" id="WishlistItemId" name="ProductId" value="@Model.ProductDetail.Id"/>
+                    <button type="submit" id="add-to-wishlist-button" class="btn-secondary">Add to Wishlist</button>
+                </form>
+            }
+
+            <form id="add-to-cart-form" asp-controller="Product" asp-action="AddToCart" method="post">
+                <input type="hidden" id="ProductId" name="ProductId" value="@Model.ProductDetail.Id"/>
+                <input type="hidden" id="Quantity" name="Quantity" value="1"/>
+                <button type="submit" id="add-to-cart-button" class="btn-primary">Add to Cart</button>
             </form>
         }
-        <form id="add-to-cart-form" asp-controller="Product" asp-action="AddToCart" method="post">
-            <input type="hidden" id="ProductId" name="ProductId" value="@Model.ProductDetail.Id"/>
-            <input type="hidden" id="Quantity" name="Quantity" value="1"/>
-            <button type="submit" id="add-to-cart-button" class="btn-primary">Add to Cart</button>
-        </form>
         @if (ViewData[Constants.Keys.ErrorMessage] != null)
         {
             <div id="error-message" style="color: red;">@ViewData[Constants.Keys.ErrorMessage]</div>

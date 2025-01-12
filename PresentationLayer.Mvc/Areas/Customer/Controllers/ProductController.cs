@@ -32,7 +32,11 @@ public class ProductController(
 
         if (product is null) return NotFound();
 
-        var isInWishlist = await wishListItemService.IsProductInWishListAsync(id, userId);
+        bool isInWishlist = false;
+        if (User.Identity is { IsAuthenticated: true })
+        {
+            isInWishlist = await wishListItemService.IsProductInWishListAsync(id, userId);
+        }
 
         return View(new ProductDetailViewModel
         {
