@@ -32,10 +32,7 @@ public class OrderController(IOrderService orderService) : Controller
     [HttpPost]
     public async Task<IActionResult> Edit(OrderDetailDto viewModel)
     {
-        if (!ModelState.IsValid)
-        {
-            return View(viewModel);
-        }
+        if (!ModelState.IsValid) return View(viewModel);
 
         var updatedOrder = await orderService.UpdateOrderAsync(viewModel);
         if (updatedOrder == null)

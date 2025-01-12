@@ -25,10 +25,7 @@ public static class MvcInstaller
             .AddEntityFrameworkStores<JuiceWorldDbContext>()
             .AddDefaultTokenProviders();
 
-        services.ConfigureApplicationCookie(options =>
-        {
-            options.LoginPath = "/Account/Login";
-        });
+        services.ConfigureApplicationCookie(options => { options.LoginPath = "/Account/Login"; });
 
         // Configure Logging
         var connectionString = Environment.GetEnvironmentVariable(EnvironmentConstants.LoggingDbConnectionString);

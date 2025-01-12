@@ -40,12 +40,10 @@ public class UserController(IUserService userService, IMapper mapper) : Controll
     [HttpPost]
     public async Task<IActionResult> Create(UserRegisterDto viewModel)
     {
-        if (!ModelState.IsValid)
-        {
-            return View(viewModel);
-        }
+        if (!ModelState.IsValid) return View(viewModel);
 
-        var createdUser = await userService.RegisterUserAsync(mapper.Map<UserRegisterDto, UserRegisterDto>(viewModel), viewModel.UserRole);
+        var createdUser = await userService.RegisterUserAsync(mapper.Map<UserRegisterDto, UserRegisterDto>(viewModel),
+            viewModel.UserRole);
         if (createdUser == null)
         {
             ModelState.AddModelError("Email", "A user with this username or email already exists.");
@@ -71,15 +69,10 @@ public class UserController(IUserService userService, IMapper mapper) : Controll
     [HttpPost]
     public async Task<IActionResult> Edit(UserUpdateDto viewModel)
     {
-        if (!ModelState.IsValid)
-        {
-            return View(viewModel);
-        }
+        if (!ModelState.IsValid) return View(viewModel);
 
         if (string.IsNullOrEmpty(viewModel.Password))
-        {
             viewModel.Password = null; // Do not update password if it is empty
-        }
 
         var updatedUser = await userService.UpdateUserAsync(viewModel);
         if (updatedUser == null)
@@ -95,13 +88,8 @@ public class UserController(IUserService userService, IMapper mapper) : Controll
     public async Task<IActionResult> Delete(int id)
     {
         var deleted = await userService.DeleteUserByIdAsync(id);
-        if (!deleted)
-        {
-            return BadRequest();
-        }
+        if (!deleted) return BadRequest();
 
         return RedirectToAction(nameof(Index));
     }
 }
-
-

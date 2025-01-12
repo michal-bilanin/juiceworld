@@ -20,21 +20,21 @@
     {
         <table class="table table-striped">
             <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Code</th>
-                    <th>Redeemed At</th>
-                </tr>
+            <tr>
+                <th>ID</th>
+                <th>Code</th>
+                <th>Redeemed At</th>
+            </tr>
             </thead>
             <tbody>
-                @foreach (var coupon in Model.CouponCodes)
-                {
+            @foreach (var coupon in Model.CouponCodes)
+            {
                 <tr class="@(coupon.RedeemedAt.HasValue ? "table-light" : "table-secondary")">
-                        <td>@coupon.Id</td>
-                        <td>@coupon.Code</td>
-                        <td>@(coupon.RedeemedAt?.ToString("yyyy-MM-dd HH:mm") ?? "Not Redeemed")</td>
-                    </tr>
-                }
+                    <td>@coupon.Id</td>
+                    <td>@coupon.Code</td>
+                    <td>@(coupon.RedeemedAt?.ToString("yyyy-MM-dd HH:mm") ?? "Not Redeemed")</td>
+                </tr>
+            }
             </tbody>
         </table>
     }

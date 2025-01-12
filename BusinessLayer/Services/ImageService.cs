@@ -20,12 +20,9 @@ public class ImageService(ILogger<ImageService> logger) : IImageService
     public string GetImageExtension(string base64Image)
     {
         foreach (var mimeType in MimeTypes)
-        {
             if (base64Image.StartsWith(mimeType.Key))
-            {
                 return mimeType.Value;
-            }
-        }
+
         return string.Empty;
     }
 
@@ -44,16 +41,14 @@ public class ImageService(ILogger<ImageService> logger) : IImageService
             logger.LogError($"ERROR - unable to write to file {filePath} \n ERROR-MESSAGE: {e.Message}");
             return false;
         }
+
         return true;
     }
 
     public async Task<string?> GetImageAsync(string imagePath)
     {
         var filePath = Path.Combine(ImgFolderPath, imagePath);
-        if (!File.Exists(filePath))
-        {
-            return null;
-        }
+        if (!File.Exists(filePath)) return null;
         return Convert.ToBase64String(await File.ReadAllBytesAsync(filePath));
     }
 
@@ -68,6 +63,7 @@ public class ImageService(ILogger<ImageService> logger) : IImageService
             logger.LogError($"ERROR - unable to delete file {imageName} \n ERROR-MESSAGE: {e.Message}");
             return false;
         }
+
         return true;
     }
 

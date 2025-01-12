@@ -25,10 +25,7 @@ public class ManufacturerController(IManufacturerService manufacturerService) : 
     [HttpPost]
     public async Task<IActionResult> Create(ManufacturerDto viewModel)
     {
-        if (!ModelState.IsValid)
-        {
-            return View(viewModel);
-        }
+        if (!ModelState.IsValid) return View(viewModel);
 
         var createdManufacturer = await manufacturerService.CreateManufacturerAsync(viewModel);
         if (createdManufacturer == null)
@@ -56,10 +53,7 @@ public class ManufacturerController(IManufacturerService manufacturerService) : 
     [HttpPost]
     public async Task<IActionResult> Edit(ManufacturerDto viewModel)
     {
-        if (!ModelState.IsValid)
-        {
-            return View(viewModel);
-        }
+        if (!ModelState.IsValid) return View(viewModel);
 
         var updatedManufacturer = await manufacturerService.UpdateManufacturerAsync(viewModel);
         if (updatedManufacturer == null)

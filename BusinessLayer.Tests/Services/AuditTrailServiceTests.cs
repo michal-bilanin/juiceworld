@@ -16,9 +16,9 @@ namespace BusinessLayer.Tests.Services;
 
 public class AuditTrailServiceTests
 {
-    private IAuditTrailService _auditTrailService;
-    private IRepository<Product> _productRepository;
-    private IMapper _mapper;
+    private readonly IAuditTrailService _auditTrailService;
+    private readonly IMapper _mapper;
+    private readonly IRepository<Product> _productRepository;
 
     public AuditTrailServiceTests()
     {
@@ -28,7 +28,8 @@ public class AuditTrailServiceTests
         _productRepository = new Repository<Product>(dbContext);
         var config = new MapperConfiguration(cfg => cfg.AddProfile<MapperProfileInstaller>());
         _mapper = config.CreateMapper();
-        _auditTrailService = new AuditTrailService(auditTrailRepository, new QueryObject<AuditTrail>(dbContext), _mapper);
+        _auditTrailService =
+            new AuditTrailService(auditTrailRepository, new QueryObject<AuditTrail>(dbContext), _mapper);
     }
 
     [Fact]
@@ -50,7 +51,7 @@ public class AuditTrailServiceTests
         // Act
         var result = await _productRepository.CreateAsync(product, userId);
 
-        var filter = new AuditTrailFilterDto()
+        var filter = new AuditTrailFilterDto
         {
             EntityName = nameof(Product)
         };

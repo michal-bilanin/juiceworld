@@ -9,7 +9,8 @@ namespace PresentationLayer.Mvc.Areas.Customer.Controllers;
 
 [Area(Constants.Areas.Customer)]
 [RedirectIfNotAuthenticatedActionFilter]
-public class OrderController(IOrderService orderService,
+public class OrderController(
+    IOrderService orderService,
     ICartItemService cartItemService,
     IOrderCouponFacade orderCouponFacade) : Controller
 {
@@ -28,10 +29,7 @@ public class OrderController(IOrderService orderService,
         int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId);
 
         var order = await orderService.GetOrderDetailByIdAsync(id);
-        if (order is null || order.UserId != userId)
-        {
-            return Unauthorized();
-        }
+        if (order is null || order.UserId != userId) return Unauthorized();
 
         return View(order);
     }
@@ -59,10 +57,7 @@ public class OrderController(IOrderService orderService,
             return View(orderDto);
         }
 
-        if (orderDto.UserId != userId)
-        {
-            return BadRequest();
-        }
+        if (orderDto.UserId != userId) return BadRequest();
 
         var order = await orderCouponFacade.CreateOrderWithCouponAsync(userId, orderDto);
         if (order is null)

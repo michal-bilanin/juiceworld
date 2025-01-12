@@ -14,7 +14,7 @@ namespace BusinessLayer.Tests.Services;
 
 public class ReviewServiceTests
 {
-    private IReviewService _reviewService;
+    private readonly IReviewService _reviewService;
 
     public ReviewServiceTests()
     {

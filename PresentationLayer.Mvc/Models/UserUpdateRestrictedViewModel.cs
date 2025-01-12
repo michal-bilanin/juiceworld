@@ -10,7 +10,8 @@ public class UserUpdateRestrictedViewModel
     [DataType(DataType.Password)]
     [Display(Name = "Password")]
     [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\p{L}\p{N}\p{P}\p{S}])[^\s]{8,}$",
-        ErrorMessage = "Passwords must have at least one uppercase letter, one lowercase letter, one number, and one special character.")]
+        ErrorMessage =
+            "Passwords must have at least one uppercase letter, one lowercase letter, one number, and one special character.")]
     public string? Password { get; set; }
 
     [DataType(DataType.Password)]

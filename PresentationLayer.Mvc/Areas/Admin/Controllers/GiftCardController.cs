@@ -32,10 +32,7 @@ public class GiftCardController(IGiftCardService giftCardService) : Controller
     [HttpPost]
     public async Task<IActionResult> Create(GiftCardCreateDto viewModel)
     {
-        if (!ModelState.IsValid)
-        {
-            return View(viewModel);
-        }
+        if (!ModelState.IsValid) return View(viewModel);
 
         var createdManufacturer = await giftCardService.CreateGiftCardAsync(viewModel);
         if (createdManufacturer == null)
@@ -63,10 +60,7 @@ public class GiftCardController(IGiftCardService giftCardService) : Controller
     [HttpPost]
     public async Task<IActionResult> Edit(GiftCardEditDto viewModel)
     {
-        if (!ModelState.IsValid)
-        {
-            return View(viewModel);
-        }
+        if (!ModelState.IsValid) return View(viewModel);
 
         var updatedManufacturer = await giftCardService.UpdateGiftCardAsync(viewModel);
         if (updatedManufacturer == null)

@@ -2,9 +2,9 @@ services:
   juiceworld-dev:
     build:
       context: .
-      dockerfile: WebApi/Dockerfile
+      dockerfile: Dockerfile-dev
     image: ${IMAGE_REPOSITORY:-juiceworld}/api:${IMAGE_TAG_EXTENDED:-latest}
-    container_name: juiceworld-api
+    container_name: juiceworld-dev
     restart: always
     stdin_open: true
     tty: true
@@ -18,6 +18,23 @@ services:
       - mongodb
     volumes:
       - ${PWD}:/home/juiceworld
+
+  juiceworld-mvc-deploy:
+    build:
+      context: .
+      dockerfile: PresentationLayer.Mvc/Dockerfile-deploy
+    image: ${IMAGE_REPOSITORY:-juiceworld}/mvc:${IMAGE_TAG_EXTENDED:-latest}
+    container_name: juiceworld-mvc-deploy
+    restart: always
+    ports:
+      - ${MVC_PORT:-7137}:${MVC_PORT:-7137}
+    environment:
+      - MVC_PORT=${MVC_PORT:-7137}
+      - DB_CONNECTION_STRING=${DB_CONNECTION_STRING}
+      - JWT_SECRET=${JWT_SECRET}
+    depends_on:
+      - postgres
+      - mongodb
 
   postgres:
     image: postgres:alpine3.19
@@ -39,3 +56,16 @@ services:
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+
+  reverse-proxy:
+    build:
+      context: .
+      dockerfile: reverse-proxy/Dockerfile
+    container_name: juiceworld-reverse-proxy
+    image: ${IMAGE_REPOSITORY:-juiceworld}/reverse-proxy:${REVERSE_PROXY_IMAGE_VERSION_TAG:-latest}
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - juiceworld-mvc-deploy

@@ -16,13 +16,9 @@ public class Repository<TEntity>(JuiceWorldDbContext context) : IRepository<TEnt
         var result = await _dbSet.AddAsync(entity);
 
         if (userId is null)
-        {
             await context.SaveChangesAsync();
-        }
         else
-        {
             await context.SaveChangesAsync((int)userId);
-        }
 
         return result.Entity;
     }
@@ -32,13 +28,9 @@ public class Repository<TEntity>(JuiceWorldDbContext context) : IRepository<TEnt
         await _dbSet.AddRangeAsync(entities);
 
         if (userId is null)
-        {
             await context.SaveChangesAsync();
-        }
         else
-        {
             await context.SaveChangesAsync((int)userId);
-        }
 
         return true;
     }
@@ -55,7 +47,8 @@ public class Repository<TEntity>(JuiceWorldDbContext context) : IRepository<TEnt
         return await query.ToListAsync();
     }
 
-    public async Task<IEnumerable<TEntity>> GetByConditionAsync(Expression<Func<TEntity, bool>> predicate, params string[] includes)
+    public async Task<IEnumerable<TEntity>> GetByConditionAsync(Expression<Func<TEntity, bool>> predicate,
+        params string[] includes)
     {
         var query = includes.Aggregate(_dbSet.AsQueryable(), (current, include) => current.Include(include));
         return await query.Where(predicate).ToListAsync();
@@ -69,21 +62,14 @@ public class Repository<TEntity>(JuiceWorldDbContext context) : IRepository<TEnt
     public async Task<TEntity?> UpdateAsync(TEntity entity, object? userId = null)
     {
         var existingEntity = await _dbSet.FindAsync(entity.Id);
-        if (existingEntity != null)
-        {
-            context.Entry(existingEntity).State = EntityState.Detached;
-        }
+        if (existingEntity != null) context.Entry(existingEntity).State = EntityState.Detached;
 
         var result = _dbSet.Update(entity);
 
         if (userId is null)
-        {
             await context.SaveChangesAsync();
-        }
         else
-        {
             await context.SaveChangesAsync((int)userId);
-        }
 
         return result.Entity;
     }
@@ -91,21 +77,14 @@ public class Repository<TEntity>(JuiceWorldDbContext context) : IRepository<TEnt
     public async Task<bool> DeleteAsync(object id, object? userId = null)
     {
         var entity = await _dbSet.FindAsync(id);
-        if (entity is null)
-        {
-            return false;
-        }
+        if (entity is null) return false;
 
         _dbSet.Remove(entity);
 
         if (userId is null)
-        {
             await context.SaveChangesAsync();
-        }
         else
-        {
             await context.SaveChangesAsync((int)userId);
-        }
 
         return true;
     }
@@ -116,13 +95,9 @@ public class Repository<TEntity>(JuiceWorldDbContext context) : IRepository<TEnt
         _dbSet.RemoveRange(entities);
 
         if (userId is null)
-        {
             await context.SaveChangesAsync();
-        }
         else
-        {
             await context.SaveChangesAsync((int)userId);
-        }
 
         return entities.Count;
     }

@@ -83,7 +83,7 @@ public class ProductController(IProductFacade productFacade,
         {
             Product = mapper.Map<ProductImageDto>(product),
             AllManufacturers = manufacturers,
-            AllTags = tags,
+            AllTags = tags
         };
 
         return View(viewModel);

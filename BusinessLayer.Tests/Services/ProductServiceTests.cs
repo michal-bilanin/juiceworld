@@ -18,7 +18,7 @@ namespace BusinessLayer.Tests.Services;
 
 public class ProductServiceTests
 {
-    private IProductService _productService;
+    private readonly IProductService _productService;
 
     public ProductServiceTests()
     {
@@ -30,7 +30,8 @@ public class ProductServiceTests
         var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
         var cache = new MemoryCache(new MemoryCacheOptions());
         var unitOfwork = new ProductUnitOfWork(dbContext);
-        _productService = new ProductService(productRepository, mapper, cache, new QueryObject<Product>(dbContext), unitOfwork);
+        _productService = new ProductService(productRepository, mapper, cache, new QueryObject<Product>(dbContext),
+            unitOfwork);
     }
 
     [Fact]

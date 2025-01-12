@@ -18,7 +18,8 @@
     @if (!Model.Any())
     {
         <div class="alert alert-info">
-            Your cart is empty. <a href="@Url.Action("Index", "Product", new { area = Constants.Areas.Customer })">Browse products</a>
+            Your cart is empty. <a href="@Url.Action("Index", "Product", new { area = Constants.Areas.Customer })">Browse
+                products</a>
         </div>
     }
     else
@@ -41,17 +42,17 @@
                     </td>
                     <td>
                         <form asp-controller="Cart" asp-action="AddToCart" method="POST" style="display:inline;">
-                            <input type="hidden" name="ProductId" value="@cartItem.Product.Id" />
-                            <input type="hidden" name="Quantity" value="@(cartItem.Quantity - 1)" />
+                            <input type="hidden" name="ProductId" value="@cartItem.Product.Id"/>
+                            <input type="hidden" name="Quantity" value="@(cartItem.Quantity - 1)"/>
                             <button type="submit" class="btn btn-primary btn-sm">-</button>
                         </form>
                         <form asp-controller="Cart" asp-action="AddToCart" method="POST" style="display:inline;">
-                            <input type="hidden" name="ProductId" value="@cartItem.Product.Id" />
-                            <input type="hidden" name="Quantity" value="@(cartItem.Quantity + 1)" />
+                            <input type="hidden" name="ProductId" value="@cartItem.Product.Id"/>
+                            <input type="hidden" name="Quantity" value="@(cartItem.Quantity + 1)"/>
                             <button type="submit" class="btn btn-primary btn-sm">+</button>
                         </form>
                         <form asp-controller="Cart" asp-action="DeleteCartItem" method="POST" style="display:inline;">
-                            <input type="hidden" name="id" value="@cartItem.Id" />
+                            <input type="hidden" name="id" value="@cartItem.Id"/>
                             <button type="submit" class="btn btn-danger btn-sm">Remove</button>
                         </form>
                     </td>

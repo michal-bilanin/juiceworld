@@ -11,7 +11,8 @@ using PresentationLayer.Mvc.Models;
 namespace PresentationLayer.Mvc.Areas.Customer.Controllers;
 
 [Area(Constants.Areas.Customer)]
-public class UserController(IUserService userService,
+public class UserController(
+    IUserService userService,
     IMapper mapper,
     SignInManager<User> signInManager) : Controller
 {
@@ -27,10 +28,7 @@ public class UserController(IUserService userService,
     [ValidateAntiForgeryToken]
     public async Task<ActionResult> Register(UserRegisterDto model)
     {
-        if (!ModelState.IsValid)
-        {
-            return View(model);
-        }
+        if (!ModelState.IsValid) return View(model);
 
         var result = await userService.RegisterUserAsync(new UserRegisterDto
         {
@@ -62,13 +60,11 @@ public class UserController(IUserService userService,
             return RedirectToAction(nameof(Index), "Home");
         }
 
-        foreach (var error in result.Errors)
-        {
-            ModelState.AddModelError(string.Empty, error.Description);
-        }
+        foreach (var error in result.Errors) ModelState.AddModelError(string.Empty, error.Description);
 
         return RedirectToAction("Index", "Home");
     }
+
     //GET: /User/Login
     [HttpGet]
     public ActionResult Login()
@@ -85,6 +81,7 @@ public class UserController(IUserService userService,
             ModelState.AddModelError("InvalidCredentials", "Invalid username or password.");
             return View(model);
         }
+
         var user = await signInManager.UserManager.FindByEmailAsync(model.Email);
         if (user == null)
         {
@@ -92,7 +89,7 @@ public class UserController(IUserService userService,
             return View(model);
         }
 
-        var result = await signInManager.CheckPasswordSignInAsync(user, model.Password, lockoutOnFailure: false);
+        var result = await signInManager.CheckPasswordSignInAsync(user, model.Password, false);
         if (result.Succeeded)
         {
             var ci = new[]
@@ -126,10 +123,7 @@ public class UserController(IUserService userService,
     public async Task<ActionResult> Profile()
     {
         var user = await userService.GetUserByEmailAsync(User.FindFirst(ClaimTypes.Email)?.Value ?? "");
-        if (user is null)
-        {
-            return NotFound();
-        }
+        if (user is null) return NotFound();
 
         return View(mapper.Map<UserDto, UserProfileViewModel>(user));
     }
@@ -138,16 +132,10 @@ public class UserController(IUserService userService,
     [RedirectIfNotAuthenticatedActionFilter]
     public async Task<IActionResult> Edit()
     {
-        if (!int.TryParse(User.FindFirst(ClaimTypes.Sid)?.Value, out var userId))
-        {
-            return BadRequest();
-        }
+        if (!int.TryParse(User.FindFirst(ClaimTypes.Sid)?.Value, out var userId)) return BadRequest();
 
         var user = await userService.GetUserByIdAsync(userId);
-        if (user == null)
-        {
-            return BadRequest();
-        }
+        if (user == null) return BadRequest();
 
         return View(mapper.Map<UserDto, UserUpdateRestrictedViewModel>(user));
     }
@@ -156,27 +144,17 @@ public class UserController(IUserService userService,
     [RedirectIfNotAuthenticatedActionFilter]
     public async Task<IActionResult> Edit(UserUpdateRestrictedViewModel viewModel)
     {
-        if (!ModelState.IsValid)
-        {
-            return View(viewModel);
-        }
+        if (!ModelState.IsValid) return View(viewModel);
 
-        if (!int.TryParse(User.FindFirst(ClaimTypes.Sid)?.Value, out var userId))
-        {
-            return BadRequest();
-        }
+        if (!int.TryParse(User.FindFirst(ClaimTypes.Sid)?.Value, out var userId)) return BadRequest();
 
-        if (viewModel.Id != userId)
-        {
-            return BadRequest();
-        }
+        if (viewModel.Id != userId) return BadRequest();
 
         if (string.IsNullOrEmpty(viewModel.Password))
-        {
             viewModel.Password = null; // Do not update password if it is empty
-        }
 
-        var updatedUser = await userService.UpdateUserAsync(mapper.Map<UserUpdateRestrictedViewModel, UserUpdateDto>(viewModel));
+        var updatedUser =
+            await userService.UpdateUserAsync(mapper.Map<UserUpdateRestrictedViewModel, UserUpdateDto>(viewModel));
         if (updatedUser == null)
         {
             ModelState.AddModelError("Email", "A user with this username or email already exists.");

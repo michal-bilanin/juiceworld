@@ -13,7 +13,7 @@ namespace BusinessLayer.Tests.Services;
 
 public class WishListItemServiceTests
 {
-    private IWishListItemService _wishListItemService;
+    private readonly IWishListItemService _wishListItemService;
 
     public WishListItemServiceTests()
     {
@@ -37,7 +37,8 @@ public class WishListItemServiceTests
         // Assert
         var wishListItemDtos = result.ToList();
         Assert.Equal(wishListItemIdsToRetrieve.Length, wishListItemDtos.Count);
-        Assert.All(wishListItemIdsToRetrieve, id => Assert.Contains(wishListItemDtos, wishListItem => wishListItem.Id == id));
+        Assert.All(wishListItemIdsToRetrieve,
+            id => Assert.Contains(wishListItemDtos, wishListItem => wishListItem.Id == id));
     }
 
     [Fact]

@@ -19,19 +19,11 @@ public class CartItemController(ICartItemService cartItemService) : ControllerBa
     [OpenApiOperation(ApiBaseName + nameof(CreateCartItem))]
     public async Task<ActionResult<CartItemDto>> CreateCartItem(CartItemDto cartItem)
     {
-        if (cartItem.Quantity < 1)
-        {
-            return BadRequest("Quantity must be greater than 0");
-        }
-        if (!Int32.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? "", out var userId))
-        {
-            return Unauthorized();
-        }
+        if (cartItem.Quantity < 1) return BadRequest("Quantity must be greater than 0");
+        if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? "", out var userId)) return Unauthorized();
         if (!User.IsInRole(UserRole.Admin.ToString()) &&
             cartItem.UserId != userId)
-        {
             return Unauthorized();
-        }
 
         var result = await cartItemService.CreateCartItemAsync(cartItem);
         return result == null ? Problem() : Ok(result);
@@ -50,10 +42,7 @@ public class CartItemController(ICartItemService cartItemService) : ControllerBa
     [OpenApiOperation(ApiBaseName + nameof(GetCartItem))]
     public async Task<ActionResult<CartItemDto>> GetCartItem(int cartItemId)
     {
-        if (await IsAuthorized(cartItemId) != Ok())
-        {
-            return Unauthorized();
-        }
+        if (await IsAuthorized(cartItemId) != Ok()) return Unauthorized();
 
         var result = await cartItemService.GetCartItemByIdAsync(cartItemId);
         return result == null ? NotFound() : Ok(result);
@@ -63,20 +52,12 @@ public class CartItemController(ICartItemService cartItemService) : ControllerBa
     [OpenApiOperation(ApiBaseName + nameof(UpdateCartItem))]
     public async Task<ActionResult<CartItemDto>> UpdateCartItem(CartItemDto cartItem)
     {
-        if (cartItem.Quantity < 1)
-        {
-            return BadRequest("Quantity must be greater than 0");
-        }
-        if (!Int32.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? "", out var userId))
-        {
-            return Unauthorized();
-        }
+        if (cartItem.Quantity < 1) return BadRequest("Quantity must be greater than 0");
+        if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? "", out var userId)) return Unauthorized();
 
         if (!User.IsInRole(UserRole.Admin.ToString()) &&
             cartItem.UserId != userId)
-        {
             return Unauthorized();
-        }
 
         var result = await cartItemService.UpdateCartItemAsync(cartItem);
         return result == null ? NotFound() : Ok(result);
@@ -86,10 +67,7 @@ public class CartItemController(ICartItemService cartItemService) : ControllerBa
     [OpenApiOperation(ApiBaseName + nameof(DeleteCartItem))]
     public async Task<ActionResult<bool>> DeleteCartItem(int cartItemId)
     {
-        if (await IsAuthorized(cartItemId) != Ok())
-        {
-            return Unauthorized();
-        }
+        if (await IsAuthorized(cartItemId) != Ok()) return Unauthorized();
         var result = await cartItemService.DeleteCartItemByIdAsync(cartItemId);
         return result ? Ok() : NotFound();
     }
@@ -97,21 +75,13 @@ public class CartItemController(ICartItemService cartItemService) : ControllerBa
     private async Task<IActionResult> IsAuthorized(int cartItemId)
     {
         var cartItem = await cartItemService.GetCartItemByIdAsync(cartItemId);
-        if (cartItem == null)
-        {
-            return NotFound();
-        }
+        if (cartItem == null) return NotFound();
 
-        if (!Int32.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? "", out var userId))
-        {
-            return Unauthorized();
-        }
+        if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? "", out var userId)) return Unauthorized();
 
         if (!User.IsInRole(UserRole.Admin.ToString()) &&
             cartItem.UserId != userId)
-        {
             return Unauthorized();
-        }
 
         return Ok();
     }

@@ -6,7 +6,6 @@ using BusinessLayer.Services.Interfaces;
 using JuiceWorld.Entities;
 using JuiceWorld.Repositories;
 using JuiceWorld.UnitOfWork;
-using Microsoft.Extensions.Caching.Memory;
 using TestUtilities.MockedObjects;
 using Xunit;
 using Assert = Xunit.Assert;
@@ -15,7 +14,7 @@ namespace BusinessLayer.Tests.Services;
 
 public class CartItemServiceTests
 {
-    private ICartItemService _cartItemService;
+    private readonly ICartItemService _cartItemService;
 
     public CartItemServiceTests()
     {
@@ -25,8 +24,7 @@ public class CartItemServiceTests
         var config = new MapperConfiguration(cfg => cfg.AddProfile<MapperProfileInstaller>());
         var mapper = config.CreateMapper();
         var orderUnitOfWork = new OrderUnitOfWork(dbContext);
-        var memorycache = new MemoryCache(new MemoryCacheOptions());
-        _cartItemService = new CartItemService(crtItemRepository, orderUnitOfWork, memorycache, mapper);
+        _cartItemService = new CartItemService(crtItemRepository, orderUnitOfWork, mapper);
     }
 
     [Fact]

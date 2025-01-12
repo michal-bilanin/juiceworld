@@ -15,7 +15,7 @@ namespace BusinessLayer.Tests.Services;
 
 public class TagServiceTests
 {
-    private ITagService _tagService;
+    private readonly ITagService _tagService;
 
     public TagServiceTests()
     {

@@ -12,7 +12,8 @@ public static class AuthUtils
 
     public static string HashPassword(string password, string salt, int rounds)
     {
-        using var rfc2898DeriveBytes = new Rfc2898DeriveBytes(password, Encoding.UTF8.GetBytes(salt), rounds, HashAlgorithmName.SHA256);
+        using var rfc2898DeriveBytes =
+            new Rfc2898DeriveBytes(password, Encoding.UTF8.GetBytes(salt), rounds, HashAlgorithmName.SHA256);
         return Convert.ToBase64String(rfc2898DeriveBytes.GetBytes(32));
     }
 }

@@ -15,7 +15,7 @@ namespace BusinessLayer.Tests.Services;
 
 public class ManufacturerServiceTests
 {
-    private IManufacturerService _manufacturerService;
+    private readonly IManufacturerService _manufacturerService;
 
     public ManufacturerServiceTests()
     {
@@ -41,7 +41,8 @@ public class ManufacturerServiceTests
         // Assert
         var manufacturerDtos = result.ToList();
         Assert.Equal(manufacturerIdsToRetrieve.Length, manufacturerDtos.Count);
-        Assert.All(manufacturerIdsToRetrieve, id => Assert.Contains(manufacturerDtos, manufacturer => manufacturer.Id == id));
+        Assert.All(manufacturerIdsToRetrieve,
+            id => Assert.Contains(manufacturerDtos, manufacturer => manufacturer.Id == id));
     }
 
     [Fact]

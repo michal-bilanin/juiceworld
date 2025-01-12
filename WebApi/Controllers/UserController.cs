@@ -36,15 +36,10 @@ public class UserController(IUserService userService) : ControllerBase
     [OpenApiOperation(ApiBaseName + nameof(GetUser))]
     public async Task<ActionResult<UserDto>> GetUser(int userId)
     {
-        if (!Int32.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? "", out var userIdParsed))
-        {
-            return Unauthorized();
-        }
+        if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? "", out var userIdParsed)) return Unauthorized();
         if (!User.IsInRole(UserRole.Admin.ToString()) &&
             userIdParsed != userId)
-        {
             return Unauthorized();
-        }
         var result = await userService.GetUserByIdAsync(userId);
         return result == null ? NotFound() : Ok(result);
     }
@@ -65,15 +60,9 @@ public class UserController(IUserService userService) : ControllerBase
         if (result == null)
             return NotFound();
 
-        if (User.IsInRole(UserRole.Admin.ToString()))
-        {
-            return Ok(result);
-        }
+        if (User.IsInRole(UserRole.Admin.ToString())) return Ok(result);
 
-        if (!Int32.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? "", out var userId))
-        {
-            return Unauthorized();
-        }
+        if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? "", out var userId)) return Unauthorized();
         return user.Id != userId ? NotFound() : Ok(result);
     }
 

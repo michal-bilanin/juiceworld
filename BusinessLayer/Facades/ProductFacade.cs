@@ -77,4 +77,9 @@ public class ProductFacade(IProductService productService, IImageService imageSe
         }
         return product.Image == null || imageService.DeleteImageAsync(product.Image);
     }
+
+    private string GeneratedImageName(ProductImageDto productImageDto)
+    {
+        return $"{Guid.NewGuid()}{_imageService.GetImageExtension(productImageDto.ImageValue)}";
+    }
 }
