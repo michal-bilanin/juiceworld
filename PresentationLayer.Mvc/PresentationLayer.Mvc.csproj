@@ -33,4 +33,11 @@
       <AdditionalFiles Include="Areas\Customer\Views\_ViewStart.cshtml" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Content Update="Images\product_placeholder.jpg">
+        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </Content>
+    </ItemGroup>
+
 </Project>

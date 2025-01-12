@@ -1,3 +1,4 @@
+@using BusinessLayer.Services
 @using Commons.Enums
 @using PresentationLayer.Mvc
 @model PresentationLayer.Mvc.Models.SearchablesFilterResultViewModel
@@ -63,7 +64,7 @@
             <div class="product-card">
                 <a href="@Url.Action("Details", new { id = product.Id })">
                     <div class="product-image">
-                        <img src="@(string.IsNullOrEmpty(product.Image) ? "/images/product_placeholder.jpg" : $"data:image/png;base64,{product.Image}")" alt="@product.Name" />
+                        <img src="@(string.IsNullOrEmpty(product.Image) ? "/images/product_placeholder.jpg" : $"/../{ImageService.ImgFolderPath}/{product.Image}")" alt="@product.Image" />
                     </div>
                     <div class="product-info">
                         <h3>@product.Name</h3>

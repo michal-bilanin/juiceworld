@@ -1,4 +1,5 @@
 @using System.Security.Claims
+@using BusinessLayer.Services
 @using Commons.Enums
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @using PresentationLayer.Mvc
@@ -14,8 +15,7 @@
 
 <div class="product-detail">
     <div class="product-image">
-        <img src="@(string.IsNullOrEmpty(Model.Image) ? "/images/product_placeholder.jpg" : $"data:image/png;base64,{Model.Image}")" alt="@Model.Name" />
-    </div>
+        <img src="@(string.IsNullOrEmpty(Model.Image) ? "/images/product_placeholder.jpg" : $"/../{ImageService.ImgFolderPath}/{Model.Image}")" alt="@Model.Image" />    </div>
     <div class="product-info">
         <p><strong>Manufacturer:</strong> @Model.Manufacturer.Name</p>
         <p><strong>Price:</strong> @Model.Price.ToString("C")</p>

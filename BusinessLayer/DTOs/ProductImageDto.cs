@@ -2,5 +2,5 @@
 
 public class ProductImageDto : ProductDto
 {
-    public required string ImageValue { get; set; }
+    public string? ImageValue { get; set; }
 }

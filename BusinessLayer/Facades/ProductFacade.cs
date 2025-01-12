@@ -6,71 +6,75 @@ using Infrastructure.QueryObjects;
 
 namespace BusinessLayer.Facades;
 
-public class ProductFacade(IProductService _productService, IImageService _imageService, IMapper _mapper) : IProductFacade
+public class ProductFacade(IProductService productService, IImageService imageService, IMapper mapper) : IProductFacade
 {
-    private string GeneratedImageName(ProductImageDto productImageDto)
+    private string GeneratedImageName(string image)
     {
-        return $"{Guid.NewGuid()}{_imageService.GetImageExtension(productImageDto.ImageValue)}";
+        return $"{Guid.NewGuid()}{imageService.GetImageExtension(image)}";
     }
 
     public async Task<ProductDto?> CreateProductAsync(ProductImageDto productImageDto)
     {
-        if (!string.IsNullOrEmpty(productImageDto.Image))
+        if (!string.IsNullOrEmpty(productImageDto.ImageValue))
         {
-            var imageName = GeneratedImageName(productImageDto);
-            if (!await _imageService.SaveImageAsync(productImageDto.ImageValue, imageName))
+            var imageName = GeneratedImageName(productImageDto.ImageValue);
+            if (!await imageService.SaveImageAsync(productImageDto.ImageValue, imageName))
             {
                 return null;
             }
             productImageDto.Image = imageName;
         }
-        return await _productService.CreateProductAsync(_mapper.Map<ProductDto>(productImageDto));
+        return await productService.CreateProductAsync(mapper.Map<ProductDto>(productImageDto));
     }
 
     public async Task<IEnumerable<ProductDto>> GetAllProductsAsync()
     {
-        return await _productService.GetAllProductsAsync();
+        return await productService.GetAllProductsAsync();
     }
 
     public async Task<FilteredResult<ProductDto>> GetProductsFilteredAsync(ProductFilterDto productFilter)
     {
-        return await _productService.GetProductsFilteredAsync(productFilter);
+        return await productService.GetProductsFilteredAsync(productFilter);
     }
 
     public async Task<ProductDto?> GetProductByIdAsync(int id)
     {
-        return await _productService.GetProductByIdAsync(id);
+        return await productService.GetProductByIdAsync(id);
     }
 
     public async Task<ProductDetailDto?> GetProductDetailByIdAsync(int id)
     {
-        var prod = await _productService.GetProductDetailByIdAsync(id);
-        var ret = _mapper.Map<ProductDetailDto>(prod);
-        ret.ImageValue = await _imageService.GetImageAsync(ret.Image ?? string.Empty);
+        var prod = await productService.GetProductDetailByIdAsync(id);
+        var ret = mapper.Map<ProductDetailDto>(prod);
+        ret.ImageValue = await imageService.GetImageAsync(ret.Image ?? string.Empty);
         return ret;
     }
 
     public async Task<ProductDto?> UpdateProductAsync(ProductImageDto productDto)
     {
-        if (!string.IsNullOrEmpty(productDto.Image))
+        var product = await productService.GetProductByIdAsync(productDto.Id);
+        if (product == null)
+            return null;
+
+        if (!string.IsNullOrEmpty(productDto.ImageValue))
         {
-            var imageName = GeneratedImageName(productDto);
-            if (!await _imageService.UpdateImageAsync(productDto.ImageValue, productDto.Image, imageName))
+            var imageName = GeneratedImageName(productDto.ImageValue);
+            if (!await imageService.UpdateImageAsync(productDto.ImageValue, product.Image, imageName))
             {
                 return null;
             }
             productDto.Image = imageName;
         }
-        return await _productService.UpdateProductAsync(_mapper.Map<ProductDto>(productDto));
+        return await productService.UpdateProductAsync(mapper.Map<ProductDto>(productDto));
     }
 
     public async Task<bool> DeleteProductByIdAsync(int id)
     {
-        var product = await _productService.GetProductByIdAsync(id);
+        var product = await productService.GetProductByIdAsync(id);
         if (product is null)
         {
             return false;
         }
-        return product.Image == null || _imageService.DeleteImageAsync(product.Image);
+        return product.Image == null || imageService.DeleteImageAsync(product.Image);
     }
 }

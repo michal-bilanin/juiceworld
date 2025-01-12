@@ -68,7 +68,7 @@ public class ProductService(
             Entities = mapper.Map<List<ProductDto>>(value!.Entities),
             PageIndex = value.PageIndex,
             TotalPages = value.TotalPages
-        }; ;
+        };
     }
 
     public async Task<FilteredResult<ProductDetailDto>> GetProductDetailsFilteredAsync(ProductFilterDto productFilter)

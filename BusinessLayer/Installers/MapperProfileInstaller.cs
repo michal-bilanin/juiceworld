@@ -36,5 +36,6 @@ public class MapperProfileInstaller : Profile
         CreateMap<CouponCodeDto, CouponCode>().ReverseMap();
         CreateMap<GiftCardEditDto, GiftCard>().ReverseMap();
         CreateMap<TagDto, Tag>().ReverseMap();
+        CreateMap<ProductDto, ProductImageDto>().ReverseMap();
     }
 }

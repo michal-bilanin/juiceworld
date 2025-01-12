@@ -4,8 +4,10 @@ namespace PresentationLayer.Mvc.Models
 {
     public class ProductEditViewModel
     {
-        public required ProductDto Product { get; set; }
+        public required ProductImageDto Product { get; set; }
         public IEnumerable<ManufacturerDto> AllManufacturers { get; set; } = [];
         public IEnumerable<TagDto> AllTags { get; set; } = [];
+
+        public IFormFile? ImageFile { get; set; }
     }
 }

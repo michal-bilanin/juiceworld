@@ -5,7 +5,7 @@ namespace BusinessLayer.Services;
 
 public class ImageService(ILogger<ImageService> logger) : IImageService
 {
-    private const string ImgFolderPath = "Images";
+    public const string ImgFolderPath = "Images";
 
     private static readonly Dictionary<string, string> MimeTypes = new()
     {
@@ -71,12 +71,15 @@ public class ImageService(ILogger<ImageService> logger) : IImageService
         return true;
     }
 
-    public async Task<bool> UpdateImageAsync(string base64Image, string imageName, string newImageName)
+    public async Task<bool> UpdateImageAsync(string base64Image, string? imageName, string newImageName)
     {
-        var oldImagePath = Path.Combine(ImgFolderPath, imageName);
-        if (File.Exists(oldImagePath))
+        if (imageName != null)
         {
-            File.Delete(oldImagePath);
+            var oldImagePath = Path.Combine(ImgFolderPath, imageName);
+            if (File.Exists(oldImagePath))
+            {
+                File.Delete(oldImagePath);
+            }
         }
         return await SaveImageAsync(base64Image, newImageName);
     }
