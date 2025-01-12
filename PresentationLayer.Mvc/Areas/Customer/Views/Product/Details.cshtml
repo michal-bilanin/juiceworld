@@ -15,7 +15,7 @@
 
 <div class="product-detail">
     <div class="product-image">
-        <img src="@(string.IsNullOrEmpty(Model.ProductDetail.Image) ? "/images/product_placeholder.jpg" : $"/../{ImageService.ImgFolderPath}/{Model.ProductDetail.Image}")" alt="@Model.ProductDetail.Image" />    </div>
+        <img src="@(string.IsNullOrEmpty(Model.ProductDetail.Image) ? "/images/product_placeholder.jpg" : $"/{ImageService.ImgFolderPath}/{Model.ProductDetail.Image}")" alt="@Model.ProductDetail.Image" />    </div>
     <div class="product-info">
         <p><strong>Manufacturer:</strong> @Model.ProductDetail.Manufacturer.Name</p>
         <p><strong>Price:</strong> @Model.ProductDetail.Price.ToString("C")</p>

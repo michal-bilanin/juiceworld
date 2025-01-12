@@ -7,6 +7,8 @@ public class ImageService(ILogger<ImageService> logger) : IImageService
 {
     public const string ImgFolderPath = "Images";
 
+    private string ImagePath(string imageName) => Path.Combine(BusinessConstants.WebRootPath, ImgFolderPath, imageName);
+
     private static readonly Dictionary<string, string> MimeTypes = new()
     {
         // enough to determine the image type
@@ -29,9 +31,9 @@ public class ImageService(ILogger<ImageService> logger) : IImageService
 
     public async Task<bool> SaveImageAsync(string base64Image, string imageName)
     {
-        Directory.CreateDirectory(ImgFolderPath);
+        Directory.CreateDirectory(Path.Combine(BusinessConstants.WebRootPath, ImgFolderPath));
         var imageBytes = Convert.FromBase64String(base64Image);
-        var filePath = Path.Combine(ImgFolderPath, imageName);
+        var filePath = ImagePath(imageName);
         try
         {
             await File.WriteAllBytesAsync(filePath, imageBytes);
@@ -47,7 +49,7 @@ public class ImageService(ILogger<ImageService> logger) : IImageService
 
     public async Task<string?> GetImageAsync(string imagePath)
     {
-        var filePath = Path.Combine(ImgFolderPath, imagePath);
+        var filePath = ImagePath(imagePath);
         if (!File.Exists(filePath)) return null;
         return Convert.ToBase64String(await File.ReadAllBytesAsync(filePath));
     }
@@ -56,7 +58,7 @@ public class ImageService(ILogger<ImageService> logger) : IImageService
     {
         try
         {
-            File.Delete(Path.Combine(ImgFolderPath, imageName));
+            File.Delete(ImagePath(imageName));
         }
         catch (Exception e)
         {
@@ -71,7 +73,7 @@ public class ImageService(ILogger<ImageService> logger) : IImageService
     {
         if (imageName != null)
         {
-            var oldImagePath = Path.Combine(ImgFolderPath, imageName);
+            var oldImagePath = ImagePath(imageName);
             if (File.Exists(oldImagePath))
             {
                 File.Delete(oldImagePath);
