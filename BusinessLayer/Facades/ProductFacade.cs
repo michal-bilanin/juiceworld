@@ -44,7 +44,7 @@ public class ProductFacade(IProductService _productService, IImageService _image
         return ret;
     }
 
-    public async Task<ProductDto?> UpdateProductAsync(ProductImageDto productDto)
+    public async Task<ProductDto?> UpdateProductAsync(ProductImageDto productDto, int userId)
     {
         if (!string.IsNullOrEmpty(productDto.Image))
         {
@@ -53,7 +53,7 @@ public class ProductFacade(IProductService _productService, IImageService _image
             productDto.Image = imageName;
         }
 
-        return await _productService.UpdateProductAsync(_mapper.Map<ProductDto>(productDto));
+        return await _productService.UpdateProductAsync(_mapper.Map<ProductDto>(productDto), userId);
     }
 
     public async Task<bool> DeleteProductByIdAsync(int id)

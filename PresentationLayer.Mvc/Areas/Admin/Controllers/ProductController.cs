@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using BusinessLayer.DTOs;
 using BusinessLayer.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -80,6 +81,11 @@ public class ProductController(
     [HttpPost]
     public async Task<IActionResult> Edit(ProductEditViewModel viewModel)
     {
+        if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? "", out var userId))
+        {
+            return Unauthorized();
+        }
+
         if (!ModelState.IsValid)
         {
             viewModel.AllManufacturers = await manufacturerService.GetAllManufacturersAsync();
@@ -87,7 +93,7 @@ public class ProductController(
             return View(viewModel);
         }
 
-        var updatedProduct = await productService.UpdateProductAsync(viewModel.Product);
+        var updatedProduct = await productService.UpdateProductAsync(viewModel.Product, userId);
         if (updatedProduct == null)
         {
             ModelState.AddModelError("Id", "Failed to update product.");

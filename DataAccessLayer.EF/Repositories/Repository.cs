@@ -11,26 +11,40 @@ public class Repository<TEntity>(JuiceWorldDbContext context) : IRepository<TEnt
 {
     private readonly DbSet<TEntity> _dbSet = context.Set<TEntity>();
 
-    public async Task<TEntity?> CreateAsync(TEntity entity, object? userId = null)
+    public async Task<TEntity?> CreateAsync(TEntity entity, object? userId = null, bool saveChanges = true)
     {
         var result = await _dbSet.AddAsync(entity);
 
-        if (userId is null)
-            await context.SaveChangesAsync();
-        else
-            await context.SaveChangesAsync((int)userId);
+        if (saveChanges)
+        {
+            if (userId is null)
+            {
+                await context.SaveChangesAsync();
+            }
+            else
+            {
+                await context.SaveChangesAsync((int)userId);
+            }
+        }
 
         return result.Entity;
     }
 
-    public async Task<bool> CreateRangeAsync(IEnumerable<TEntity> entities, object? userId = null)
+    public async Task<bool> CreateRangeAsync(IEnumerable<TEntity> entities, object? userId = null, bool saveChanges = true)
     {
         await _dbSet.AddRangeAsync(entities);
 
-        if (userId is null)
-            await context.SaveChangesAsync();
-        else
-            await context.SaveChangesAsync((int)userId);
+        if (saveChanges)
+        {
+            if (userId is null)
+            {
+                await context.SaveChangesAsync();
+            }
+            else
+            {
+                await context.SaveChangesAsync((int)userId);
+            }
+        }
 
         return true;
     }
@@ -59,45 +73,66 @@ public class Repository<TEntity>(JuiceWorldDbContext context) : IRepository<TEnt
         return await _dbSet.Where(e => ids.Contains(e.Id)).ToListAsync();
     }
 
-    public async Task<TEntity?> UpdateAsync(TEntity entity, object? userId = null)
+    public async Task<TEntity?> UpdateAsync(TEntity entity, object? userId = null, bool saveChanges = true)
     {
         var existingEntity = await _dbSet.FindAsync(entity.Id);
         if (existingEntity != null) context.Entry(existingEntity).State = EntityState.Detached;
 
         var result = _dbSet.Update(entity);
 
-        if (userId is null)
-            await context.SaveChangesAsync();
-        else
-            await context.SaveChangesAsync((int)userId);
+        if (saveChanges)
+        {
+            if (userId is null)
+            {
+                await context.SaveChangesAsync();
+            }
+            else
+            {
+                await context.SaveChangesAsync((int)userId);
+            }
+        }
 
         return result.Entity;
     }
 
-    public async Task<bool> DeleteAsync(object id, object? userId = null)
+    public async Task<bool> DeleteAsync(object id, object? userId = null, bool saveChanges = true)
     {
         var entity = await _dbSet.FindAsync(id);
         if (entity is null) return false;
 
         _dbSet.Remove(entity);
 
-        if (userId is null)
-            await context.SaveChangesAsync();
-        else
-            await context.SaveChangesAsync((int)userId);
+        if (saveChanges)
+        {
+            if (userId is null)
+            {
+                await context.SaveChangesAsync();
+            }
+            else
+            {
+                await context.SaveChangesAsync((int)userId);
+            }
+        }
 
         return true;
     }
 
-    public async Task<int> RemoveAllByConditionAsync(Expression<Func<TEntity, bool>> predicate, object? userId = null)
+    public async Task<int> RemoveAllByConditionAsync(Expression<Func<TEntity, bool>> predicate, object? userId = null, bool saveChanges = true)
     {
         var entities = await _dbSet.Where(predicate).ToListAsync();
         _dbSet.RemoveRange(entities);
 
-        if (userId is null)
-            await context.SaveChangesAsync();
-        else
-            await context.SaveChangesAsync((int)userId);
+        if (saveChanges)
+        {
+            if (userId is null)
+            {
+                await context.SaveChangesAsync();
+            }
+            else
+            {
+                await context.SaveChangesAsync((int)userId);
+            }
+        }
 
         return entities.Count;
     }

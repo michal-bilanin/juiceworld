@@ -28,8 +28,15 @@ public class OrderUnitOfWork
     {
     }
 
-    public async Task Commit()
+    public async Task Commit(object? userId = null)
     {
-        await _context.SaveChangesAsync();
+        if (userId is null)
+        {
+            await _context.SaveChangesAsync();
+        }
+        else
+        {
+            await _context.SaveChangesAsync((int)userId);
+        }
     }
 }

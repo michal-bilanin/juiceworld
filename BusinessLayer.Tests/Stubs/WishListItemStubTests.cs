@@ -73,7 +73,7 @@ public class WishListItemServiceStubTests
         // Arrange
         var wishListItemDto = new WishListItemDto { Id = 3, ProductId = 3, UserId = 1 };
         var wishListItem = _mapper.Map<WishListItem>(wishListItemDto);
-        _wishListItemRepositoryMock.Setup(repo => repo.CreateAsync(It.IsAny<WishListItem>(), null))
+        _wishListItemRepositoryMock.Setup(repo => repo.CreateAsync(It.IsAny<WishListItem>(), null, true))
             .ReturnsAsync(wishListItem);
 
         // Act
@@ -92,7 +92,7 @@ public class WishListItemServiceStubTests
         // Arrange
         var wishListItemDto = new WishListItemDto { Id = 1, ProductId = 3, UserId = 1 };
         var wishListItem = _mapper.Map<WishListItem>(wishListItemDto);
-        _wishListItemRepositoryMock.Setup(repo => repo.UpdateAsync(It.IsAny<WishListItem>(), null))
+        _wishListItemRepositoryMock.Setup(repo => repo.UpdateAsync(It.IsAny<WishListItem>(), null, true))
             .ReturnsAsync(wishListItem);
 
         // Act
@@ -110,7 +110,7 @@ public class WishListItemServiceStubTests
     {
         // Arrange
         var wishListItemId = 1;
-        _wishListItemRepositoryMock.Setup(repo => repo.DeleteAsync(wishListItemId, null)).ReturnsAsync(true);
+        _wishListItemRepositoryMock.Setup(repo => repo.DeleteAsync(wishListItemId, null, true)).ReturnsAsync(true);
 
         // Act
         var result = await _wishListItemService.DeleteWishListItemByIdAsync(wishListItemId);

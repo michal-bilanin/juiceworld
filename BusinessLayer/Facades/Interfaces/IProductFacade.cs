@@ -10,6 +10,6 @@ public interface IProductFacade
     Task<FilteredResult<ProductDto>> GetProductsFilteredAsync(ProductFilterDto productFilter);
     Task<ProductDto?> GetProductByIdAsync(int id);
     Task<ProductDetailDto?> GetProductDetailByIdAsync(int id);
-    Task<ProductDto?> UpdateProductAsync(ProductImageDto productDto);
+    Task<ProductDto?> UpdateProductAsync(ProductImageDto productDto, int userId);
     Task<bool> DeleteProductByIdAsync(int id);
 }

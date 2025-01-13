@@ -106,7 +106,7 @@ public class OrderServiceStubTests
             PaymentMethodType = PaymentMethodType.Bitcoin
         };
         var order = _mapper.Map<Order>(orderDto);
-        _orderRepositoryMock.Setup(repo => repo.CreateAsync(It.IsAny<Order>(), null)).ReturnsAsync(order);
+        _orderRepositoryMock.Setup(repo => repo.CreateAsync(It.IsAny<Order>(), null, true)).ReturnsAsync(order);
         var result = await _orderService.CreateOrderAsync(orderDto);
         Assert.NotNull(result);
         Assert.Equal(orderDto.Id, result.Id);
@@ -132,7 +132,7 @@ public class OrderServiceStubTests
             Country = ""
         };
         var updatedOrder = _mapper.Map<Order>(orderDto);
-        _orderRepositoryMock.Setup(repo => repo.UpdateAsync(It.IsAny<Order>(), null)).ReturnsAsync(updatedOrder);
+        _orderRepositoryMock.Setup(repo => repo.UpdateAsync(It.IsAny<Order>(), null, true)).ReturnsAsync(updatedOrder);
         var result = await _orderService.UpdateOrderAsync(orderDto);
         Assert.NotNull(result);
         Assert.Equal(orderDto.Status, result.Status);
@@ -142,7 +142,7 @@ public class OrderServiceStubTests
     public async Task DeleteOrderByIdAsync_Simple()
     {
         var orderId = 1;
-        _orderRepositoryMock.Setup(repo => repo.DeleteAsync(orderId, null)).ReturnsAsync(true);
+        _orderRepositoryMock.Setup(repo => repo.DeleteAsync(orderId, null, true)).ReturnsAsync(true);
         var result = await _orderService.DeleteOrderByIdAsync(orderId);
         Assert.True(result);
     }

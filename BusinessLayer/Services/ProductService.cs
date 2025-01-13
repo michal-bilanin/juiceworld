@@ -111,14 +111,17 @@ public class ProductService(
         return mapper.Map<ProductDetailDto>(value);
     }
 
-    public async Task<ProductDto?> UpdateProductAsync(ProductDto productDto)
+    public async Task<ProductDto?> UpdateProductAsync(ProductDto productDto, int userId)
     {
         var cacheKeyDetail = $"{_cacheKeyPrefix}-productDetail{productDto.Id}";
         memoryCache.Remove(cacheKeyDetail);
         var cacheKey1 = $"{_cacheKeyPrefix}-product{productDto.Id}";
         memoryCache.Remove(cacheKey1);
         var oldProduct = await productUnitOfWork.ProductRepository.GetByIdAsync(productDto.Id);
-        if (oldProduct is null) return null;
+        if (oldProduct is null)
+        {
+            return null;
+        }
 
         var product = mapper.Map<Product>(productDto);
         oldProduct.Tags.Clear();
@@ -126,8 +129,8 @@ public class ProductService(
         var tags = await productUnitOfWork.TagRepository.GetByIdRangeAsync(productDto.TagIds.Cast<object>());
         product.Tags = tags.ToList();
 
-        var updatedProduct = await productUnitOfWork.ProductRepository.UpdateAsync(product);
-        await productUnitOfWork.Commit();
+        var updatedProduct = await productUnitOfWork.ProductRepository.UpdateAsync(product, userId, false);
+        await productUnitOfWork.Commit(userId);
         return updatedProduct is null ? null : mapper.Map<ProductDto>(updatedProduct);
     }
 
