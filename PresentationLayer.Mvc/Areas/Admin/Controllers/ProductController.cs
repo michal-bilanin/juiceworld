@@ -1,5 +1,7 @@
+using AutoMapper;
 using System.Security.Claims;
 using BusinessLayer.DTOs;
+using BusinessLayer.Facades.Interfaces;
 using BusinessLayer.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using PresentationLayer.Mvc.ActionFilters;
@@ -9,15 +11,15 @@ namespace PresentationLayer.Mvc.Areas.Admin.Controllers;
 
 [Area(Constants.Areas.Admin)]
 [RedirectIfNotAdminActionFilter]
-public class ProductController(
-    IProductService productService,
+public class ProductController(IProductFacade productFacade,
     IManufacturerService manufacturerService,
+    IMapper mapper,
     ITagService tagService) : Controller
 {
     [HttpGet]
     public async Task<IActionResult> Index([FromQuery] ProductFilterDto productFilter)
     {
-        var products = await productService.GetProductsFilteredAsync(productFilter);
+        var products = await productFacade.GetProductsFilteredAsync(productFilter);
         return View(products);
     }
 
@@ -28,7 +30,7 @@ public class ProductController(
         var tags = await tagService.GetAllTagsAsync();
         var viewModel = new ProductEditViewModel
         {
-            Product = new ProductDto(),
+            Product = new ProductImageDto(),
             AllManufacturers = manufacturers,
             AllTags = tags
         };
@@ -46,7 +48,17 @@ public class ProductController(
             return View(viewModel);
         }
 
-        var createdProduct = await productService.CreateProductAsync(viewModel.Product);
+        if (viewModel.ImageFile != null && viewModel.ImageFile.Length > 0)
+        {
+            using (var memoryStream = new MemoryStream())
+            {
+                await viewModel.ImageFile.CopyToAsync(memoryStream);
+                var imageBytes = memoryStream.ToArray();
+                viewModel.Product.ImageValue = Convert.ToBase64String(imageBytes);
+            }
+        }
+
+        var createdProduct = await productFacade.CreateProductAsync(viewModel.Product);
         if (createdProduct == null)
         {
             ModelState.AddModelError("Id", "Failed to create product.");
@@ -59,7 +71,7 @@ public class ProductController(
     [HttpGet]
     public async Task<IActionResult> Edit(int id)
     {
-        var product = await productService.GetProductByIdAsync(id);
+        var product = await productFacade.GetProductByIdAsync(id);
         if (product == null)
         {
             ModelState.AddModelError("Id", "Product not found.");
@@ -70,7 +82,7 @@ public class ProductController(
         var tags = await tagService.GetAllTagsAsync();
         var viewModel = new ProductEditViewModel
         {
-            Product = product,
+            Product = mapper.Map<ProductImageDto>(product),
             AllManufacturers = manufacturers,
             AllTags = tags
         };
@@ -93,7 +105,17 @@ public class ProductController(
             return View(viewModel);
         }
 
-        var updatedProduct = await productService.UpdateProductAsync(viewModel.Product, userId);
+        if (viewModel.ImageFile != null && viewModel.ImageFile.Length > 0)
+        {
+            using (var memoryStream = new MemoryStream())
+            {
+                await viewModel.ImageFile.CopyToAsync(memoryStream);
+                var imageBytes = memoryStream.ToArray();
+                viewModel.Product.ImageValue = Convert.ToBase64String(imageBytes);
+            }
+        }
+
+        var updatedProduct = await productFacade.UpdateProductAsync(viewModel.Product, userId, false);
         if (updatedProduct == null)
         {
             ModelState.AddModelError("Id", "Failed to update product.");
@@ -106,7 +128,7 @@ public class ProductController(
     [HttpPost]
     public async Task<IActionResult> Delete(int id)
     {
-        var result = await productService.DeleteProductByIdAsync(id);
+        var result = await productFacade.DeleteProductByIdAsync(id);
         return result ? RedirectToAction(nameof(Index)) : NotFound();
     }
 }

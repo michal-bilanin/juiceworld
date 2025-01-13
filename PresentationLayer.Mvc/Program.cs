@@ -1,8 +1,10 @@
 using System.Diagnostics;
+using BusinessLayer;
 using BusinessLayer.Installers;
 using Commons.Constants;
 using Commons.Middleware;
 using JuiceWorld.Installers;
+using PresentationLayer.Mvc;
 using PresentationLayer.Mvc.Installers;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +16,8 @@ builder.Services.DalInstall();
 builder.Services.MvcInstall();
 
 var app = builder.Build();
+
+BusinessConstants.WebRootPath = app.Environment.WebRootPath;
 
 var mvcPort = Environment.GetEnvironmentVariable(EnvironmentConstants.MvcPort);
 if (mvcPort == null)
