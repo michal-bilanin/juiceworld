@@ -1,8 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-using BusinessLayer.DTOs;
 using Commons.Enums;
 
-namespace PresentationLayer.Mvc.Models;
+namespace PresentationLayer.Mvc.Areas.Customer.Models;
 
 public class CreateOrderViewModel
 {

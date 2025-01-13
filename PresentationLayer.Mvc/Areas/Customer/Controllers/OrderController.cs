@@ -5,6 +5,7 @@ using BusinessLayer.Services.Interfaces;
 using Infrastructure.QueryObjects;
 using Microsoft.AspNetCore.Mvc;
 using PresentationLayer.Mvc.ActionFilters;
+using PresentationLayer.Mvc.Areas.Customer.Models;
 using PresentationLayer.Mvc.Facades.Interfaces;
 using PresentationLayer.Mvc.Models;
 

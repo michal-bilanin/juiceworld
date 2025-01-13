@@ -1,4 +1,7 @@
-namespace PresentationLayer.Mvc.Models;
+using PresentationLayer.Mvc.Areas.Admin.Models;
+using PresentationLayer.Mvc.Models;
+
+namespace PresentationLayer.Mvc.Areas.Customer.Models;
 
 public class WishlistItemDetailViewModel
 {

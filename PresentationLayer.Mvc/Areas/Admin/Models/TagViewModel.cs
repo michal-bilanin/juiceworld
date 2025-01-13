@@ -1,6 +1,7 @@
 using System.ComponentModel;
+using PresentationLayer.Mvc.Models;
 
-namespace PresentationLayer.Mvc.Models;
+namespace PresentationLayer.Mvc.Areas.Admin.Models;
 
 public class TagViewModel : BaseEntityViewModel
 {

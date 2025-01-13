@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Commons.Enums;
 
-namespace PresentationLayer.Mvc.Models;
+namespace PresentationLayer.Mvc.Areas.Admin.Models;
 
 public class UserUpdateViewModel
 {

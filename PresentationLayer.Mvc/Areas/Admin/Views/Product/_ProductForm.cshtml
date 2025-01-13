@@ -1,7 +1,7 @@
 @using Commons.Enums
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @using PresentationLayer.Mvc
-@model PresentationLayer.Mvc.Models.ProductEditViewModel
+@model PresentationLayer.Mvc.Areas.Admin.Models.ProductEditViewModel
 
 <form asp-action="@ViewData[Constants.Keys.Action]" method="post" class="form-horizontal" enctype="multipart/form-data">
     <input type="hidden" asp-for="Product.Id"/>

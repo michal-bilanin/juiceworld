@@ -1,5 +1,8 @@
 ﻿using AutoMapper;
 using BusinessLayer.DTOs;
+using Infrastructure.QueryObjects;
+using PresentationLayer.Mvc.Areas.Admin.Models;
+using PresentationLayer.Mvc.Areas.Customer.Models;
 using PresentationLayer.Mvc.Models;
 
 namespace PresentationLayer.Mvc.Installers;

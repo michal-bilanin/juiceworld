@@ -1,4 +1,4 @@
-namespace PresentationLayer.Mvc.Models;
+namespace PresentationLayer.Mvc.Areas.Customer.Models;
 
 public class SearchablesFilterViewModel
 {

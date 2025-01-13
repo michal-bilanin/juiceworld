@@ -1,3 +1,4 @@
+using PresentationLayer.Mvc.Areas.Customer.Models;
 using PresentationLayer.Mvc.Models;
 
 namespace PresentationLayer.Mvc.Facades.Interfaces;

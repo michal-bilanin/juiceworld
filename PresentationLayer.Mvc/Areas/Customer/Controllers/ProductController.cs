@@ -5,6 +5,8 @@ using BusinessLayer.Services.Interfaces;
 using Commons.Enums;
 using Microsoft.AspNetCore.Mvc;
 using PresentationLayer.Mvc.ActionFilters;
+using PresentationLayer.Mvc.Areas.Admin.Models;
+using PresentationLayer.Mvc.Areas.Customer.Models;
 using PresentationLayer.Mvc.Facades.Interfaces;
 using PresentationLayer.Mvc.Models;
 
