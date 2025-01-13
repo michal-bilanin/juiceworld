@@ -65,5 +65,7 @@ public class MvcMapperInstaller : Profile
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.NameQuery))
             .ForMember(dest => dest.PageIndex, opt => opt.MapFrom(src => src.TagPageIndex))
             .ForMember(dest => dest.PageSize, opt => opt.MapFrom(src => src.TagPageSize));
+
+        CreateMap(typeof(FilteredResult<>), typeof(FilteredResult<>)).ConvertUsing(typeof(FilteredResultConverter<,>));
     }
 }
