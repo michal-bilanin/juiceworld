@@ -53,7 +53,6 @@ public class ProductService(
             PageIndex = value.PageIndex,
             TotalPages = value.TotalPages
         };
-        ;
     }
 
     public async Task<FilteredResult<ProductDetailDto>> GetProductDetailsFilteredAsync(ProductFilterDto productFilter)

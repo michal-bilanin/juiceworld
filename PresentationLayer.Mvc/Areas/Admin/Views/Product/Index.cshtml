@@ -13,8 +13,7 @@
 
     <form method="get" asp-action="Index" class="form-inline mb-3">
         <div class="form-group mr-2 d-flex flex-row gap-2">
-            <input type="text" name="Name" class="form-control" placeholder="Search by name"
-                   value="@ViewContext.HttpContext.Request.Query["Name"]"/>
+            <input type="text" name="@nameof(ProductFilterDto.NameQuery)" class="form-control" placeholder="Search by name" value="@ViewContext.HttpContext.Request.Query[nameof(ProductFilterDto.NameQuery)]" />
             <button type="submit" class="btn btn-primary">Search</button>
         </div>
     </form>
