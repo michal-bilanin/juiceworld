@@ -20,10 +20,6 @@ public class ProductService(
 ) : IProductService
 {
     private readonly string _cacheKeyPrefix = nameof(ProductService);
-    private string CacheKeyFiltered(ProductFilterDto productFilter) => $"{_cacheKeyPrefix}-product{productFilter.GetHashCode()}";
-    private string CacheKeyFilteredDetail(ProductFilterDto productFilter) => $"{_cacheKeyPrefix}-productDetail{productFilter.GetHashCode()}";
-    private string CacheKeyProduct(int id) => $"{_cacheKeyPrefix}-product{id}"; 
-    private string CacheKeyProductDetail(int id) => $"{_cacheKeyPrefix}-productDetail{id}"; 
 
     public async Task<ProductDto?> CreateProductAsync(ProductDto productDto)
     {
@@ -39,7 +35,7 @@ public class ProductService(
 
     public async Task<FilteredResult<ProductDto>> GetProductsFilteredAsync(ProductFilterDto productFilter)
     {
-        var cacheKey = CacheKeyFiltered(productFilter);
+        var cacheKey = $"{_cacheKeyPrefix}-product{JsonSerializer.Serialize(productFilter)}";
         if (!memoryCache.TryGetValue(cacheKey, out FilteredResult<Product>? value))
         {
             var query = GetQueryObject(productFilter);
@@ -61,7 +57,7 @@ public class ProductService(
 
     public async Task<FilteredResult<ProductDetailDto>> GetProductDetailsFilteredAsync(ProductFilterDto productFilter)
     {
-        var cacheKey = CacheKeyFilteredDetail(productFilter);
+        var cacheKey = $"{_cacheKeyPrefix}-productDetail{JsonSerializer.Serialize(productFilter)}";
         if (!memoryCache.TryGetValue(cacheKey, out FilteredResult<Product>? value))
         {
             var query = GetQueryObject(productFilter);
@@ -82,7 +78,7 @@ public class ProductService(
 
     public async Task<ProductDto?> GetProductByIdAsync(int id)
     {
-        var cacheKey = CacheKeyProduct(id);
+        var cacheKey = $"{_cacheKeyPrefix}-product{id}";
         if (!memoryCache.TryGetValue(cacheKey, out Product? value))
         {
             value = await productRepository.GetByIdAsync(id, nameof(Product.Tags));
@@ -97,7 +93,7 @@ public class ProductService(
 
     public async Task<ProductDetailDto?> GetProductDetailByIdAsync(int id)
     {
-        var cacheKey = CacheKeyProductDetail(id);
+        var cacheKey = $"{_cacheKeyPrefix}-productDetail{id}";
         if (!memoryCache.TryGetValue(cacheKey, out Product? value))
         {
             value = await productRepository.GetByIdAsync(id, nameof(Product.Manufacturer),
@@ -116,9 +112,9 @@ public class ProductService(
 
     public async Task<ProductDto?> UpdateProductAsync(ProductDto productDto, int userId)
     {
-        var cacheKeyDetail = CacheKeyProductDetail(productDto.Id);
+        var cacheKeyDetail = $"{_cacheKeyPrefix}-productDetail{productDto.Id}";
         memoryCache.Remove(cacheKeyDetail);
-        var cacheKey1 = CacheKeyProduct(productDto.Id);
+        var cacheKey1 = $"{_cacheKeyPrefix}-product{productDto.Id}";
         memoryCache.Remove(cacheKey1);
         var oldProduct = await productUnitOfWork.ProductRepository.GetByIdAsync(productDto.Id);
         if (oldProduct is null)
@@ -137,13 +133,13 @@ public class ProductService(
         return updatedProduct is null ? null : mapper.Map<ProductDto>(updatedProduct);
     }
 
-    public Task<bool> DeleteProductByIdAsync(int id)
+    public async Task<bool> DeleteProductByIdAsync(int id)
     {
-        var cacheKeyDetail = CacheKeyProductDetail(id);
+        var cacheKeyDetail = $"{_cacheKeyPrefix}-productDetail{id}";
         memoryCache.Remove(cacheKeyDetail);
-        var cacheKey1 = CacheKeyProduct(id);
+        var cacheKey1 = $"{_cacheKeyPrefix}-product{id}";
         memoryCache.Remove(cacheKey1);
-        return productRepository.DeleteAsync(id);
+        return await productRepository.DeleteAsync(id);
     }
 
     private IQueryObject<Product> GetQueryObject(ProductFilterDto productFilter)

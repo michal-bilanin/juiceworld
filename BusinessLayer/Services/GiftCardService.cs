@@ -21,9 +21,7 @@ public class GiftCardService(
         var newGiftCard = await giftCardRepository.CreateAsync(mapper.Map<GiftCard>(giftCardCreateDto));
 
         if (newGiftCard is null)
-        {
             return null;
-        }
 
         foreach (var coupon in Enumerable.Range(0, giftCardCreateDto.CouponsCount))
             await couponCodeRepository.CreateAsync(new CouponCode
@@ -44,6 +42,7 @@ public class GiftCardService(
             .OrderBy(p => p.Id)
             .Paginate(giftCardFilterDto.PageIndex, giftCardFilterDto.PageSize)
             .ExecuteAsync();
+        ;
 
         return new FilteredResult<GiftCardEditDto>
         {
@@ -65,9 +64,9 @@ public class GiftCardService(
         return updatedGiftCard is null ? null : mapper.Map<GiftCardDetailDto>(updatedGiftCard);
     }
 
-    public Task<bool> DeleteGiftCardByIdAsync(int id)
+    public async Task<bool> DeleteGiftCardByIdAsync(int id)
     {
-        return giftCardRepository.DeleteAsync(id);
+        return await giftCardRepository.DeleteAsync(id);
     }
 
     public async Task<CouponCodeDto?> RedeemCouponAsync(string couponCode)

@@ -54,8 +54,8 @@ public class WishListItemService(IRepository<WishListItem> wishListItemRepositor
         return updatedWishListItem is null ? null : mapper.Map<WishListItemDto>(updatedWishListItem);
     }
 
-    public Task<bool> DeleteWishListItemByIdAsync(int id)
+    public async Task<bool> DeleteWishListItemByIdAsync(int id)
     {
-        return wishListItemRepository.DeleteAsync(id);
+        return await wishListItemRepository.DeleteAsync(id);
     }
 }

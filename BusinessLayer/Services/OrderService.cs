@@ -20,8 +20,6 @@ public class OrderService(
 {
     private readonly string _cacheKeyPrefix = nameof(OrderService);
 
-    private string CacheKeyOrder(int id) => $"{_cacheKeyPrefix}-OrderDetail{id}";
-
     public async Task<OrderDto?> ExecuteOrderAsync(CreateOrderDto orderDto, int? couponId)
     {
         var order = mapper.Map<Order>(orderDto);
@@ -132,7 +130,7 @@ public class OrderService(
 
     public async Task<OrderDetailDto?> GetOrderDetailByIdAsync(int id)
     {
-        var cacheKey = CacheKeyOrder(id);
+        var cacheKey = $"{_cacheKeyPrefix}-OrderDetail{id}";
         if (!memoryCache.TryGetValue(cacheKey, out Order? value))
         {
             value = await orderRepository.GetByIdAsync(id,
@@ -149,20 +147,17 @@ public class OrderService(
 
     public async Task<OrderDto?> UpdateOrderAsync(OrderDto orderDto)
     {
-        var cacheKey = CacheKeyOrder(orderDto.Id);
+        var cacheKey = $"{_cacheKeyPrefix}-OrderDetail{orderDto.Id}";
         memoryCache.Remove(cacheKey);
 
-        var updatedOrder = await orderRepository.UpdateAsync(mapper.Map<Order>(orderDto));
-        var cacheEntryOptions = new MemoryCacheEntryOptions()
-            .SetAbsoluteExpiration(TimeSpan.FromSeconds(30));
 
-        memoryCache.Set(cacheKey, updatedOrder, cacheEntryOptions);
+        var updatedOrder = await orderRepository.UpdateAsync(mapper.Map<Order>(orderDto));
         return updatedOrder is null ? null : mapper.Map<OrderDto>(updatedOrder);
     }
 
     public async Task<OrderDto?> UpdateOrderAsync(OrderDetailDto orderDto)
     {
-        var cacheKey = CacheKeyOrder(orderDto.Id);
+        var cacheKey = $"{_cacheKeyPrefix}-OrderDetail{orderDto.Id}";
         memoryCache.Remove(cacheKey);
 
         var order = mapper.Map<Order>(orderDto);
@@ -204,7 +199,7 @@ public class OrderService(
 
     public Task<bool> DeleteOrderByIdAsync(int id)
     {
-        var cacheKey = CacheKeyOrder(id);
+        var cacheKey = $"{_cacheKeyPrefix}-OrderDetail{id}";
         memoryCache.Remove(cacheKey);
         return orderRepository.DeleteAsync(id);
     }

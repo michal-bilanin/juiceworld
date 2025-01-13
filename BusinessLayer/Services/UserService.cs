@@ -99,8 +99,8 @@ public class UserService(
         return mapper.Map<UserDto>(userDb);
     }
 
-    public Task<bool> DeleteUserByIdAsync(int id)
+    public async Task<bool> DeleteUserByIdAsync(int id)
     {
-        return userRepository.DeleteAsync(id);
+        return await userRepository.DeleteAsync(id);
     }
 }

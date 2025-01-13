@@ -75,8 +75,6 @@ public class ProductFacade(IProductService productService, IImageService imageSe
         {
             return false;
         }
-        
-        return (product.Image == null || imageService.DeleteImage(product.Image)) && 
-               await productService.DeleteProductByIdAsync(product.Id);
+        return product.Image == null || imageService.DeleteImageAsync(product.Image);
     }
 }

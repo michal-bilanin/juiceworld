@@ -13,7 +13,6 @@ public class ReviewService(
     IMapper mapper) : IReviewService
 {
     private readonly string _cacheKeyPrefix = nameof(ReviewService);
-    private string CacheKeyReview(int id) => $"{_cacheKeyPrefix}-Review{id}";
 
     public async Task<ReviewDto?> CreateReviewAsync(ReviewDto reviewDto)
     {
@@ -29,7 +28,7 @@ public class ReviewService(
 
     public async Task<ReviewDto?> GetReviewByIdAsync(int id)
     {
-        var cacheKey = CacheKeyReview(id);
+        var cacheKey = $"{_cacheKeyPrefix}-Review{id}";
         if (!memoryCache.TryGetValue(cacheKey, out Review? value))
         {
             value = await reviewRepository.GetByIdAsync(id);
@@ -43,21 +42,16 @@ public class ReviewService(
 
     public async Task<ReviewDto?> UpdateReviewAsync(ReviewDto reviewDto)
     {
-        var cacheKey = CacheKeyReview(reviewDto.Id);
+        var cacheKey = $"{_cacheKeyPrefix}-Review{reviewDto.Id}";
         memoryCache.Remove(cacheKey);
         var updatedReview = await reviewRepository.UpdateAsync(mapper.Map<Review>(reviewDto));
-        
-        var cacheEntryOptions = new MemoryCacheEntryOptions()
-            .SetAbsoluteExpiration(TimeSpan.FromSeconds(30));
-
-        memoryCache.Set(cacheKey, updatedReview, cacheEntryOptions);
         return updatedReview is null ? null : mapper.Map<ReviewDto>(updatedReview);
     }
 
-    public Task<bool> DeleteReviewByIdAsync(int id)
+    public async Task<bool> DeleteReviewByIdAsync(int id)
     {
-        var cacheKey = CacheKeyReview(id);
+        var cacheKey = $"{_cacheKeyPrefix}-Review{id}";
         memoryCache.Remove(cacheKey);
-        return reviewRepository.DeleteAsync(id);
+        return await reviewRepository.DeleteAsync(id);
     }
 }
