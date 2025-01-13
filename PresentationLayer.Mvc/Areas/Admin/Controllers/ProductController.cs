@@ -115,7 +115,7 @@ public class ProductController(IProductFacade productFacade,
             }
         }
 
-        var updatedProduct = await productFacade.UpdateProductAsync(viewModel.Product, userId, false);
+        var updatedProduct = await productFacade.UpdateProductAsync(viewModel.Product, userId);
         if (updatedProduct == null)
         {
             ModelState.AddModelError("Id", "Failed to update product.");
