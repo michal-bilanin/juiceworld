@@ -56,7 +56,7 @@ public class OrderService(
 
             orderProducts.Add(new OrderProduct
             {
-                OrderId = newOrder.Id,
+                Order = newOrder,
                 ProductId = cartItem.ProductId,
                 Quantity = cartItem.Quantity,
                 Price = cartItem.Product.Price
