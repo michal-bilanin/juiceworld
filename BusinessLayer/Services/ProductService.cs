@@ -22,8 +22,8 @@ public class ProductService(
     private readonly string _cacheKeyPrefix = nameof(ProductService);
     private string CacheKeyFiltered(ProductFilterDto productFilter) => $"{_cacheKeyPrefix}-product{productFilter.GetHashCode()}";
     private string CacheKeyFilteredDetail(ProductFilterDto productFilter) => $"{_cacheKeyPrefix}-productDetail{productFilter.GetHashCode()}";
-    private string CacheKeyProduct(int id) => $"{_cacheKeyPrefix}-product{id}"; 
-    private string CacheKeyProductDetail(int id) => $"{_cacheKeyPrefix}-productDetail{id}"; 
+    private string CacheKeyProduct(int id) => $"{_cacheKeyPrefix}-product{id}";
+    private string CacheKeyProductDetail(int id) => $"{_cacheKeyPrefix}-productDetail{id}";
 
     public async Task<ProductDto?> CreateProductAsync(ProductDto productDto)
     {

@@ -46,7 +46,7 @@ public class ReviewService(
         var cacheKey = CacheKeyReview(reviewDto.Id);
         memoryCache.Remove(cacheKey);
         var updatedReview = await reviewRepository.UpdateAsync(mapper.Map<Review>(reviewDto));
-        
+
         var cacheEntryOptions = new MemoryCacheEntryOptions()
             .SetAbsoluteExpiration(TimeSpan.FromSeconds(30));
 

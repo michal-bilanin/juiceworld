@@ -79,10 +79,10 @@ public class ManufacturerService(
         memoryCache.Remove(cacheKey);
         var cacheEntryOptions = new MemoryCacheEntryOptions()
             .SetAbsoluteExpiration(TimeSpan.FromSeconds(30));
-        
+
         var updatedManufacturer = await manufacturerRepository.UpdateAsync(mapper.Map<Manufacturer>(manufacturerDto));
         memoryCache.Set(cacheKey, updatedManufacturer, cacheEntryOptions);
-        
+
         return updatedManufacturer is null ? null : mapper.Map<ManufacturerDto>(updatedManufacturer);
     }
 

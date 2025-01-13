@@ -15,8 +15,8 @@ public class TagService(
     IMapper mapper) : ITagService
 {
     private readonly string _cacheKeyPrefix = nameof(TagService);
-    private string CacheKeyTag(int id) => $"{_cacheKeyPrefix}-tag{id}"; 
-    private string CacheKeyTagAll() => $"{_cacheKeyPrefix}-allTags"; 
+    private string CacheKeyTag(int id) => $"{_cacheKeyPrefix}-tag{id}";
+    private string CacheKeyTagAll() => $"{_cacheKeyPrefix}-allTags";
     public async Task<TagDto?> CreateTagAsync(TagDto tagDto)
     {
         var newTag = await tagRepository.CreateAsync(mapper.Map<Tag>(tagDto));
