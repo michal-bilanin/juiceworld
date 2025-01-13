@@ -13,7 +13,10 @@ public class WishlistController(IWishListItemService wishListItemService, ICartI
     [HttpGet]
     public async Task<ActionResult> Index()
     {
-        int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId);
+        if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId))
+        {
+            return BadRequest();
+        }
 
         var wishListItems = await wishListItemService.GetWishListItemsByUserIdAsync(userId);
         return View(wishListItems);
@@ -29,7 +32,10 @@ public class WishlistController(IWishListItemService wishListItemService, ICartI
 
     public async Task<IActionResult> AddToCart(int productId)
     {
-        int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId);
+        if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId))
+        {
+            return BadRequest();
+        }
 
         var addToCartDto = new AddToCartDto
         {

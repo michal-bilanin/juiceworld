@@ -17,7 +17,10 @@ public class OrderController(
     [HttpGet]
     public async Task<ActionResult> Index([FromQuery] PaginationDto pagination)
     {
-        int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId);
+        if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId))
+        {
+            return BadRequest();
+        }
 
         var orders = await orderService.GetOrdersByUserIdAsync(userId, pagination);
         return View(orders);
@@ -26,7 +29,10 @@ public class OrderController(
     [HttpGet]
     public async Task<ActionResult> Details(int id)
     {
-        int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId);
+        if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId))
+        {
+            return BadRequest();
+        }
 
         var order = await orderService.GetOrderDetailByIdAsync(id);
         if (order is null || order.UserId != userId) return Unauthorized();
@@ -37,7 +43,10 @@ public class OrderController(
     [HttpGet]
     public async Task<ActionResult> Create()
     {
-        int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId);
+        if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId))
+        {
+            return BadRequest();
+        }
 
         var cartItems = await cartItemService.GetCartItemsByUserIdAsync(userId);
 
@@ -47,7 +56,10 @@ public class OrderController(
     [HttpPost]
     public async Task<ActionResult> Create(CreateOrderDto orderDto)
     {
-        int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId);
+        if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId))
+        {
+            return BadRequest();
+        }
         var cartItems = await cartItemService.GetCartItemsByUserIdAsync(userId);
 
 

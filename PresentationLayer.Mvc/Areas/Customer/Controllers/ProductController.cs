@@ -27,7 +27,10 @@ public class ProductController(
     [HttpGet]
     public async Task<IActionResult> Details(int id)
     {
-        int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId);
+        if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId))
+        {
+            return BadRequest();
+        }
         var product = await productService.GetProductDetailByIdAsync(id);
 
         if (product is null) return NotFound();
@@ -49,7 +52,10 @@ public class ProductController(
     [RedirectIfNotAuthenticatedActionFilter]
     public async Task<IActionResult> AddToCart(AddToCartDto addToCartDto)
     {
-        int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId);
+        if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId))
+        {
+            return BadRequest();
+        }
 
         var success = await cartItemService.AddToCartAsync(addToCartDto, userId);
         var product = await productService.GetProductDetailByIdAsync(addToCartDto.ProductId);
@@ -64,7 +70,10 @@ public class ProductController(
     [RedirectIfNotAdminActionFilter]
     public async Task<IActionResult> AddToWishlist(int productId)
     {
-        int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId);
+        if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId))
+        {
+            return BadRequest();
+        }
 
         await wishListItemService.CreateWishListItemAsync(new WishListItemDto
         {
@@ -81,7 +90,10 @@ public class ProductController(
     {
         if (!ModelState.IsValid) return RedirectToAction(nameof(Details), new { id = reviewDto.ProductId });
 
-        int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId);
+        if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId))
+        {
+            return BadRequest();
+        }
 
         reviewDto.UserId = userId;
         var review = await reviewService.CreateReviewAsync(reviewDto);
@@ -94,7 +106,10 @@ public class ProductController(
     [RedirectIfNotAuthenticatedActionFilter]
     public async Task<IActionResult> DeleteReview(int id)
     {
-        int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId);
+        if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId))
+        {
+            return BadRequest();
+        }
 
         var review = await reviewService.GetReviewByIdAsync(id);
         if (review is null || (review.UserId != userId && !User.IsInRole(UserRole.Admin.ToString())))
