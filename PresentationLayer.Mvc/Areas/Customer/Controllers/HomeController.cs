@@ -10,9 +10,7 @@ public class HomeController : Controller
     public IActionResult Index()
     {
         if (User.Identity is { IsAuthenticated: true })
-        {
             return RedirectToAction("Index", "Product", new { area = Constants.Areas.Customer });
-        }
 
         return View();
     }

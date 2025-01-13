@@ -6,24 +6,18 @@ using Infrastructure.QueryObjects;
 
 namespace BusinessLayer.Facades;
 
-public class ProductFacade(IProductService _productService, IImageService _imageService, IMapper _mapper) : IProductFacade
+public class ProductFacade(IProductService _productService, IImageService _imageService, IMapper _mapper)
+    : IProductFacade
 {
-    private string GeneratedImageName(ProductImageDto productImageDto)
-    {
-        return $"{Guid.NewGuid()}{_imageService.GetImageExtension(productImageDto.ImageValue)}";
-    }
-
     public async Task<ProductDto?> CreateProductAsync(ProductImageDto productImageDto)
     {
         if (!string.IsNullOrEmpty(productImageDto.Image))
         {
             var imageName = GeneratedImageName(productImageDto);
-            if (!await _imageService.SaveImageAsync(productImageDto.ImageValue, imageName))
-            {
-                return null;
-            }
+            if (!await _imageService.SaveImageAsync(productImageDto.ImageValue, imageName)) return null;
             productImageDto.Image = imageName;
         }
+
         return await _productService.CreateProductAsync(_mapper.Map<ProductDto>(productImageDto));
     }
 
@@ -55,22 +49,22 @@ public class ProductFacade(IProductService _productService, IImageService _image
         if (!string.IsNullOrEmpty(productDto.Image))
         {
             var imageName = GeneratedImageName(productDto);
-            if (!await _imageService.UpdateImageAsync(productDto.ImageValue, productDto.Image, imageName))
-            {
-                return null;
-            }
+            if (!await _imageService.UpdateImageAsync(productDto.ImageValue, productDto.Image, imageName)) return null;
             productDto.Image = imageName;
         }
+
         return await _productService.UpdateProductAsync(_mapper.Map<ProductDto>(productDto));
     }
 
     public async Task<bool> DeleteProductByIdAsync(int id)
     {
         var product = await _productService.GetProductByIdAsync(id);
-        if (product is null)
-        {
-            return false;
-        }
+        if (product is null) return false;
         return product.Image == null || _imageService.DeleteImageAsync(product.Image);
+    }
+
+    private string GeneratedImageName(ProductImageDto productImageDto)
+    {
+        return $"{Guid.NewGuid()}{_imageService.GetImageExtension(productImageDto.ImageValue)}";
     }
 }

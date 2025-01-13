@@ -8,12 +8,14 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace BusinessLayer.Services;
 
-public class TagService(IRepository<Tag> tagRepository,
+public class TagService(
+    IRepository<Tag> tagRepository,
     IQueryObject<Tag> tagQueryObject,
     IMemoryCache memoryCache,
     IMapper mapper) : ITagService
 {
-    private string _cacheKeyPrefix = nameof(TagService);
+    private readonly string _cacheKeyPrefix = nameof(TagService);
+
     public async Task<TagDto?> CreateTagAsync(TagDto tagDto)
     {
         var newTag = await tagRepository.CreateAsync(mapper.Map<Tag>(tagDto));
@@ -22,7 +24,7 @@ public class TagService(IRepository<Tag> tagRepository,
 
     public async Task<IEnumerable<TagDto>> GetAllTagsAsync()
     {
-        string cacheKey = $"{_cacheKeyPrefix}-allTags";
+        var cacheKey = $"{_cacheKeyPrefix}-allTags";
         if (!memoryCache.TryGetValue(cacheKey, out List<Tag>? value))
         {
             var tags = await tagRepository.GetAllAsync();
@@ -31,6 +33,7 @@ public class TagService(IRepository<Tag> tagRepository,
             memoryCache.Set(cacheKey, tags.ToList(), cacheEntryOptions);
             value = tags.ToList();
         }
+
         return mapper.Map<List<TagDto>>(value);
     }
 
@@ -53,7 +56,7 @@ public class TagService(IRepository<Tag> tagRepository,
 
     public async Task<TagDto?> GetTagByIdAsync(int id)
     {
-        string cacheKey = $"{_cacheKeyPrefix}-tag{id}";
+        var cacheKey = $"{_cacheKeyPrefix}-tag{id}";
         if (!memoryCache.TryGetValue(cacheKey, out Tag? value))
         {
             value = await tagRepository.GetByIdAsync(id);
@@ -61,14 +64,15 @@ public class TagService(IRepository<Tag> tagRepository,
                 .SetAbsoluteExpiration(TimeSpan.FromSeconds(30));
             memoryCache.Set(cacheKey, value, cacheEntryOptions);
         }
+
         return value is null ? null : mapper.Map<TagDto>(value);
     }
 
     public async Task<TagDto?> UpdateTagAsync(TagDto tagDto)
     {
-        string cacheKey = $"{_cacheKeyPrefix}-tag{tagDto.Id}";
+        var cacheKey = $"{_cacheKeyPrefix}-tag{tagDto.Id}";
         memoryCache.Remove(cacheKey);
-        string cacheKeyAll = $"{_cacheKeyPrefix}-allTags";
+        var cacheKeyAll = $"{_cacheKeyPrefix}-allTags";
         memoryCache.Remove(cacheKeyAll);
         var updatedTag = await tagRepository.UpdateAsync(mapper.Map<Tag>(tagDto));
         return updatedTag is null ? null : mapper.Map<TagDto>(updatedTag);
@@ -76,9 +80,9 @@ public class TagService(IRepository<Tag> tagRepository,
 
     public async Task<bool> DeleteTagByIdAsync(int id)
     {
-        string cacheKey = $"{_cacheKeyPrefix}-tag{id}";
+        var cacheKey = $"{_cacheKeyPrefix}-tag{id}";
         memoryCache.Remove(cacheKey);
-        string cacheKeyAll = $"{_cacheKeyPrefix}-allTags";
+        var cacheKeyAll = $"{_cacheKeyPrefix}-allTags";
         memoryCache.Remove(cacheKeyAll);
         return await tagRepository.DeleteAsync(id);
     }

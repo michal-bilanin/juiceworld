@@ -4,8 +4,8 @@
 
 @{
     ViewData[Constants.Keys.Title] = "Users";
-    int startPage = Math.Max(1, Model.PageIndex - 5);
-    int endPage = Math.Min(Model.TotalPages, Model.PageIndex + 5);
+    var startPage = Math.Max(1, Model.PageIndex - 5);
+    var endPage = Math.Min(Model.TotalPages, Model.PageIndex + 5);
 }
 
 <div class="container mt-5">
@@ -13,11 +13,12 @@
 
     <form method="get" asp-action="Index" class="form-inline mb-3">
         <div class="form-group mr-2 d-flex flex-row gap-2">
-            <input type="text" name="Name" class="form-control" placeholder="Search by name or Email" value="@ViewContext.HttpContext.Request.Query["Name"]" />
+            <input type="text" name="Name" class="form-control" placeholder="Search by name or Email"
+                   value="@ViewContext.HttpContext.Request.Query["Name"]"/>
             <button type="submit" class="btn btn-primary">Search</button>
         </div>
     </form>
-    
+
     <a href="@Url.Action("Create", "User")" class="btn btn-success mb-3">Create New User</a>
 
     <table class="table table-striped">
@@ -40,7 +41,9 @@
                 <td>@user.UserRole</td>
                 <td>
                     <a href="@Url.Action("Edit", "User", new { id = user.Id })" class="btn btn-info">Edit</a>
-                    <form method="post" asp-action="Delete" asp-controller="User" asp-route-id="@user.Id" class="d-inline" onsubmit="return confirm(`Are you sure you want to delete user: @user.UserName`);">
+                    <form method="post" asp-action="Delete" asp-controller="User" asp-route-id="@user.Id"
+                          class="d-inline"
+                          onsubmit="return confirm(`Are you sure you want to delete user: @user.UserName`);">
                         <button type="submit" class="btn btn-danger">Delete</button>
                     </form>
                 </td>
@@ -51,10 +54,10 @@
 
     <nav aria-label="Page navigation">
         <ul class="pagination justify-content-center">
-            @for (int i = startPage; i <= endPage; i++)
+            @for (var i = startPage; i <= endPage; i++)
             {
                 <li class="page-item @(i == Model.PageIndex ? "active" : "")">
-                    <a class="page-link" href="@Url.Action("Index", new PaginationDto{PageIndex = i})">@i</a>
+                    <a class="page-link" href="@Url.Action("Index", new PaginationDto { PageIndex = i })">@i</a>
                 </li>
             }
         </ul>

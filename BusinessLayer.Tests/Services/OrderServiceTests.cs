@@ -17,7 +17,7 @@ namespace BusinessLayer.Tests.Services;
 
 public class OrderServiceTests
 {
-    private IOrderService _orderService;
+    private readonly IOrderService _orderService;
 
     public OrderServiceTests()
     {

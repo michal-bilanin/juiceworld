@@ -2,6 +2,12 @@
 
 public static class Constants
 {
+    public static string JwtToken = "JWT_TOKEN";
+
+    public static string DefaultArea = Areas.Customer;
+    public static string DefaultController = "Home";
+    public static string DefaultAction = "Index";
+
     public static class Areas
     {
         public const string Admin = "Admin";
@@ -15,10 +21,4 @@ public static class Constants
         public const string ButtonText = "ButtonText";
         public const string ErrorMessage = "ErrorMessage";
     }
-
-    public static string JwtToken = "JWT_TOKEN";
-
-    public static string DefaultArea = Areas.Customer;
-    public static string DefaultController = "Home";
-    public static string DefaultAction = "Index";
 }

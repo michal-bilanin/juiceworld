@@ -1,5 +1,4 @@
 using System.Linq.Expressions;
-using System.Text.Json;
 using AutoMapper;
 using BusinessLayer.DTOs;
 using BusinessLayer.Services.Interfaces;
@@ -19,7 +18,7 @@ public class OrderService(
     IMemoryCache memoryCache,
     IMapper mapper) : IOrderService
 {
-    private string _cacheKeyPrefix = nameof(OrderService);
+    private readonly string _cacheKeyPrefix = nameof(OrderService);
 
     public async Task<OrderDto?> ExecuteOrderAsync(CreateOrderDto orderDto, int? couponId)
     {
@@ -28,19 +27,13 @@ public class OrderService(
         order.CouponId = couponId;
         var newOrder = await orderUnitOfWork.OrderRepository.CreateAsync(order, order.UserId);
 
-        if (newOrder is null)
-        {
-            return null;
-        }
+        if (newOrder is null) return null;
 
         var cartItems =
             (List<CartItem>)await orderUnitOfWork.CartItemRepository.GetByConditionAsync(
                 ci => ci.UserId == order.UserId, nameof(CartItem.Product));
 
-        if (cartItems.Count == 0)
-        {
-            return null;
-        }
+        if (cartItems.Count == 0) return null;
 
         // remove cart items
         await orderUnitOfWork.CartItemRepository.RemoveAllByConditionAsync(ci => ci.UserId == order.UserId,
@@ -50,10 +43,7 @@ public class OrderService(
         List<OrderProduct> orderProducts = [];
         foreach (var cartItem in cartItems)
         {
-            if (cartItem.Product is null)
-            {
-                return null;
-            }
+            if (cartItem.Product is null) return null;
 
             orderProducts.Add(new OrderProduct
             {
@@ -105,12 +95,12 @@ public class OrderService(
     public async Task<FilteredResult<OrderDto>> GetOrdersByUserIdAsync(int userId, PaginationDto paginationDto)
     {
         var query = orderQueryObject.Filter(o => o.UserId == userId)
-                .OrderBy(
-                    new (Expression<Func<Order, object>> KeySelector, bool IsDesc)[]
-                    {
-                        (o => o.Status, false),
-                        (o => o.Id, false)
-                    })
+            .OrderBy(
+                new (Expression<Func<Order, object>> KeySelector, bool IsDesc)[]
+                {
+                    (o => o.Status, false),
+                    (o => o.Id, false)
+                })
             .Paginate(paginationDto.PageIndex, paginationDto.PageSize);
 
         var value = await query.ExecuteAsync();
@@ -131,7 +121,7 @@ public class OrderService(
 
     public async Task<OrderDetailDto?> GetOrderDetailByIdAsync(int id)
     {
-        string cacheKey = $"{_cacheKeyPrefix}-OrderDetail{id}";
+        var cacheKey = $"{_cacheKeyPrefix}-OrderDetail{id}";
         if (!memoryCache.TryGetValue(cacheKey, out Order? value))
         {
             value = await orderRepository.GetByIdAsync(id,
@@ -148,7 +138,7 @@ public class OrderService(
 
     public async Task<OrderDto?> UpdateOrderAsync(OrderDto orderDto)
     {
-        string cacheKey = $"{_cacheKeyPrefix}-OrderDetail{orderDto.Id}";
+        var cacheKey = $"{_cacheKeyPrefix}-OrderDetail{orderDto.Id}";
         memoryCache.Remove(cacheKey);
 
 
@@ -158,16 +148,13 @@ public class OrderService(
 
     public async Task<OrderDto?> UpdateOrderAsync(OrderDetailDto orderDto)
     {
-        string cacheKey = $"{_cacheKeyPrefix}-OrderDetail{orderDto.Id}";
+        var cacheKey = $"{_cacheKeyPrefix}-OrderDetail{orderDto.Id}";
         memoryCache.Remove(cacheKey);
 
         var order = mapper.Map<Order>(orderDto);
         order.OrderProducts = [];
         var updatedOrder = await orderUnitOfWork.OrderRepository.UpdateAsync(order);
-        if (updatedOrder is null)
-        {
-            return null;
-        }
+        if (updatedOrder is null) return null;
 
         // remove old order products
         await orderUnitOfWork.OrderProductRepository.RemoveAllByConditionAsync(op => op.OrderId == orderDto.Id);
@@ -180,16 +167,10 @@ public class OrderService(
         List<OrderProduct> orderProducts = [];
         foreach (var orderProduct in orderDto.OrderProducts)
         {
-            if (orderProduct.Quantity <= 0)
-            {
-                continue;
-            }
+            if (orderProduct.Quantity <= 0) continue;
 
             var product = products.FirstOrDefault(p => p.Id == orderProduct.ProductId);
-            if (product is null)
-            {
-                return null;
-            }
+            if (product is null) return null;
 
             orderProducts.Add(new OrderProduct
             {
@@ -199,6 +180,7 @@ public class OrderService(
                 Price = product.Price
             });
         }
+
         await orderUnitOfWork.OrderProductRepository.CreateRangeAsync(orderProducts);
 
         await orderUnitOfWork.Commit();
@@ -207,7 +189,7 @@ public class OrderService(
 
     public Task<bool> DeleteOrderByIdAsync(int id)
     {
-        string cacheKey = $"{_cacheKeyPrefix}-OrderDetail{id}";
+        var cacheKey = $"{_cacheKeyPrefix}-OrderDetail{id}";
         memoryCache.Remove(cacheKey);
         return orderRepository.DeleteAsync(id);
     }

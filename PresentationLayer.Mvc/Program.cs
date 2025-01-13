@@ -32,7 +32,7 @@ app.UseAuthorization();
 app.UseMiddleware<RequestLoggingMiddleware>("MVC");
 
 app.MapControllerRoute(
-    name: "areas",
-    pattern: "{area:exists=Customer}/{controller=Home}/{action=Index}/{id?}");
+    "areas",
+    "{area:exists=Customer}/{controller=Home}/{action=Index}/{id?}");
 
 app.Run();

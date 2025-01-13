@@ -9,13 +9,14 @@
 <h2>Edit Order</h2>
 
 <form asp-action="Edit">
-    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="Id"/>
     <input type="hidden" asp-for="UserId"/>
     <input type="hidden" asp-for="AddressId"/>
 
     <div class="form-group">
         <label asp-for="PaymentMethodType" class="control-label"></label>
-        <select asp-for="PaymentMethodType" class="form-control" asp-items="Html.GetEnumSelectList<PaymentMethodType>()"></select>
+        <select asp-for="PaymentMethodType" class="form-control"
+                asp-items="Html.GetEnumSelectList<PaymentMethodType>()"></select>
     </div>
     <div class="form-group">
         <label asp-for="DeliveryType" class="control-label"></label>
@@ -28,23 +29,23 @@
 
     <div class="form-group">
         <label asp-for="City" class="control-label"></label>
-        <input asp-for="City" class="form-control" />
+        <input asp-for="City" class="form-control"/>
     </div>
     <div class="form-group">
         <label asp-for="Street" class="control-label"></label>
-        <input asp-for="Street" class="form-control" />
+        <input asp-for="Street" class="form-control"/>
     </div>
     <div class="form-group">
         <label asp-for="HouseNumber" class="control-label"></label>
-        <input asp-for="HouseNumber" class="form-control" />
+        <input asp-for="HouseNumber" class="form-control"/>
     </div>
     <div class="form-group">
         <label asp-for="ZipCode" class="control-label"></label>
-        <input asp-for="ZipCode" class="form-control" />
+        <input asp-for="ZipCode" class="form-control"/>
     </div>
     <div class="form-group">
         <label asp-for="Country" class="control-label"></label>
-        <input asp-for="Country" class="form-control" />
+        <input asp-for="Country" class="form-control"/>
     </div>
     <div class="form-group">
         <label>Coupon code:</label>
@@ -68,11 +69,11 @@
             </tr>
             </thead>
             <tbody id="order-products-body">
-            @for (int i = 0; i < Model.OrderProducts.Count; i++)
+            @for (var i = 0; i < Model.OrderProducts.Count; i++)
             {
                 <tr data-index="@i">
                     <td>
-                        <input type="hidden" asp-for="OrderProducts[i].ProductId" />
+                        <input type="hidden" asp-for="OrderProducts[i].ProductId"/>
                         @Model.OrderProducts[i].ProductId
                     </td>
                     <td>
@@ -84,7 +85,7 @@
                                value="@Model.OrderProducts[i].Quantity"/>
                     </td>
                     <td>
-                        <input type="hidden" asp-for="OrderProducts[i].Price" />
+                        <input type="hidden" asp-for="OrderProducts[i].Price"/>
                         @Model.OrderProducts[i].Price.ToString("C")
                     </td>
                     <td class="product-total">@((Model.OrderProducts[i].Price * Model.OrderProducts[i].Quantity).ToString("C"))</td>
@@ -119,7 +120,10 @@
                 const price = parseFloat(quantityInput.getAttribute('data-price'));
                 const quantity = parseInt(quantityInput.value) || 0;
                 const rowTotal = price * quantity;
-                row.querySelector('.product-total').textContent = rowTotal.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+                row.querySelector('.product-total').textContent = rowTotal.toLocaleString('en-US', {
+                    style: 'currency',
+                    currency: 'USD'
+                });
                 return rowTotal;
             }
 
@@ -128,7 +132,10 @@
                 orderProductsBody.querySelectorAll('tr').forEach(row => {
                     grandTotal += calculateRowTotal(row);
                 });
-                grandTotalElement.textContent = grandTotal.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+                grandTotalElement.textContent = grandTotal.toLocaleString('en-US', {
+                    style: 'currency',
+                    currency: 'USD'
+                });
             }
 
             // Event listener for quantity change

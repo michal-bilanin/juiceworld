@@ -1,4 +1,3 @@
-using System.Text.Json;
 using AutoMapper;
 using BusinessLayer.DTOs;
 using BusinessLayer.Services.Interfaces;
@@ -15,7 +14,8 @@ public class ManufacturerService(
     IMemoryCache memoryCache,
     IMapper mapper) : IManufacturerService
 {
-    private string _cacheKeyPrefix = nameof(ManufacturerService);
+    private readonly string _cacheKeyPrefix = nameof(ManufacturerService);
+
     public async Task<ManufacturerDto?> CreateManufacturerAsync(ManufacturerDto manufacturerDto)
     {
         var newManufacturer = await manufacturerRepository.CreateAsync(mapper.Map<Manufacturer>(manufacturerDto));
@@ -24,7 +24,7 @@ public class ManufacturerService(
 
     public async Task<IEnumerable<ManufacturerDto>> GetAllManufacturersAsync()
     {
-        string cacheKey = $"{_cacheKeyPrefix}-allManufacturers";
+        var cacheKey = $"{_cacheKeyPrefix}-allManufacturers";
         if (!memoryCache.TryGetValue(cacheKey, out IEnumerable<Manufacturer>? value))
         {
             value = await manufacturerRepository.GetAllAsync();
@@ -58,7 +58,7 @@ public class ManufacturerService(
 
     public async Task<ManufacturerDto?> GetManufacturerByIdAsync(int id)
     {
-        string cacheKey = $"{_cacheKeyPrefix}-Manufacturer{id}";
+        var cacheKey = $"{_cacheKeyPrefix}-Manufacturer{id}";
         if (!memoryCache.TryGetValue(cacheKey, out Manufacturer? value))
         {
             value = await manufacturerRepository.GetByIdAsync(id);
@@ -73,7 +73,7 @@ public class ManufacturerService(
 
     public async Task<ManufacturerDto?> UpdateManufacturerAsync(ManufacturerDto manufacturerDto)
     {
-        string cacheKey = $"{_cacheKeyPrefix}-Manufacturer{manufacturerDto.Id}";
+        var cacheKey = $"{_cacheKeyPrefix}-Manufacturer{manufacturerDto.Id}";
         memoryCache.Remove(cacheKey);
         var updatedManufacturer = await manufacturerRepository.UpdateAsync(mapper.Map<Manufacturer>(manufacturerDto));
         return updatedManufacturer is null ? null : mapper.Map<ManufacturerDto>(updatedManufacturer);
@@ -81,7 +81,7 @@ public class ManufacturerService(
 
     public async Task<bool> DeleteManufacturerByIdAsync(int id)
     {
-        string cacheKey = $"{_cacheKeyPrefix}-Manufacturer{id}";
+        var cacheKey = $"{_cacheKeyPrefix}-Manufacturer{id}";
         memoryCache.Remove(cacheKey);
         return await manufacturerRepository.DeleteAsync(id);
     }

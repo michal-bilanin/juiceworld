@@ -48,15 +48,9 @@ public class ReviewController(IReviewService reviewService) : ControllerBase
         if (result == null)
             return NotFound();
 
-        if (User.IsInRole(UserRole.Admin.ToString()))
-        {
-            return Ok(result);
-        }
+        if (User.IsInRole(UserRole.Admin.ToString())) return Ok(result);
 
-        if (!Int32.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? "", out var userId))
-        {
-            return Unauthorized();
-        }
+        if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? "", out var userId)) return Unauthorized();
 
         return review.UserId != userId ? NotFound() : Ok(result);
     }

@@ -12,10 +12,8 @@ public class RedirectIfNotAdminActionFilter : ActionFilterAttribute
 
         if (user.Identity is null || !user.Identity.IsAuthenticated ||
             !user.IsInRole(UserRole.Admin.ToString()))
-        {
             context.Result = new RedirectToActionResult(Constants.DefaultAction, Constants.DefaultController,
                 new { area = Constants.DefaultArea });
-        }
 
         base.OnActionExecuting(context);
     }

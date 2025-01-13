@@ -13,14 +13,16 @@ namespace BusinessLayer.Tests.Stubs;
 
 public class WishListItemServiceStubTests
 {
-    private readonly IWishListItemService _wishListItemService;
-    private readonly Mock<IRepository<WishListItem>> _wishListItemRepositoryMock;
     private readonly IMapper _mapper;
-    private readonly List<WishListItem> _wishListItems = new List<WishListItem>
+    private readonly Mock<IRepository<WishListItem>> _wishListItemRepositoryMock;
+
+    private readonly List<WishListItem> _wishListItems = new()
     {
         new WishListItem { Id = 1, ProductId = 1, UserId = 1 },
         new WishListItem { Id = 2, ProductId = 2, UserId = 2 }
     };
+
+    private readonly IWishListItemService _wishListItemService;
 
     public WishListItemServiceStubTests()
     {
@@ -71,7 +73,8 @@ public class WishListItemServiceStubTests
         // Arrange
         var wishListItemDto = new WishListItemDto { Id = 3, ProductId = 3, UserId = 1 };
         var wishListItem = _mapper.Map<WishListItem>(wishListItemDto);
-        _wishListItemRepositoryMock.Setup(repo => repo.CreateAsync(It.IsAny<WishListItem>(), null)).ReturnsAsync(wishListItem);
+        _wishListItemRepositoryMock.Setup(repo => repo.CreateAsync(It.IsAny<WishListItem>(), null))
+            .ReturnsAsync(wishListItem);
 
         // Act
         var result = await _wishListItemService.CreateWishListItemAsync(wishListItemDto);
@@ -89,7 +92,8 @@ public class WishListItemServiceStubTests
         // Arrange
         var wishListItemDto = new WishListItemDto { Id = 1, ProductId = 3, UserId = 1 };
         var wishListItem = _mapper.Map<WishListItem>(wishListItemDto);
-        _wishListItemRepositoryMock.Setup(repo => repo.UpdateAsync(It.IsAny<WishListItem>(), null)).ReturnsAsync(wishListItem);
+        _wishListItemRepositoryMock.Setup(repo => repo.UpdateAsync(It.IsAny<WishListItem>(), null))
+            .ReturnsAsync(wishListItem);
 
         // Act
         var result = await _wishListItemService.UpdateWishListItemAsync(wishListItemDto);

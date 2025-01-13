@@ -8,7 +8,10 @@ namespace PresentationLayer.Mvc.Areas.Admin.Controllers;
 
 [Area(Constants.Areas.Admin)]
 [RedirectIfNotAdminActionFilter]
-public class ProductController(IProductService productService, IManufacturerService manufacturerService, ITagService tagService) : Controller
+public class ProductController(
+    IProductService productService,
+    IManufacturerService manufacturerService,
+    ITagService tagService) : Controller
 {
     [HttpGet]
     public async Task<IActionResult> Index([FromQuery] ProductFilterDto productFilter)
@@ -68,7 +71,7 @@ public class ProductController(IProductService productService, IManufacturerServ
         {
             Product = product,
             AllManufacturers = manufacturers,
-            AllTags = tags,
+            AllTags = tags
         };
 
         return View(viewModel);

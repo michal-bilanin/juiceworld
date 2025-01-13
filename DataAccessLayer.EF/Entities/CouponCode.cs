@@ -8,6 +8,7 @@ public class CouponCode : BaseEntity, IAuditableEntity
 {
     [MaxLength(100)]
     public string Code { get; set; } = "";
+
     public int GiftCardId { get; set; }
 
     public DateTime? RedeemedAt { get; set; }

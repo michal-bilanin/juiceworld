@@ -27,7 +27,8 @@ public class GiftCardController(IGiftCardService giftCardService) : ControllerBa
     [HttpGet]
     [OpenApiOperation(ApiBaseName + nameof(GetAllgiftCards))]
     [Authorize(Roles = nameof(UserRole.Admin))]
-    public async Task<ActionResult<IEnumerable<GiftCardEditDto>>> GetAllgiftCards([FromQuery] GiftCardFilterDto giftCardFilter)
+    public async Task<ActionResult<IEnumerable<GiftCardEditDto>>> GetAllgiftCards(
+        [FromQuery] GiftCardFilterDto giftCardFilter)
     {
         var result = await giftCardService.GetAllGiftCardsAsync(giftCardFilter);
         return Ok(result);

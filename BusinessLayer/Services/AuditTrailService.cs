@@ -29,9 +29,7 @@ public class AuditTrailService(
             .OrderBy(at => at.CreatedAt);
 
         if (filter is { PageIndex: not null, PageSize: not null })
-        {
             query = query.Paginate(filter.PageIndex.Value, filter.PageSize.Value);
-        }
 
         var result = await query.ExecuteAsync();
         return mapper.Map<List<AuditTrailDto>>(result.Entities);

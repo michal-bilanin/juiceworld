@@ -9,18 +9,15 @@ using Microsoft.AspNetCore.Identity;
 
 namespace BusinessLayer.Services;
 
-public class UserService(IRepository<User> userRepository,
+public class UserService(
+    IRepository<User> userRepository,
     IQueryObject<User> userQueryObject,
     UserManager<User> userManager,
     IMapper mapper) : IUserService
 {
     public async Task<IdentityResult> RegisterUserAsync(UserRegisterDto userRegisterDto, UserRole role)
     {
-
-        if (await GetUserByEmailAsync(userRegisterDto.Email) is not null)
-        {
-            return IdentityResult.Failed();
-        }
+        if (await GetUserByEmailAsync(userRegisterDto.Email) is not null) return IdentityResult.Failed();
 
         var user = new User
         {
@@ -43,8 +40,11 @@ public class UserService(IRepository<User> userRepository,
     public Task<FilteredResult<UserDto>> GetUsersFilteredAsync(UserFilterDto userFilter)
     {
         var query = userQueryObject
-            .Filter(user => user.UserName != null && user.Email != null && (userFilter.Name == null || user.UserName.ToLower().Contains(userFilter.Name.ToLower())
-                || user.Email.ToLower().Contains(userFilter.Name.ToLower())))
+            .Filter(user => user.UserName != null && user.Email != null && (userFilter.Name == null ||
+                                                                            user.UserName.ToLower()
+                                                                                .Contains(userFilter.Name.ToLower())
+                                                                            || user.Email.ToLower()
+                                                                                .Contains(userFilter.Name.ToLower())))
             .Paginate(userFilter.PageIndex, userFilter.PageSize)
             .OrderBy(user => user.Id);
 
@@ -71,31 +71,16 @@ public class UserService(IRepository<User> userRepository,
     public async Task<UserDto?> UpdateUserAsync(UserUpdateDto userDto)
     {
         var user = await userManager.FindByIdAsync(userDto.Id.ToString());
-        if (user == null)
-        {
-            return null;
-        }
+        if (user == null) return null;
 
-        if (!string.IsNullOrEmpty(userDto.Email))
-        {
-            user.Email = userDto.Email;
-        }
+        if (!string.IsNullOrEmpty(userDto.Email)) user.Email = userDto.Email;
 
         // Update only non-null fields
-        if (!string.IsNullOrEmpty(userDto.UserName))
-        {
-            user.UserName = userDto.UserName;
-        }
+        if (!string.IsNullOrEmpty(userDto.UserName)) user.UserName = userDto.UserName;
 
-        if (!string.IsNullOrEmpty(userDto.Email))
-        {
-            user.Email = userDto.Email;
-        }
+        if (!string.IsNullOrEmpty(userDto.Email)) user.Email = userDto.Email;
 
-        if (!string.IsNullOrEmpty(userDto.Bio))
-        {
-            user.Bio = userDto.Bio;
-        }
+        if (!string.IsNullOrEmpty(userDto.Bio)) user.Bio = userDto.Bio;
         user.UserRole = userDto.UserRole;
 
         user.UpdatedAt = DateTime.UtcNow;

@@ -25,10 +25,7 @@ public class CartController(ICartItemService cartItemService) : Controller
         int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId);
 
         var success = await cartItemService.AddToCartAsync(addToCartDto, userId);
-        if (!success)
-        {
-            ViewData[Constants.Keys.ErrorMessage] = "Failed to add item to cart.";
-        }
+        if (!success) ViewData[Constants.Keys.ErrorMessage] = "Failed to add item to cart.";
 
         return RedirectToAction(nameof(Index));
     }
@@ -39,10 +36,7 @@ public class CartController(ICartItemService cartItemService) : Controller
         int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId);
 
         var success = await cartItemService.DeleteCartItemByIdAsync(id, userId);
-        if (!success)
-        {
-            ViewData[Constants.Keys.ErrorMessage] = "Failed to delete item from cart.";
-        }
+        if (!success) ViewData[Constants.Keys.ErrorMessage] = "Failed to delete item from cart.";
 
         return RedirectToAction(nameof(Index));
     }

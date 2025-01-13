@@ -2,7 +2,6 @@ using BusinessLayer.Facades;
 using BusinessLayer.Facades.Interfaces;
 using BusinessLayer.Services;
 using BusinessLayer.Services.Interfaces;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BusinessLayer.Installers;

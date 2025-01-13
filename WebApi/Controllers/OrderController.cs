@@ -37,19 +37,10 @@ public class OrderController(IOrderService orderService) : ControllerBase
     public async Task<ActionResult<OrderDto>> GetOrderDetail(int orderId)
     {
         var result = await orderService.GetOrderDetailByIdAsync(orderId);
-        if (result == null)
-        {
-            return NotFound();
-        }
-        if (User.IsInRole(UserRole.Admin.ToString()))
-        {
-            return Ok(result);
-        }
+        if (result == null) return NotFound();
+        if (User.IsInRole(UserRole.Admin.ToString())) return Ok(result);
 
-        if (!Int32.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? "", out var userId))
-        {
-            return Unauthorized();
-        }
+        if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? "", out var userId)) return Unauthorized();
         return result.UserId != userId ? NotFound() : Ok(result);
     }
 

@@ -10,7 +10,12 @@ using PresentationLayer.Mvc.Models;
 namespace PresentationLayer.Mvc.Areas.Customer.Controllers;
 
 [Area(Constants.Areas.Customer)]
-public class ProductController(ISearchablesFacade searchablesFacade, IProductService productService, ICartItemService cartItemService, IReviewService reviewService) : Controller
+public class ProductController(
+    ISearchablesFacade searchablesFacade,
+    IProductService productService,
+    ICartItemService cartItemService,
+    IReviewService reviewService,
+    IWishListItemService wishListItemService) : Controller
 {
     [HttpGet]
     public async Task<IActionResult> Index([FromQuery] SearchablesFilterViewModel searchablesFilter)
@@ -22,13 +27,18 @@ public class ProductController(ISearchablesFacade searchablesFacade, IProductSer
     [HttpGet]
     public async Task<IActionResult> Details(int id)
     {
+        int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId);
         var product = await productService.GetProductDetailByIdAsync(id);
-        if (product is null)
-        {
-            return NotFound();
-        }
 
-        return View(product);
+        if (product is null) return NotFound();
+
+        var isInWishlist = await wishListItemService.IsProductInWishListAsync(id, userId);
+
+        return View(new ProductDetailViewModel
+        {
+            ProductDetail = product,
+            IsInWishList = isInWishlist
+        });
     }
 
     [HttpPost]
@@ -39,36 +49,39 @@ public class ProductController(ISearchablesFacade searchablesFacade, IProductSer
 
         var success = await cartItemService.AddToCartAsync(addToCartDto, userId);
         var product = await productService.GetProductDetailByIdAsync(addToCartDto.ProductId);
-        if (product is null)
-        {
-            return NotFound();
-        }
+        if (product is null) return NotFound();
 
-        if (!success)
-        {
-            ViewData[Constants.Keys.ErrorMessage] = "Failed to add the product to the cart.";
-        }
+        if (!success) ViewData[Constants.Keys.ErrorMessage] = "Failed to add the product to the cart.";
 
-        return View("Details", product);
+        return RedirectToAction(nameof(Details), new { id = product.Id });
+    }
+
+    [HttpPost]
+    [RedirectIfNotAdminActionFilter]
+    public async Task<IActionResult> AddToWishlist(int productId)
+    {
+        int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId);
+
+        await wishListItemService.CreateWishListItemAsync(new WishListItemDto
+        {
+            ProductId = productId,
+            UserId = userId
+        });
+
+        return RedirectToAction(nameof(Details), new { id = productId });
     }
 
     [HttpPost]
     [RedirectIfNotAuthenticatedActionFilter]
     public async Task<IActionResult> AddReview(ReviewDto reviewDto)
     {
-        if (!ModelState.IsValid)
-        {
-            return RedirectToAction(nameof(Details), new { id = reviewDto.ProductId });
-        }
+        if (!ModelState.IsValid) return RedirectToAction(nameof(Details), new { id = reviewDto.ProductId });
 
         int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId);
 
         reviewDto.UserId = userId;
         var review = await reviewService.CreateReviewAsync(reviewDto);
-        if (review is null)
-        {
-            return BadRequest();
-        }
+        if (review is null) return BadRequest();
 
         return RedirectToAction(nameof(Details), new { id = review.ProductId });
     }
@@ -81,15 +94,10 @@ public class ProductController(ISearchablesFacade searchablesFacade, IProductSer
 
         var review = await reviewService.GetReviewByIdAsync(id);
         if (review is null || (review.UserId != userId && !User.IsInRole(UserRole.Admin.ToString())))
-        {
             return Unauthorized();
-        }
 
         var success = await reviewService.DeleteReviewByIdAsync(id);
-        if (!success)
-        {
-            return BadRequest();
-        }
+        if (!success) return BadRequest();
 
         return RedirectToAction(nameof(Details), new { id = review.ProductId });
     }
