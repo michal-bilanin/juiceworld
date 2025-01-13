@@ -1,9 +1,12 @@
 using System.Security.Claims;
+using AutoMapper;
 using BusinessLayer.DTOs;
 using BusinessLayer.Services.Interfaces;
+using Infrastructure.QueryObjects;
 using Microsoft.AspNetCore.Mvc;
 using PresentationLayer.Mvc.ActionFilters;
 using PresentationLayer.Mvc.Facades.Interfaces;
+using PresentationLayer.Mvc.Models;
 
 namespace PresentationLayer.Mvc.Areas.Customer.Controllers;
 
@@ -12,18 +15,19 @@ namespace PresentationLayer.Mvc.Areas.Customer.Controllers;
 public class OrderController(
     IOrderService orderService,
     ICartItemService cartItemService,
-    IOrderCouponFacade orderCouponFacade) : Controller
+    IOrderCouponFacade orderCouponFacade,
+    IMapper mapper) : Controller
 {
     [HttpGet]
-    public async Task<ActionResult> Index([FromQuery] PaginationDto pagination)
+    public async Task<ActionResult> Index([FromQuery] PaginationViewModel pagination)
     {
         if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId))
         {
             return BadRequest();
         }
 
-        var orders = await orderService.GetOrdersByUserIdAsync(userId, pagination);
-        return View(orders);
+        var orders = await orderService.GetOrdersByUserIdAsync(userId, mapper.Map<PaginationDto>(pagination));
+        return View(mapper.Map<FilteredResult<OrderViewModel>>(orders));
     }
 
     [HttpGet]
@@ -35,9 +39,12 @@ public class OrderController(
         }
 
         var order = await orderService.GetOrderDetailByIdAsync(id);
-        if (order is null || order.UserId != userId) return Unauthorized();
+        if (order is null || order.UserId != userId)
+        {
+            return Unauthorized();
+        }
 
-        return View(order);
+        return View(mapper.Map<OrderDetailViewModel>(order));
     }
 
     [HttpGet]
@@ -50,33 +57,32 @@ public class OrderController(
 
         var cartItems = await cartItemService.GetCartItemsByUserIdAsync(userId);
 
-        return View(new CreateOrderDto { UserId = userId, CartItems = cartItems });
+        return View(new CreateOrderViewModel { UserId = userId, CartItems = mapper.Map<IEnumerable<CartItemDetailViewModel>>(cartItems) });
     }
 
     [HttpPost]
-    public async Task<ActionResult> Create(CreateOrderDto orderDto)
+    public async Task<ActionResult> Create(CreateOrderViewModel orderViewModel)
     {
         if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId))
         {
             return BadRequest();
         }
-        var cartItems = await cartItemService.GetCartItemsByUserIdAsync(userId);
-
+        var cartItems = mapper.Map<IEnumerable<CartItemDetailViewModel>>(await cartItemService.GetCartItemsByUserIdAsync(userId));
 
         if (!ModelState.IsValid)
         {
-            orderDto.CartItems = cartItems;
-            return View(orderDto);
+            orderViewModel.CartItems = cartItems;
+            return View(orderViewModel);
         }
 
-        if (orderDto.UserId != userId) return BadRequest();
+        if (orderViewModel.UserId != userId) return BadRequest();
 
-        var order = await orderCouponFacade.CreateOrderWithCouponAsync(userId, orderDto);
+        var order = await orderCouponFacade.CreateOrderWithCouponAsync(userId, mapper.Map<CreateOrderDto>(orderViewModel));
         if (order is null)
         {
             ModelState.AddModelError("Order", "Failed to create order.");
-            orderDto.CartItems = cartItems;
-            return View(orderDto);
+            orderViewModel.CartItems = cartItems;
+            return View(orderViewModel);
         }
 
         return RedirectToAction(nameof(Details), new { order.Id });

@@ -12,6 +12,36 @@ public class MvcMapperInstaller : Profile
         CreateMap<UserSimpleViewModel, UserDto>().ReverseMap();
         CreateMap<UserUpdateRestrictedViewModel, UserDto>().ReverseMap();
         CreateMap<UserUpdateRestrictedViewModel, UserUpdateDto>().ReverseMap();
+        CreateMap<AddToCartViewModel, AddToCartDto>().ReverseMap();
+        CreateMap<BaseEntityViewModel, BaseEntityDto>().ReverseMap();
+        CreateMap<CartItemDetailViewModel, CartItemDetailDto>().ReverseMap();
+        CreateMap<CouponCodeViewModel, CouponCodeDto>().ReverseMap();
+        CreateMap<CreateOrderViewModel, CreateOrderDto>().ReverseMap();
+
+        CreateMap<GiftCardCreateViewModel, GiftCardCreateDto>().ReverseMap();
+        CreateMap<GiftCardDetailViewModel, GiftCardDetailDto>().ReverseMap();
+        CreateMap<GiftCardEditViewModel, GiftCardEditDto>().ReverseMap();
+        CreateMap<GiftCardFilterViewModel, GiftCardFilterDto>().ReverseMap();
+        CreateMap<GiftCardViewModel, GiftCardViewDto>().ReverseMap();
+
+        CreateMap<ManufacturerFilterViewModel, ManufacturerFilterDto>().ReverseMap();
+        CreateMap<ManufacturerViewModel, ManufacturerDto>().ReverseMap();
+
+        CreateMap<OrderDetailViewModel, OrderDetailDto>().ReverseMap();
+        CreateMap<OrderViewModel, OrderDto>().ReverseMap();
+
+        CreateMap<PaginationViewModel, PaginationDto>().ReverseMap();
+        CreateMap<ProductDetailViewModel, ProductDetailDto>().ReverseMap();
+        CreateMap<ProductFilterViewModel, ProductFilterDto>().ReverseMap();
+        CreateMap<ProductImageViewModel, ProductImageDto>().ReverseMap();
+        CreateMap<ProductViewModel, ProductDto>().ReverseMap();
+
+        CreateMap<ReviewViewModel, ReviewDto>().ReverseMap();
+        CreateMap<TagViewModel, TagDto>().ReverseMap();
+        CreateMap<UserFilterViewModel, UserFilterDto>().ReverseMap();
+        CreateMap<UserRegisterViewModel, UserRegisterDto>().ReverseMap();
+        CreateMap<UserUpdateViewModel, UserUpdateDto>().ReverseMap();
+        CreateMap<WishlistItemDetailViewModel, WishListItemDetailDto>().ReverseMap();
 
         CreateMap<SearchablesFilterViewModel, ProductFilterDto>()
             .ForMember(dest => dest.NameQuery, opt => opt.MapFrom(src => src.NameQuery))

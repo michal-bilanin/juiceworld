@@ -1,6 +1,6 @@
 @using Commons.Enums
 @using PresentationLayer.Mvc
-@model BusinessLayer.DTOs.OrderDetailDto
+@model PresentationLayer.Mvc.Models.OrderDetailViewModel
 
 @{
     ViewData[Constants.Keys.Title] = "Edit Order";
@@ -11,7 +11,6 @@
 <form asp-action="Edit">
     <input type="hidden" asp-for="Id"/>
     <input type="hidden" asp-for="UserId"/>
-    <input type="hidden" asp-for="AddressId"/>
 
     <div class="form-group">
         <label asp-for="PaymentMethodType" class="control-label"></label>

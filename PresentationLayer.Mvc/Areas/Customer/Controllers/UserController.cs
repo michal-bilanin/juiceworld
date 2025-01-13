@@ -28,9 +28,12 @@ public class UserController(
     // POST: /User/Register
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<ActionResult> Register(UserRegisterDto model)
+    public async Task<ActionResult> Register(UserRegisterViewModel model)
     {
-        if (!ModelState.IsValid) return View(model);
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
 
         var result = await userService.RegisterUserAsync(new UserRegisterDto
         {
@@ -126,7 +129,7 @@ public class UserController(
         var user = await userService.GetUserByEmailAsync(User.FindFirst(ClaimTypes.Email)?.Value ?? "");
         if (user is null) return NotFound();
 
-        return View(mapper.Map<UserDto, UserProfileViewModel>(user));
+        return View(mapper.Map<UserProfileViewModel>(user));
     }
 
     [HttpGet]
@@ -138,18 +141,27 @@ public class UserController(
         var user = await userService.GetUserByIdAsync(userId);
         if (user == null) return BadRequest();
 
-        return View(mapper.Map<UserDto, UserUpdateRestrictedViewModel>(user));
+        return View(mapper.Map<UserUpdateRestrictedViewModel>(user));
     }
 
     [HttpPost]
     [RedirectIfNotAuthenticatedActionFilter]
     public async Task<IActionResult> Edit(UserUpdateRestrictedViewModel viewModel)
     {
-        if (!ModelState.IsValid) return View(viewModel);
+        if (!ModelState.IsValid)
+        {
+            return View(viewModel);
+        }
 
-        if (!int.TryParse(User.FindFirst(ClaimTypes.Sid)?.Value, out var userId)) return BadRequest();
+        if (!int.TryParse(User.FindFirst(ClaimTypes.Sid)?.Value, out var userId))
+        {
+            return BadRequest();
+        }
 
-        if (viewModel.Id != userId) return BadRequest();
+        if (viewModel.Id != userId)
+        {
+            return BadRequest();
+        }
 
         if (string.IsNullOrEmpty(viewModel.Password))
             viewModel.Password = null; // Do not update password if it is empty

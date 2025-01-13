@@ -13,9 +13,9 @@ namespace PresentationLayer.Mvc.Areas.Admin.Controllers;
 public class UserController(IUserService userService, IMapper mapper) : Controller
 {
     [HttpGet]
-    public async Task<IActionResult> Index([FromQuery] UserFilterDto userFilterDto)
+    public async Task<IActionResult> Index([FromQuery] UserFilterViewModel userFilterViewModel)
     {
-        var users = await userService.GetUsersFilteredAsync(userFilterDto);
+        var users = await userService.GetUsersFilteredAsync(mapper.Map<UserFilterDto>(userFilterViewModel));
         return View(new FilteredResult<UserSimpleViewModel>
         {
             Entities = mapper.Map<IEnumerable<UserDto>, IEnumerable<UserSimpleViewModel>>(users.Entities),
@@ -27,7 +27,7 @@ public class UserController(IUserService userService, IMapper mapper) : Controll
     [HttpGet]
     public IActionResult Create()
     {
-        return View(new UserRegisterDto
+        return View(new UserRegisterViewModel
         {
             UserName = "",
             Email = "",
@@ -38,13 +38,17 @@ public class UserController(IUserService userService, IMapper mapper) : Controll
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(UserRegisterDto viewModel)
+    public async Task<IActionResult> Create(UserRegisterViewModel viewModel)
     {
-        if (!ModelState.IsValid) return View(viewModel);
+        if (!ModelState.IsValid)
+        {
+            return View(viewModel);
+        }
 
-        var createdUser = await userService.RegisterUserAsync(mapper.Map<UserRegisterDto, UserRegisterDto>(viewModel),
-            viewModel.UserRole);
-        if (createdUser == null)
+        var createdUser = await userService.RegisterUserAsync(
+            mapper.Map<UserRegisterDto, UserRegisterDto>(mapper.Map<UserRegisterDto>(viewModel)), viewModel.UserRole);
+
+        if (!createdUser.Succeeded)
         {
             ModelState.AddModelError("Email", "A user with this username or email already exists.");
             return View(viewModel);
@@ -63,18 +67,21 @@ public class UserController(IUserService userService, IMapper mapper) : Controll
             return View();
         }
 
-        return View(mapper.Map<UserDto, UserUpdateDto>(user));
+        return View(mapper.Map<UserUpdateViewModel>(user));
     }
 
     [HttpPost]
-    public async Task<IActionResult> Edit(UserUpdateDto viewModel)
+    public async Task<IActionResult> Edit(UserUpdateViewModel viewModel)
     {
-        if (!ModelState.IsValid) return View(viewModel);
+        if (!ModelState.IsValid)
+        {
+            return View(viewModel);
+        }
 
         if (string.IsNullOrEmpty(viewModel.Password))
             viewModel.Password = null; // Do not update password if it is empty
 
-        var updatedUser = await userService.UpdateUserAsync(viewModel);
+        var updatedUser = await userService.UpdateUserAsync(mapper.Map<UserUpdateDto>(viewModel));
         if (updatedUser == null)
         {
             ModelState.AddModelError("Email", "A user with this username or email already exists.");

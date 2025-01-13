@@ -1,11 +1,11 @@
+using BusinessLayer.DTOs;
 using Commons.Enums;
 using JuiceWorld.Entities;
 
-namespace BusinessLayer.DTOs;
+namespace PresentationLayer.Mvc.Models;
 
-public class OrderDetailDto
+public class OrderDetailViewModel : BaseEntityViewModel
 {
-    public int Id { get; set; }
     public DeliveryType DeliveryType { get; set; } = DeliveryType.Standard;
     public OrderStatus Status { get; set; } = OrderStatus.Pending;
     public DateTime? Departure { get; set; }

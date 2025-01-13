@@ -1,9 +1,10 @@
 using System.ComponentModel.DataAnnotations;
+using BusinessLayer.DTOs;
 using Commons.Enums;
 
-namespace BusinessLayer.DTOs;
+namespace PresentationLayer.Mvc.Models;
 
-public class CreateOrderDto : BaseEntityDto
+public class CreateOrderViewModel
 {
     public DeliveryType DeliveryType { get; set; } = DeliveryType.Standard;
     public PaymentMethodType PaymentMethodType { get; set; } = PaymentMethodType.Monero;
@@ -25,5 +26,6 @@ public class CreateOrderDto : BaseEntityDto
 
     public int UserId { get; set; }
     public int AddressId { get; set; }
+    public IEnumerable<CartItemDetailViewModel> CartItems { get; set; } = [];
     public string? CouponCodeString { get; set; }
 }

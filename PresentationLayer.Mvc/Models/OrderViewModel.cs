@@ -1,11 +1,9 @@
 using Commons.Enums;
-using JuiceWorld.Entities;
 
-namespace BusinessLayer.DTOs;
+namespace PresentationLayer.Mvc.Models;
 
-public class OrderDetailDto
+public class OrderViewModel : BaseEntityViewModel
 {
-    public int Id { get; set; }
     public DeliveryType DeliveryType { get; set; } = DeliveryType.Standard;
     public OrderStatus Status { get; set; } = OrderStatus.Pending;
     public DateTime? Departure { get; set; }
@@ -16,9 +14,6 @@ public class OrderDetailDto
     public required string HouseNumber { get; set; }
     public required string ZipCode { get; set; }
     public required string Country { get; set; }
-    public UserDto? User { get; set; }
     public int UserId { get; set; }
-
-    public CouponCode? CouponCode { get; set; }
-    public List<OrderProductDetailDto> OrderProducts { get; set; } = [];
+    public int AddressId { get; set; }
 }

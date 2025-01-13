@@ -3,6 +3,7 @@ using System.Security.Claims;
 using BusinessLayer.DTOs;
 using BusinessLayer.Facades.Interfaces;
 using BusinessLayer.Services.Interfaces;
+using Infrastructure.QueryObjects;
 using Microsoft.AspNetCore.Mvc;
 using PresentationLayer.Mvc.ActionFilters;
 using PresentationLayer.Mvc.Models;
@@ -17,10 +18,10 @@ public class ProductController(IProductFacade productFacade,
     ITagService tagService) : Controller
 {
     [HttpGet]
-    public async Task<IActionResult> Index([FromQuery] ProductFilterDto productFilter)
+    public async Task<IActionResult> Index([FromQuery] ProductFilterViewModel productFilter)
     {
-        var products = await productFacade.GetProductsFilteredAsync(productFilter);
-        return View(products);
+        var products = await productFacade.GetProductsFilteredAsync(mapper.Map<ProductFilterDto>(productFilter));
+        return View(mapper.Map<FilteredResult<ProductViewModel>>(products));
     }
 
     [HttpGet]
@@ -30,9 +31,9 @@ public class ProductController(IProductFacade productFacade,
         var tags = await tagService.GetAllTagsAsync();
         var viewModel = new ProductEditViewModel
         {
-            Product = new ProductImageDto(),
-            AllManufacturers = manufacturers,
-            AllTags = tags
+            Product = new ProductImageViewModel(),
+            AllManufacturers = mapper.Map<IEnumerable<ManufacturerViewModel>>(manufacturers),
+            AllTags = mapper.Map<IEnumerable<TagViewModel>>(tags)
         };
 
         return View(viewModel);
@@ -43,8 +44,8 @@ public class ProductController(IProductFacade productFacade,
     {
         if (!ModelState.IsValid)
         {
-            viewModel.AllManufacturers = await manufacturerService.GetAllManufacturersAsync();
-            viewModel.AllTags = await tagService.GetAllTagsAsync();
+            viewModel.AllManufacturers = mapper.Map<IEnumerable<ManufacturerViewModel>>(await manufacturerService.GetAllManufacturersAsync());
+            viewModel.AllTags = mapper.Map<IEnumerable<TagViewModel>>(await tagService.GetAllTagsAsync());
             return View(viewModel);
         }
 
@@ -58,7 +59,7 @@ public class ProductController(IProductFacade productFacade,
             }
         }
 
-        var createdProduct = await productFacade.CreateProductAsync(viewModel.Product);
+        var createdProduct = await productFacade.CreateProductAsync(mapper.Map<ProductImageDto>(viewModel.Product));
         if (createdProduct == null)
         {
             ModelState.AddModelError("Id", "Failed to create product.");
@@ -82,9 +83,9 @@ public class ProductController(IProductFacade productFacade,
         var tags = await tagService.GetAllTagsAsync();
         var viewModel = new ProductEditViewModel
         {
-            Product = mapper.Map<ProductImageDto>(product),
-            AllManufacturers = manufacturers,
-            AllTags = tags
+            Product = mapper.Map<ProductImageViewModel>(product),
+            AllManufacturers = mapper.Map<IEnumerable<ManufacturerViewModel>>(manufacturers),
+            AllTags = mapper.Map<IEnumerable<TagViewModel>>(tags)
         };
 
         return View(viewModel);
@@ -100,8 +101,8 @@ public class ProductController(IProductFacade productFacade,
 
         if (!ModelState.IsValid)
         {
-            viewModel.AllManufacturers = await manufacturerService.GetAllManufacturersAsync();
-            viewModel.AllTags = await tagService.GetAllTagsAsync();
+            viewModel.AllManufacturers = mapper.Map<IEnumerable<ManufacturerViewModel>>(await manufacturerService.GetAllManufacturersAsync());
+            viewModel.AllTags = mapper.Map<IEnumerable<TagViewModel>>(await tagService.GetAllTagsAsync());
             return View(viewModel);
         }
 
@@ -115,7 +116,7 @@ public class ProductController(IProductFacade productFacade,
             }
         }
 
-        var updatedProduct = await productFacade.UpdateProductAsync(viewModel.Product, userId);
+        var updatedProduct = await productFacade.UpdateProductAsync(mapper.Map<ProductImageDto>(viewModel.Product), userId);
         if (updatedProduct == null)
         {
             ModelState.AddModelError("Id", "Failed to update product.");

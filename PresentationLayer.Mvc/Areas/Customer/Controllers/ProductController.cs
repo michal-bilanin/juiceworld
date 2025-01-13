@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using AutoMapper;
 using BusinessLayer.DTOs;
 using BusinessLayer.Services.Interfaces;
 using Commons.Enums;
@@ -15,7 +16,8 @@ public class ProductController(
     IProductService productService,
     ICartItemService cartItemService,
     IReviewService reviewService,
-    IWishListItemService wishListItemService) : Controller
+    IWishListItemService wishListItemService,
+    IMapper mapper) : Controller
 {
     [HttpGet]
     public async Task<IActionResult> Index([FromQuery] SearchablesFilterViewModel searchablesFilter)
@@ -53,15 +55,15 @@ public class ProductController(
 
     [HttpPost]
     [RedirectIfNotAuthenticatedActionFilter]
-    public async Task<IActionResult> AddToCart(AddToCartDto addToCartDto)
+    public async Task<IActionResult> AddToCart(AddToCartViewModel addToCartViewModel)
     {
         if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId))
         {
             return BadRequest();
         }
 
-        var success = await cartItemService.AddToCartAsync(addToCartDto, userId);
-        var product = await productService.GetProductDetailByIdAsync(addToCartDto.ProductId);
+        var success = await cartItemService.AddToCartAsync(mapper.Map<AddToCartDto>(addToCartViewModel), userId);
+        var product = await productService.GetProductDetailByIdAsync(addToCartViewModel.ProductId);
         if (product is null) return NotFound();
 
         if (!success) ViewData[Constants.Keys.ErrorMessage] = "Failed to add the product to the cart.";
@@ -89,17 +91,20 @@ public class ProductController(
 
     [HttpPost]
     [RedirectIfNotAuthenticatedActionFilter]
-    public async Task<IActionResult> AddReview(ReviewDto reviewDto)
+    public async Task<IActionResult> AddReview(ReviewViewModel reviewViewModel)
     {
-        if (!ModelState.IsValid) return RedirectToAction(nameof(Details), new { id = reviewDto.ProductId });
+        if (!ModelState.IsValid)
+        {
+            return RedirectToAction(nameof(Details), new { id = reviewViewModel.ProductId });
+        }
 
         if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId))
         {
             return BadRequest();
         }
 
-        reviewDto.UserId = userId;
-        var review = await reviewService.CreateReviewAsync(reviewDto);
+        reviewViewModel.UserId = userId;
+        var review = await reviewService.CreateReviewAsync(mapper.Map<ReviewDto>(reviewViewModel));
         if (review is null) return BadRequest();
 
         return RedirectToAction(nameof(Details), new { id = review.ProductId });
@@ -119,7 +124,10 @@ public class ProductController(
             return Unauthorized();
 
         var success = await reviewService.DeleteReviewByIdAsync(id);
-        if (!success) return BadRequest();
+        if (!success)
+        {
+            return BadRequest();
+        }
 
         return RedirectToAction(nameof(Details), new { id = review.ProductId });
     }
