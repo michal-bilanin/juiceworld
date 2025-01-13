@@ -105,7 +105,7 @@ public class ImageServiceTests
         await _imageService.SaveImageAsync(base64Image, imageName);
 
         // Act
-        var result = _imageService.DeleteImageAsync(imageName);
+        var result = _imageService.DeleteImage(imageName);
 
         // Assert
         Assert.True(result);
@@ -119,7 +119,7 @@ public class ImageServiceTests
         var imageName = "nonExistingImage.png";
 
         // Act
-        var result = _imageService.DeleteImageAsync(imageName);
+        var result = _imageService.DeleteImage(imageName);
 
         // Assert
         Assert.True(result); // It should return true even if the file doesn't exist

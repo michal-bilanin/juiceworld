@@ -54,7 +54,7 @@ public class ImageService(ILogger<ImageService> logger) : IImageService
         return Convert.ToBase64String(await File.ReadAllBytesAsync(filePath));
     }
 
-    public bool DeleteImageAsync(string imageName)
+    public bool DeleteImage(string imageName)
     {
         try
         {
@@ -69,7 +69,7 @@ public class ImageService(ILogger<ImageService> logger) : IImageService
         return true;
     }
 
-    public async Task<bool> UpdateImageAsync(string base64Image, string? imageName, string newImageName)
+    public Task<bool> UpdateImageAsync(string base64Image, string? imageName, string newImageName)
     {
         if (imageName != null)
         {
@@ -79,6 +79,6 @@ public class ImageService(ILogger<ImageService> logger) : IImageService
                 File.Delete(oldImagePath);
             }
         }
-        return await SaveImageAsync(base64Image, newImageName);
+        return SaveImageAsync(base64Image, newImageName);
     }
 }

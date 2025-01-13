@@ -15,7 +15,8 @@ public class TagService(
     IMapper mapper) : ITagService
 {
     private readonly string _cacheKeyPrefix = nameof(TagService);
-
+    private string CacheKeyTag(int id) => $"{_cacheKeyPrefix}-tag{id}"; 
+    private string CacheKeyTagAll() => $"{_cacheKeyPrefix}-allTags"; 
     public async Task<TagDto?> CreateTagAsync(TagDto tagDto)
     {
         var newTag = await tagRepository.CreateAsync(mapper.Map<Tag>(tagDto));
@@ -24,7 +25,7 @@ public class TagService(
 
     public async Task<IEnumerable<TagDto>> GetAllTagsAsync()
     {
-        var cacheKey = $"{_cacheKeyPrefix}-allTags";
+        var cacheKey = CacheKeyTagAll();
         if (!memoryCache.TryGetValue(cacheKey, out List<Tag>? value))
         {
             var tags = await tagRepository.GetAllAsync();
@@ -56,7 +57,7 @@ public class TagService(
 
     public async Task<TagDto?> GetTagByIdAsync(int id)
     {
-        var cacheKey = $"{_cacheKeyPrefix}-tag{id}";
+        var cacheKey = CacheKeyTag(id);
         if (!memoryCache.TryGetValue(cacheKey, out Tag? value))
         {
             value = await tagRepository.GetByIdAsync(id);
@@ -70,7 +71,7 @@ public class TagService(
 
     public async Task<TagDto?> UpdateTagAsync(TagDto tagDto)
     {
-        var cacheKey = $"{_cacheKeyPrefix}-tag{tagDto.Id}";
+        var cacheKey = CacheKeyTag(tagDto.Id);
         memoryCache.Remove(cacheKey);
         var cacheKeyAll = $"{_cacheKeyPrefix}-allTags";
         memoryCache.Remove(cacheKeyAll);
@@ -78,12 +79,12 @@ public class TagService(
         return updatedTag is null ? null : mapper.Map<TagDto>(updatedTag);
     }
 
-    public async Task<bool> DeleteTagByIdAsync(int id)
+    public Task<bool> DeleteTagByIdAsync(int id)
     {
-        var cacheKey = $"{_cacheKeyPrefix}-tag{id}";
+        var cacheKey = CacheKeyTag(id);
         memoryCache.Remove(cacheKey);
-        var cacheKeyAll = $"{_cacheKeyPrefix}-allTags";
+        var cacheKeyAll = CacheKeyTagAll();
         memoryCache.Remove(cacheKeyAll);
-        return await tagRepository.DeleteAsync(id);
+        return tagRepository.DeleteAsync(id);
     }
 }

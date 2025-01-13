@@ -79,9 +79,9 @@ public class CartItemService(
         return true;
     }
 
-    public async Task<bool> DeleteCartItemByIdAsync(int id)
+    public Task<bool> DeleteCartItemByIdAsync(int id)
     {
-        return await cartItemRepository.DeleteAsync(id);
+        return cartItemRepository.DeleteAsync(id);
     }
 
     public async Task<bool> DeleteCartItemByIdAsync(int id, int userId)
