@@ -46,36 +46,42 @@ public class CartItemService(
     public async Task<bool> AddToCartAsync(AddToCartDto addToCartDto, int userId)
     {
         var product = await orderUnitOfWork.ProductRepository.GetByIdAsync(addToCartDto.ProductId);
-        if (product is null) return false;
+        if (product is null)
+        {
+            return false;
+        }
 
         await orderUnitOfWork.WishListItemRepository.RemoveAllByConditionAsync(wli =>
-            wli.UserId == userId && wli.ProductId == addToCartDto.ProductId);
+            wli.UserId == userId && wli.ProductId == addToCartDto.ProductId, userId, false);
 
         var cartItem =
             (await orderUnitOfWork.CartItemRepository.GetByConditionAsync(c =>
                 c.UserId == userId && c.ProductId == addToCartDto.ProductId)).FirstOrDefault();
         if (cartItem is null)
         {
-            if (addToCartDto.Quantity <= 0) return false;
+            if (addToCartDto.Quantity <= 0)
+            {
+                return false;
+            }
 
             await orderUnitOfWork.CartItemRepository.CreateAsync(new CartItem
             {
                 UserId = userId,
                 ProductId = addToCartDto.ProductId,
                 Quantity = addToCartDto.Quantity
-            });
+            }, userId, false);
 
-            await orderUnitOfWork.Commit();
+            await orderUnitOfWork.Commit(userId);
             return true;
         }
 
         cartItem.Quantity = addToCartDto.Quantity;
         if (cartItem.Quantity <= 0)
-            await orderUnitOfWork.CartItemRepository.DeleteAsync(cartItem.Id);
+            await orderUnitOfWork.CartItemRepository.DeleteAsync(cartItem.Id, userId, false);
         else
-            await orderUnitOfWork.CartItemRepository.UpdateAsync(cartItem);
+            await orderUnitOfWork.CartItemRepository.UpdateAsync(cartItem, userId, false);
 
-        await orderUnitOfWork.Commit();
+        await orderUnitOfWork.Commit(userId);
         return true;
     }
 
@@ -89,12 +95,18 @@ public class CartItemService(
         var cartItem =
             (await orderUnitOfWork.CartItemRepository.GetByConditionAsync(c => c.Id == id && c.UserId == userId))
             .FirstOrDefault();
-        if (cartItem is null) return false;
+        if (cartItem is null)
+        {
+            return false;
+        }
 
-        if (cartItem.UserId != userId) return false;
+        if (cartItem.UserId != userId)
+        {
+            return false;
+        }
 
-        await orderUnitOfWork.CartItemRepository.DeleteAsync(id);
-        await orderUnitOfWork.Commit();
+        await orderUnitOfWork.CartItemRepository.DeleteAsync(id, userId, false);
+        await orderUnitOfWork.Commit(userId);
         return true;
     }
 }

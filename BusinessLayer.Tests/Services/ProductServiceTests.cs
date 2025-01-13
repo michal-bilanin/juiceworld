@@ -132,7 +132,7 @@ public class ProductServiceTests
         };
 
         // Act
-        var result = await _productService.UpdateProductAsync(product);
+        var result = await _productService.UpdateProductAsync(product, 1);
 
         // Assert
         Assert.NotNull(result);

@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using BusinessLayer.DTOs;
 using BusinessLayer.Facades.Interfaces;
 using Commons.Enums;
@@ -53,7 +54,12 @@ public class ProductController(IProductFacade productFacade) : ControllerBase
     [Authorize(Roles = nameof(UserRole.Admin))]
     public async Task<ActionResult<ProductDto>> UpdateProduct(ProductImageDto product)
     {
-        var result = await productFacade.UpdateProductAsync(product);
+        if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? "", out var userId))
+        {
+            return Unauthorized();
+        }
+
+        var result = await productFacade.UpdateProductAsync(product, userId);
         return result == null ? NotFound() : Ok(result);
     }
 

@@ -58,7 +58,7 @@ public class CartItemServiceStubTests
     {
         var cartItemDto = new CartItemDto { Id = 3, ProductId = 3, Quantity = 1 };
         var cartItem = _mapper.Map<CartItem>(cartItemDto);
-        _cartItemRepositoryMock.Setup(repo => repo.CreateAsync(It.IsAny<CartItem>(), null)).ReturnsAsync(cartItem);
+        _cartItemRepositoryMock.Setup(repo => repo.CreateAsync(It.IsAny<CartItem>(), null, true)).ReturnsAsync(cartItem);
         var result = await _cartItemService.CreateCartItemAsync(cartItemDto);
         Assert.NotNull(result);
         Assert.Equal(cartItemDto.Id, result.Id);
@@ -69,7 +69,7 @@ public class CartItemServiceStubTests
     {
         var cartItemDto = new CartItemDto { Id = 1, ProductId = 1, Quantity = 3 };
         var updatedCartItem = _mapper.Map<CartItem>(cartItemDto);
-        _cartItemRepositoryMock.Setup(repo => repo.UpdateAsync(It.IsAny<CartItem>(), null))
+        _cartItemRepositoryMock.Setup(repo => repo.UpdateAsync(It.IsAny<CartItem>(), null, true))
             .ReturnsAsync(updatedCartItem);
         var result = await _cartItemService.UpdateCartItemAsync(cartItemDto);
         Assert.NotNull(result);
@@ -80,7 +80,7 @@ public class CartItemServiceStubTests
     public async Task DeleteCartItemByIdAsync_Simple()
     {
         var cartItemId = 1;
-        _cartItemRepositoryMock.Setup(repo => repo.DeleteAsync(cartItemId, null)).ReturnsAsync(true);
+        _cartItemRepositoryMock.Setup(repo => repo.DeleteAsync(cartItemId, null, true)).ReturnsAsync(true);
         var result = await _cartItemService.DeleteCartItemByIdAsync(cartItemId);
         Assert.True(result);
     }

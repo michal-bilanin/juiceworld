@@ -79,7 +79,7 @@ public class ManufacturerServiceStubTests
         // Arrange
         var manufacturerDto = new ManufacturerDto { Name = "New Manufacturer" };
         var manufacturer = _mapper.Map<Manufacturer>(manufacturerDto);
-        _manufacturerRepositoryMock.Setup(repo => repo.CreateAsync(It.IsAny<Manufacturer>(), null))
+        _manufacturerRepositoryMock.Setup(repo => repo.CreateAsync(It.IsAny<Manufacturer>(), null, true))
             .ReturnsAsync(manufacturer);
 
         // Act
@@ -96,7 +96,7 @@ public class ManufacturerServiceStubTests
         // Arrange
         var manufacturerDto = new ManufacturerDto { Id = 1, Name = "Updated Manufacturer" };
         var updatedManufacturer = _mapper.Map<Manufacturer>(manufacturerDto);
-        _manufacturerRepositoryMock.Setup(repo => repo.UpdateAsync(It.IsAny<Manufacturer>(), null))
+        _manufacturerRepositoryMock.Setup(repo => repo.UpdateAsync(It.IsAny<Manufacturer>(), null, true))
             .ReturnsAsync(updatedManufacturer);
 
         // Act
@@ -112,7 +112,7 @@ public class ManufacturerServiceStubTests
     {
         // Arrange
         var manufacturerId = 1;
-        _manufacturerRepositoryMock.Setup(repo => repo.DeleteAsync(manufacturerId, null)).ReturnsAsync(true);
+        _manufacturerRepositoryMock.Setup(repo => repo.DeleteAsync(manufacturerId, null, true)).ReturnsAsync(true);
 
         // Act
         var result = await _manufacturerService.DeleteManufacturerByIdAsync(manufacturerId);

@@ -5,8 +5,10 @@ using BusinessLayer.Services.Interfaces;
 using JuiceWorld.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using PresentationLayer.Mvc.ActionFilters;
 using PresentationLayer.Mvc.Models;
+using Index = System.Index;
 
 namespace PresentationLayer.Mvc.Areas.Customer.Controllers;
 
@@ -78,14 +80,15 @@ public class UserController(
     {
         if (!ModelState.IsValid)
         {
-            ModelState.AddModelError("InvalidCredentials", "Invalid username or password.");
             return View(model);
         }
+
+        // Add error message by default, redirect on success
+        ModelState.AddModelError(nameof(UserLoginViewModel.Email), "Invalid username or password.");
 
         var user = await signInManager.UserManager.FindByEmailAsync(model.Email);
         if (user == null)
         {
-            ModelState.AddModelError(string.Empty, "User doesn't exist.");
             return View(model);
         }
 
@@ -104,9 +107,7 @@ public class UserController(
             return RedirectToAction(nameof(Index), "Home");
         }
 
-        ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-
-        return RedirectToAction(nameof(Index), "Home");
+        return View(model);
     }
 
     // GET: /User/Logout

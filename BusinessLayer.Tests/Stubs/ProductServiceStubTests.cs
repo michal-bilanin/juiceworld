@@ -109,7 +109,7 @@ public class ProductServiceStubTests
         };
 
         var product = _mapper.Map<Product>(productDto);
-        _productRepositoryMock.Setup(repo => repo.CreateAsync(It.IsAny<Product>(), null)).ReturnsAsync(product);
+        _productRepositoryMock.Setup(repo => repo.CreateAsync(It.IsAny<Product>(), null, true)).ReturnsAsync(product);
 
         // Act
         var result = await _productService.CreateProductAsync(productDto);
@@ -129,7 +129,7 @@ public class ProductServiceStubTests
     {
         // Arrange
         var productId = 1;
-        _productRepositoryMock.Setup(repo => repo.DeleteAsync(productId, null)).ReturnsAsync(true);
+        _productRepositoryMock.Setup(repo => repo.DeleteAsync(productId, null, true)).ReturnsAsync(true);
 
         // Act
         var result = await _productService.DeleteProductByIdAsync(productId);

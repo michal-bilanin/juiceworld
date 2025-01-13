@@ -97,7 +97,7 @@ public class ReviewServiceStubTests
         };
 
         var review = _mapper.Map<Review>(reviewDto);
-        _reviewRepositoryMock.Setup(repo => repo.CreateAsync(It.IsAny<Review>(), null)).ReturnsAsync(review);
+        _reviewRepositoryMock.Setup(repo => repo.CreateAsync(It.IsAny<Review>(), null, true)).ReturnsAsync(review);
 
         // Act
         var result = await _reviewService.CreateReviewAsync(reviewDto);
@@ -125,7 +125,7 @@ public class ReviewServiceStubTests
         };
 
         var review = _mapper.Map<Review>(reviewDto);
-        _reviewRepositoryMock.Setup(repo => repo.UpdateAsync(It.IsAny<Review>(), null)).ReturnsAsync(review);
+        _reviewRepositoryMock.Setup(repo => repo.UpdateAsync(It.IsAny<Review>(), null, true)).ReturnsAsync(review);
 
         // Act
         var result = await _reviewService.UpdateReviewAsync(reviewDto);
@@ -144,7 +144,7 @@ public class ReviewServiceStubTests
     {
         // Arrange
         var reviewId = 1;
-        _reviewRepositoryMock.Setup(repo => repo.DeleteAsync(reviewId, null)).ReturnsAsync(true);
+        _reviewRepositoryMock.Setup(repo => repo.DeleteAsync(reviewId, null, true)).ReturnsAsync(true);
 
         // Act
         var result = await _reviewService.DeleteReviewByIdAsync(reviewId);

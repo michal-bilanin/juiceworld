@@ -27,37 +27,46 @@ public class OrderService(
         var order = mapper.Map<Order>(orderDto);
         order.Status = OrderStatus.Pending;
         order.CouponId = couponId;
-        var newOrder = await orderUnitOfWork.OrderRepository.CreateAsync(order, order.UserId);
+        var newOrder = await orderUnitOfWork.OrderRepository.CreateAsync(order, order.UserId, false);
 
-        if (newOrder is null) return null;
+        if (newOrder is null)
+        {
+            return null;
+        }
 
         var cartItems =
             (List<CartItem>)await orderUnitOfWork.CartItemRepository.GetByConditionAsync(
                 ci => ci.UserId == order.UserId, nameof(CartItem.Product));
 
-        if (cartItems.Count == 0) return null;
+        if (cartItems.Count == 0)
+        {
+            return null;
+        }
 
         // remove cart items
         await orderUnitOfWork.CartItemRepository.RemoveAllByConditionAsync(ci => ci.UserId == order.UserId,
-            order.UserId);
+            order.UserId, false);
 
         // create order products
         List<OrderProduct> orderProducts = [];
         foreach (var cartItem in cartItems)
         {
-            if (cartItem.Product is null) return null;
+            if (cartItem.Product is null)
+            {
+                return null;
+            }
 
             orderProducts.Add(new OrderProduct
             {
-                OrderId = newOrder.Id,
+                Order = newOrder,
                 ProductId = cartItem.ProductId,
                 Quantity = cartItem.Quantity,
                 Price = cartItem.Product.Price
             });
         }
 
-        await orderUnitOfWork.OrderProductRepository.CreateRangeAsync(orderProducts);
-        await orderUnitOfWork.Commit();
+        await orderUnitOfWork.OrderProductRepository.CreateRangeAsync(orderProducts, order.UserId, false);
+        await orderUnitOfWork.Commit(order.UserId);
 
         return mapper.Map<OrderDto>(newOrder);
     }
@@ -158,11 +167,12 @@ public class OrderService(
 
         var order = mapper.Map<Order>(orderDto);
         order.OrderProducts = [];
-        var updatedOrder = await orderUnitOfWork.OrderRepository.UpdateAsync(order);
+        var updatedOrder = await orderUnitOfWork.OrderRepository.UpdateAsync(order, order.UserId, false);
         if (updatedOrder is null) return null;
 
         // remove old order products
-        await orderUnitOfWork.OrderProductRepository.RemoveAllByConditionAsync(op => op.OrderId == orderDto.Id);
+        await orderUnitOfWork.OrderProductRepository.RemoveAllByConditionAsync(op => op.OrderId == orderDto.Id,
+            order.UserId, false);
 
         // fetch products
         var products = (await orderUnitOfWork.ProductRepository.GetByConditionAsync(p =>
@@ -186,9 +196,9 @@ public class OrderService(
             });
         }
 
-        await orderUnitOfWork.OrderProductRepository.CreateRangeAsync(orderProducts);
+        await orderUnitOfWork.OrderProductRepository.CreateRangeAsync(orderProducts, order.UserId, false);
 
-        await orderUnitOfWork.Commit();
+        await orderUnitOfWork.Commit(order.UserId);
         return mapper.Map<OrderDto>(updatedOrder);
     }
 

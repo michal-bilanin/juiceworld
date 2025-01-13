@@ -13,7 +13,10 @@ public class CartController(ICartItemService cartItemService) : Controller
     [HttpGet]
     public async Task<ActionResult> Index()
     {
-        int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId);
+        if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId))
+        {
+            return BadRequest();
+        }
 
         var cartItems = await cartItemService.GetCartItemsByUserIdAsync(userId);
         return View(cartItems);
@@ -22,7 +25,10 @@ public class CartController(ICartItemService cartItemService) : Controller
     [HttpPost]
     public async Task<IActionResult> AddToCart(AddToCartDto addToCartDto)
     {
-        int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId);
+        if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId))
+        {
+            return BadRequest();
+        }
 
         var success = await cartItemService.AddToCartAsync(addToCartDto, userId);
         if (!success) ViewData[Constants.Keys.ErrorMessage] = "Failed to add item to cart.";
@@ -33,7 +39,10 @@ public class CartController(ICartItemService cartItemService) : Controller
     [HttpPost]
     public async Task<IActionResult> DeleteCartItem(int id)
     {
-        int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId);
+        if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId))
+        {
+            return BadRequest();
+        }
 
         var success = await cartItemService.DeleteCartItemByIdAsync(id, userId);
         if (!success) ViewData[Constants.Keys.ErrorMessage] = "Failed to delete item from cart.";

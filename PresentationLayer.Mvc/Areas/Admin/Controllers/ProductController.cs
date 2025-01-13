@@ -1,4 +1,5 @@
 using AutoMapper;
+using System.Security.Claims;
 using BusinessLayer.DTOs;
 using BusinessLayer.Facades.Interfaces;
 using BusinessLayer.Services.Interfaces;
@@ -92,6 +93,11 @@ public class ProductController(IProductFacade productFacade,
     [HttpPost]
     public async Task<IActionResult> Edit(ProductEditViewModel viewModel)
     {
+        if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? "", out var userId))
+        {
+            return Unauthorized();
+        }
+
         if (!ModelState.IsValid)
         {
             viewModel.AllManufacturers = await manufacturerService.GetAllManufacturersAsync();
@@ -109,7 +115,7 @@ public class ProductController(IProductFacade productFacade,
             }
         }
 
-        var updatedProduct = await productFacade.UpdateProductAsync(viewModel.Product);
+        var updatedProduct = await productFacade.UpdateProductAsync(viewModel.Product, userId);
         if (updatedProduct == null)
         {
             ModelState.AddModelError("Id", "Failed to update product.");
