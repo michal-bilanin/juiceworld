@@ -1,5 +1,8 @@
+using BusinessLayer.Facades;
+using BusinessLayer.Facades.Interfaces;
 using BusinessLayer.Services;
 using BusinessLayer.Services.Interfaces;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BusinessLayer.Installers;
@@ -10,7 +13,7 @@ public static class BusinessLayerInstaller
     {
         services.AddAutoMapper(typeof(BusinessLayerInstaller));
 
-        services.AddScoped<IAddressService, AddressService>();
+        services.AddScoped<IGiftCardService, GiftCardService>();
         services.AddScoped<ICartItemService, CartItemService>();
         services.AddScoped<IManufacturerService, ManufacturerService>();
         services.AddScoped<IOrderService, OrderService>();
@@ -19,6 +22,10 @@ public static class BusinessLayerInstaller
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IWishListItemService, WishListItemService>();
         services.AddScoped<IAuditTrailService, AuditTrailService>();
+        services.AddScoped<ITagService, TagService>();
+        services.AddScoped<IImageService, ImageService>();
+        services.AddScoped<IProductFacade, ProductFacade>();
+        services.AddMemoryCache();
 
         return services;
     }

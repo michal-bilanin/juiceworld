@@ -5,7 +5,6 @@ using BusinessLayer.Services;
 using BusinessLayer.Services.Interfaces;
 using Commons.Enums;
 using Infrastructure.Repositories;
-using JuiceWorld.Data;
 using JuiceWorld.Entities;
 using JuiceWorld.QueryObjects;
 using JuiceWorld.Repositories;

@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using BusinessLayer.DTOs;
 using BusinessLayer.Services.Interfaces;
 using Commons.Enums;
@@ -43,11 +44,26 @@ public class ReviewController(IReviewService reviewService) : ControllerBase
     public async Task<ActionResult<ReviewDto>> UpdateReview(ReviewDto review)
     {
         var result = await reviewService.UpdateReviewAsync(review);
-        return result == null ? NotFound() : Ok(result);
+
+        if (result == null)
+            return NotFound();
+
+        if (User.IsInRole(UserRole.Admin.ToString()))
+        {
+            return Ok(result);
+        }
+
+        if (!Int32.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? "", out var userId))
+        {
+            return Unauthorized();
+        }
+
+        return review.UserId != userId ? NotFound() : Ok(result);
     }
 
     [HttpDelete("{reviewId:int}")]
     [OpenApiOperation(ApiBaseName + nameof(DeleteReview))]
+    [Authorize(Roles = nameof(UserRole.Admin))]
     public async Task<ActionResult<bool>> DeleteReview(int reviewId)
     {
         var result = await reviewService.DeleteReviewByIdAsync(reviewId);

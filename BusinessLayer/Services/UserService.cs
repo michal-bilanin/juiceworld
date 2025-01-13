@@ -1,60 +1,37 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using AutoMapper;
 using BusinessLayer.DTOs;
 using BusinessLayer.Services.Interfaces;
-using Commons.Constants;
-using Commons.Utils;
+using Commons.Enums;
 using Infrastructure.QueryObjects;
 using Infrastructure.Repositories;
 using JuiceWorld.Entities;
-using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Identity;
 
 namespace BusinessLayer.Services;
 
-public class UserService(IRepository<User> userRepository, IQueryObject<User> userQueryObject, IMapper mapper) : IUserService
+public class UserService(IRepository<User> userRepository,
+    IQueryObject<User> userQueryObject,
+    UserManager<User> userManager,
+    IMapper mapper) : IUserService
 {
-    private const int PasswordHashRounds = 10;
-
-    public async Task<UserDto?> CreateUserAsync(UserDto userDto)
-    {
-        var newUser = await userRepository.CreateAsync(mapper.Map<User>(userDto));
-        return newUser is null ? null : mapper.Map<UserDto>(newUser);
-    }
-
-    public async Task<string?> LoginAsync(LoginDto login)
-    {
-        var user = await GetUserByEmailAsync(login.Email);
-        if (user is null)
-        {
-            return null;
-        }
-
-        return !VerifyPassword(user, login.Password) ? null : CreateToken(user);
-    }
-
-    public async Task<string?> RegisterUserAsync(UserRegisterDto userRegisterDto)
+    public async Task<IdentityResult> RegisterUserAsync(UserRegisterDto userRegisterDto, UserRole role)
     {
 
         if (await GetUserByEmailAsync(userRegisterDto.Email) is not null)
         {
-            return null;
+            return IdentityResult.Failed();
         }
 
-        var salt = AuthUtils.GenerateSalt();
-        var userDto = new UserDto
+        var user = new User
         {
             UserName = userRegisterDto.UserName,
             Email = userRegisterDto.Email,
-            PasswordSalt = salt,
-            PasswordHash = AuthUtils.HashPassword(userRegisterDto.Password, salt, PasswordHashRounds),
-            PasswordHashRounds = PasswordHashRounds,
             Bio = userRegisterDto.Bio,
+            UserRole = role
         };
 
-        var user = await CreateUserAsync(userDto);
-        return user is null ? null : CreateToken(user);
+        var result = await userManager.CreateAsync(user, userRegisterDto.Password);
+        return result;
     }
 
     public async Task<IEnumerable<UserDto>> GetAllUsersAsync()
@@ -63,9 +40,25 @@ public class UserService(IRepository<User> userRepository, IQueryObject<User> us
         return mapper.Map<List<UserDto>>(users);
     }
 
+    public Task<FilteredResult<UserDto>> GetUsersFilteredAsync(UserFilterDto userFilter)
+    {
+        var query = userQueryObject
+            .Filter(user => user.UserName != null && user.Email != null && (userFilter.Name == null || user.UserName.ToLower().Contains(userFilter.Name.ToLower())
+                || user.Email.ToLower().Contains(userFilter.Name.ToLower())))
+            .Paginate(userFilter.PageIndex, userFilter.PageSize)
+            .OrderBy(user => user.Id);
+
+        return query.ExecuteAsync().ContinueWith(result => new FilteredResult<UserDto>
+        {
+            Entities = mapper.Map<List<UserDto>>(result.Result.Entities),
+            PageIndex = result.Result.PageIndex,
+            TotalPages = result.Result.TotalPages
+        });
+    }
+
     public async Task<UserDto?> GetUserByEmailAsync(string email)
     {
-        var user = (await userQueryObject.Filter(user => user.Email == email).ExecuteAsync()).FirstOrDefault();
+        var user = (await userQueryObject.Filter(user => user.Email == email).ExecuteAsync()).Entities.FirstOrDefault();
         return user is null ? null : mapper.Map<UserDto>(user);
     }
 
@@ -75,57 +68,54 @@ public class UserService(IRepository<User> userRepository, IQueryObject<User> us
         return user is null ? null : mapper.Map<UserDto>(user);
     }
 
-    public async Task<UserDto?> UpdateUserAsync(UserDto userDto)
+    public async Task<UserDto?> UpdateUserAsync(UserUpdateDto userDto)
     {
-        var updatedUser = await userRepository.UpdateAsync(mapper.Map<User>(userDto));
-        return updatedUser is null ? null : mapper.Map<UserDto>(updatedUser);
+        var user = await userManager.FindByIdAsync(userDto.Id.ToString());
+        if (user == null)
+        {
+            return null;
+        }
+
+        if (!string.IsNullOrEmpty(userDto.Email))
+        {
+            user.Email = userDto.Email;
+        }
+
+        // Update only non-null fields
+        if (!string.IsNullOrEmpty(userDto.UserName))
+        {
+            user.UserName = userDto.UserName;
+        }
+
+        if (!string.IsNullOrEmpty(userDto.Email))
+        {
+            user.Email = userDto.Email;
+        }
+
+        if (!string.IsNullOrEmpty(userDto.Bio))
+        {
+            user.Bio = userDto.Bio;
+        }
+        user.UserRole = userDto.UserRole;
+
+        user.UpdatedAt = DateTime.UtcNow;
+
+        // Save changes
+        await userManager.UpdateAsync(user);
+
+        if (userDto.Password != null)
+        {
+            var token = await userManager.GeneratePasswordResetTokenAsync(user);
+            await userManager.ResetPasswordAsync(user, token, userDto.Password);
+        }
+
+        var userDb = await userRepository.GetByIdAsync(userDto.Id);
+
+        return mapper.Map<UserDto>(userDb);
     }
 
     public async Task<bool> DeleteUserByIdAsync(int id)
     {
         return await userRepository.DeleteAsync(id);
     }
-
-    private static string CreateToken(UserDto user)
-    {
-        var handler = new JwtSecurityTokenHandler();
-
-        var secret = Environment.GetEnvironmentVariable(EnvironmentConstants.JwtSecret);
-
-        if (secret == null)
-        {
-            throw new Exception($"{EnvironmentConstants.JwtSecret} environment variable is not set");
-        }
-
-        var privateKey = Encoding.UTF8.GetBytes(secret);
-
-        var credentials = new SigningCredentials(
-            new SymmetricSecurityKey(privateKey),
-            SecurityAlgorithms.HmacSha256);
-
-        var tokenDescriptor = new SecurityTokenDescriptor
-        {
-            SigningCredentials = credentials,
-            Expires = DateTime.UtcNow.AddHours(1),
-            Subject = GenerateClaims(user)
-        };
-
-        var token = handler.CreateToken(tokenDescriptor);
-        return handler.WriteToken(token);
-    }
-
-    private static ClaimsIdentity GenerateClaims(UserDto user)
-    {
-        var ci = new ClaimsIdentity();
-
-        ci.AddClaim(new Claim(ClaimTypes.Sid, user.Id.ToString()));
-        ci.AddClaim(new Claim(ClaimTypes.Name, user.UserName));
-        ci.AddClaim(new Claim(ClaimTypes.Email, user.Email));
-        ci.AddClaim(new Claim(ClaimTypes.Role, user.UserRole.ToString()));
-
-        return ci;
-    }
-
-    private bool VerifyPassword(UserDto user, string password) =>
-        AuthUtils.HashPassword(password, user.PasswordSalt, user.PasswordHashRounds) == user.PasswordHash;
 }

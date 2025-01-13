@@ -7,6 +7,8 @@ using Commons.Enums;
 using JuiceWorld.Entities;
 using JuiceWorld.QueryObjects;
 using JuiceWorld.Repositories;
+using JuiceWorld.UnitOfWork;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using TestUtilities.MockedObjects;
 using Xunit;
@@ -26,8 +28,9 @@ public class ProductServiceTests
         var config = new MapperConfiguration(cfg => cfg.AddProfile<MapperProfileInstaller>());
         var mapper = config.CreateMapper();
         var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-        var logger = new Logger<ProductService>(loggerFactory);
-        _productService = new ProductService(productRepository, mapper, logger, new QueryObject<Product>(dbContext));
+        var cache = new MemoryCache(new MemoryCacheOptions());
+        var unitOfwork = new ProductUnitOfWork(dbContext);
+        _productService = new ProductService(productRepository, mapper, cache, new QueryObject<Product>(dbContext), unitOfwork);
     }
 
     [Fact]
@@ -91,8 +94,7 @@ public class ProductServiceTests
         // Arrange
         var productFilter = new ProductFilterDto
         {
-            Name = "Anastrozole",
-            Description = "30 tablets, each 1mg",
+            NameQuery = "Anastrozole",
             PriceMax = 2399,
             PriceMin = 2399,
             PageIndex = 1,
@@ -103,12 +105,11 @@ public class ProductServiceTests
         var result = await _productService.GetProductsFilteredAsync(productFilter);
 
         // Assert
-        var productDtos = result.ToList();
+        var productDtos = result.Entities.ToList();
         Assert.Single(productDtos);
         Assert.All(productDtos, product =>
         {
-            Assert.Equal(productFilter.Name, product.Name);
-            Assert.Equal(productFilter.Description, product.Description);
+            Assert.Equal(productFilter.NameQuery, product.Name);
             Assert.True(product.Price <= productFilter.PriceMax);
             Assert.True(product.Price >= productFilter.PriceMin);
         });

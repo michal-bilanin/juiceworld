@@ -1,3 +1,4 @@
+using System.Text.Json;
 using AutoMapper;
 using BusinessLayer.DTOs;
 using BusinessLayer.Services.Interfaces;
@@ -5,70 +6,22 @@ using Commons.Enums;
 using Infrastructure.QueryObjects;
 using Infrastructure.Repositories;
 using JuiceWorld.Entities;
-using Microsoft.Extensions.Logging;
+using JuiceWorld.UnitOfWork;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace BusinessLayer.Services;
 
 public class ProductService(
     IRepository<Product> productRepository,
     IMapper mapper,
-    ILogger<ProductService> logger,
-    IQueryObject<Product> queryObject) : IProductService
+    IMemoryCache memoryCache,
+    IQueryObject<Product> queryObject,
+    ProductUnitOfWork productUnitOfWork
+    ) : IProductService
 {
-    private const string ImgFolderPath = "Images";
-    private static readonly Dictionary<string, string> MimeTypes = new()
-    {
-        // enough to determine the image type
-        // source https://stackoverflow.com/questions/57976898/how-to-get-mime-type-from-base-64-string
-        { "/9j/", ".jpg" },
-        { "iVBORw0KGgo", ".png" },
-        { "R0lGODlh", ".gif" },
-        { "R0lGODdh", ".gif" }
-    };
-
-    private async Task<bool> SaveImageAsync(string base64Image, string imageName)
-    {
-        Directory.CreateDirectory(ImgFolderPath);
-        var imageBytes = Convert.FromBase64String(base64Image);
-        var filePath = Path.Combine(ImgFolderPath, imageName);
-        try
-        {
-            await File.WriteAllBytesAsync(filePath, imageBytes);
-        }
-        catch (Exception e)
-        {
-            logger.LogError($"ERROR - unable to write to file {filePath} \n ERROR-MESSAGE: {e.Message}");
-            return false;
-        }
-
-        return true;
-    }
-
-    private static string GetImageExtension(string base64Image)
-    {
-        foreach (var mimeType in MimeTypes)
-        {
-            if (base64Image.StartsWith(mimeType.Key))
-            {
-                return mimeType.Value;
-            }
-        }
-        return string.Empty;
-    }
-
+    private string _cacheKeyPrefix = nameof(ProductService);
     public async Task<ProductDto?> CreateProductAsync(ProductDto productDto)
     {
-        if (!string.IsNullOrEmpty(productDto.Image))
-        {
-            var extension = GetImageExtension(productDto.Image);
-            var imageName = $"{Guid.NewGuid()}{extension}";
-            if (!await SaveImageAsync(productDto.Image, imageName))
-            {
-                return null;
-            }
-            productDto.Image = imageName;
-        }
-
         var newProduct = await productRepository.CreateAsync(mapper.Map<Product>(productDto));
         return newProduct is null ? null : mapper.Map<ProductDto>(newProduct);
     }
@@ -79,100 +32,131 @@ public class ProductService(
         return mapper.Map<List<ProductDto>>(products);
     }
 
-    public async Task<IEnumerable<ProductDto>> GetProductsFilteredAsync(ProductFilterDto productFilter)
+    private IQueryObject<Product> GetQueryObject(ProductFilterDto productFilter)
     {
         Enum.TryParse<ProductCategory>(productFilter.Category, true, out var categoryEnum);
-        var query = queryObject.Filter(p =>
-            (productFilter.ManufacturerName == null ||
-             p.Manufacturer.Name.ToLower().Contains(productFilter.ManufacturerName.ToLower())) &&
-            (productFilter.Category == null || p.Category == categoryEnum) &&
-            (productFilter.PriceMax == null || p.Price <= productFilter.PriceMax) &&
-            (productFilter.PriceMin == null || p.Price >= productFilter.PriceMin) &&
-            (productFilter.Name == null || p.Name.ToLower().Contains(productFilter.Name.ToLower())) &&
-            (productFilter.Description == null ||
-             p.Description.ToLower().Contains(productFilter.Description.ToLower())));
 
-        if (productFilter is { PageIndex: not null, PageSize: not null })
+        return queryObject.Filter(p =>
+                (productFilter.Category == null || p.Category == categoryEnum) &&
+                (productFilter.PriceMax == null || p.Price <= productFilter.PriceMax) &&
+                (productFilter.PriceMin == null || p.Price >= productFilter.PriceMin) &&
+                (productFilter.ManufacturerId == null || p.ManufacturerId == productFilter.ManufacturerId) &&
+                (productFilter.TagId == null || p.Tags.Any(t => t.Id == productFilter.TagId)) &&
+                (p.Manufacturer == null || productFilter.NameQuery == null ||
+                 p.Name.ToLower().Contains(productFilter.NameQuery.ToLower()) ||
+                 p.Description.ToLower().Contains(productFilter.NameQuery.ToLower())))
+            .OrderBy(p => p.Id)
+            .Paginate(productFilter.PageIndex, productFilter.PageSize);
+    }
+
+    public async Task<FilteredResult<ProductDto>> GetProductsFilteredAsync(ProductFilterDto productFilter)
+    {
+        string cacheKey = $"{_cacheKeyPrefix}-product{JsonSerializer.Serialize(productFilter)}";
+        if (!memoryCache.TryGetValue(cacheKey, out FilteredResult<Product>? value))
         {
-            query = query.Paginate(productFilter.PageIndex.Value, productFilter.PageSize.Value);
+            var query = GetQueryObject(productFilter);
+            query.Include(nameof(Product.Tags), nameof(Product.Manufacturer), nameof(Product.Reviews));
+            value = await query.ExecuteAsync();
+
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+                .SetAbsoluteExpiration(TimeSpan.FromSeconds(30));
+            memoryCache.Set(cacheKey, value, cacheEntryOptions);
         }
 
-        var result = await query.ExecuteAsync();
-        return mapper.Map<ICollection<ProductDto>>(result);
+        return new FilteredResult<ProductDto>
+        {
+            Entities = mapper.Map<List<ProductDto>>(value!.Entities),
+            PageIndex = value.PageIndex,
+            TotalPages = value.TotalPages
+        }; ;
+    }
+
+    public async Task<FilteredResult<ProductDetailDto>> GetProductDetailsFilteredAsync(ProductFilterDto productFilter)
+    {
+        string cacheKey = $"{_cacheKeyPrefix}-productDetail{JsonSerializer.Serialize(productFilter)}";
+        if (!memoryCache.TryGetValue(cacheKey, out FilteredResult<Product>? value))
+        {
+            var query = GetQueryObject(productFilter);
+            value = await query.ExecuteAsync();
+
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+                .SetAbsoluteExpiration(TimeSpan.FromSeconds(30));
+            memoryCache.Set(cacheKey, value, cacheEntryOptions);
+        }
+
+        return new FilteredResult<ProductDetailDto>
+        {
+            Entities = mapper.Map<List<ProductDetailDto>>(value!.Entities),
+            PageIndex = value.PageIndex,
+            TotalPages = value.TotalPages
+        };
     }
 
     public async Task<ProductDto?> GetProductByIdAsync(int id)
     {
-        var product = await productRepository.GetByIdAsync(id);
-        return product is null ? null : mapper.Map<ProductDto>(product);
+        string cacheKey = $"{_cacheKeyPrefix}-product{id}";
+        if (!memoryCache.TryGetValue(cacheKey, out Product? value))
+        {
+            value = await productRepository.GetByIdAsync(id, nameof(Product.Tags));
+
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+                .SetAbsoluteExpiration(TimeSpan.FromSeconds(30));
+            memoryCache.Set(cacheKey, value, cacheEntryOptions);
+        }
+
+        return value is null ? null : mapper.Map<ProductDto>(value);
     }
 
     public async Task<ProductDetailDto?> GetProductDetailByIdAsync(int id)
     {
-        var product = await productRepository.GetByIdAsync(id, nameof(Product.Manufacturer),
-            nameof(Product.Reviews));
-
-        if (product is null)
+        string cacheKey = $"{_cacheKeyPrefix}-productDetail{id}";
+        if (!memoryCache.TryGetValue(cacheKey, out Product? value))
         {
-            return null;
+            value = await productRepository.GetByIdAsync(id, nameof(Product.Manufacturer),
+                nameof(Product.Reviews), $"{nameof(Product.Reviews)}.{nameof(Review.User)}", nameof(Product.Tags));
+
+            if (value is null)
+            {
+                return null;
+            }
+
+            value.Reviews = value.Reviews.OrderByDescending(r => r.CreatedAt).ToList();
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+                .SetAbsoluteExpiration(TimeSpan.FromSeconds(30));
+            memoryCache.Set(cacheKey, value, cacheEntryOptions);
         }
-
-        var ret = mapper.Map<ProductDetailDto>(product);
-        if (product.Image is null)
-        {
-            return ret;
-        }
-
-        var imagePath = Path.Combine(ImgFolderPath, product.Image);
-        Console.WriteLine(Path.GetFullPath(imagePath));
-
-        if (!File.Exists(imagePath))
-        {
-            return ret;
-        }
-
-        var image = await File.ReadAllBytesAsync(imagePath);
-        ret.Image = Convert.ToBase64String(image);
-
-        return ret;
+        return mapper.Map<ProductDetailDto>(value);
     }
 
     public async Task<ProductDto?> UpdateProductAsync(ProductDto productDto)
     {
-        var oldProduct = await productRepository.GetByIdAsync(productDto.Id);
+        string cacheKeyDetail = $"{_cacheKeyPrefix}-productDetail{productDto.Id}";
+        memoryCache.Remove(cacheKeyDetail);
+        string cacheKey1 = $"{_cacheKeyPrefix}-product{productDto.Id}";
+        memoryCache.Remove(cacheKey1);
+        var oldProduct = await productUnitOfWork.ProductRepository.GetByIdAsync(productDto.Id);
         if (oldProduct is null)
         {
             return null;
         }
 
-        if (!string.IsNullOrEmpty(productDto.Image))
-        {
-            if (oldProduct.Image != null)
-            {
-                var oldImagePath = Path.Combine(ImgFolderPath, oldProduct.Image);
-                if (File.Exists(oldImagePath))
-                {
-                    File.Delete(oldImagePath);
-                }
-            }
+        var product = mapper.Map<Product>(productDto);
+        oldProduct.Tags.Clear();
 
-            var extension = GetImageExtension(productDto.Image);
-            var imageName = $"{Guid.NewGuid()}{extension}";
+        var tags = await productUnitOfWork.TagRepository.GetByIdRangeAsync(productDto.TagIds.Cast<object>());
+        product.Tags = tags.ToList();
 
-            if (!await SaveImageAsync(productDto.Image, imageName))
-            {
-                return null;
-            }
-
-            productDto.Image = imageName;
-        }
-
-        var updatedProduct = await productRepository.UpdateAsync(mapper.Map<Product>(productDto));
+        var updatedProduct = await productUnitOfWork.ProductRepository.UpdateAsync(product);
+        await productUnitOfWork.Commit();
         return updatedProduct is null ? null : mapper.Map<ProductDto>(updatedProduct);
     }
 
     public async Task<bool> DeleteProductByIdAsync(int id)
     {
+        string cacheKeyDetail = $"{_cacheKeyPrefix}-productDetail{id}";
+        memoryCache.Remove(cacheKeyDetail);
+        string cacheKey1 = $"{_cacheKeyPrefix}-product{id}";
+        memoryCache.Remove(cacheKey1);
         return await productRepository.DeleteAsync(id);
     }
 }

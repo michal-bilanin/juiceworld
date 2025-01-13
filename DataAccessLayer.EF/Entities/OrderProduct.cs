@@ -8,6 +8,9 @@ public class OrderProduct : BaseEntity
     [Range(1, int.MaxValue)]
     public int Quantity { get; set; }
 
+    [Range(0, double.MaxValue)]
+    public decimal Price { get; set; }
+
     public int OrderId { get; set; }
     public int ProductId { get; set; }
 

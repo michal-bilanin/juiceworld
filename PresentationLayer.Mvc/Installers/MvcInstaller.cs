@@ -1,10 +1,12 @@
 ﻿using System.Diagnostics;
-using System.Text;
 using Commons.Constants;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using Serilog;
+using JuiceWorld.Data;
+using JuiceWorld.Entities;
+using Microsoft.AspNetCore.Identity;
 using MongoDB.Driver;
+using PresentationLayer.Mvc.Facades;
+using PresentationLayer.Mvc.Facades.Interfaces;
+using Serilog;
 using Serilog.Events;
 
 namespace PresentationLayer.Mvc.Installers;
@@ -16,42 +18,17 @@ public static class MvcInstaller
         services.AddControllers();
         services.AddAutoMapper(typeof(MvcMapperInstaller));
 
+        services.AddScoped<ISearchablesFacade, SearchablesFacade>();
+        services.AddScoped<IOrderCouponFacade, OrderCouponFacade>();
 
-        var secret = Environment.GetEnvironmentVariable(EnvironmentConstants.JwtSecret);
-        if (secret == null)
+        services.AddIdentity<User, IdentityRole<int>>()
+            .AddEntityFrameworkStores<JuiceWorldDbContext>()
+            .AddDefaultTokenProviders();
+
+        services.ConfigureApplicationCookie(options =>
         {
-            throw new Exception($"JWT secret is null, make sure it is specified " +
-                                $"in the environment variable: {EnvironmentConstants.JwtSecret}");
-        }
-
-        services.AddAuthentication(x =>
-            {
-                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddCookie(options =>
-            {
-                options.Cookie.Name = Constants.JwtToken; // the cookie that stores the JWT
-            })
-            .AddJwtBearer(x =>
-            {
-                x.SaveToken = true;
-                x.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret))
-                };
-                x.Events = new JwtBearerEvents
-                {
-                    OnMessageReceived = context =>
-                    {
-                        context.Token = context.Request.Cookies[Constants.JwtToken];
-                        return Task.CompletedTask;
-                    }
-                };
-            });
+            options.LoginPath = "/Account/Login";
+        });
 
         // Configure Logging
         var connectionString = Environment.GetEnvironmentVariable(EnvironmentConstants.LoggingDbConnectionString);

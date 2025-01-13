@@ -3,11 +3,18 @@ using BusinessLayer.DTOs;
 using BusinessLayer.Services.Interfaces;
 using Infrastructure.Repositories;
 using JuiceWorld.Entities;
+using JuiceWorld.UnitOfWork;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace BusinessLayer.Services;
 
-public class CartItemService(IRepository<CartItem> cartItemRepository, IMapper mapper) : ICartItemService
+public class CartItemService(IRepository<CartItem> cartItemRepository,
+    OrderUnitOfWork orderUnitOfWork,
+    IMemoryCache memoryCache,
+    IMapper mapper)
+    : ICartItemService
 {
+    private string _cacheKeyPrefix = nameof(CartItemService);
     public async Task<CartItemDto?> CreateCartItemAsync(CartItemDto cartItemDto)
     {
         var newCartItem = await cartItemRepository.CreateAsync(mapper.Map<CartItem>(cartItemDto));
@@ -20,6 +27,22 @@ public class CartItemService(IRepository<CartItem> cartItemRepository, IMapper m
         return mapper.Map<List<CartItemDto>>(cartItems);
     }
 
+    public async Task<IEnumerable<CartItemDetailDto>> GetCartItemsByUserIdAsync(int userId)
+    {
+        string cacheKey = $"{_cacheKeyPrefix}-CartItems{userId}";
+        if (!memoryCache.TryGetValue(cacheKey, out IEnumerable<CartItem>? value))
+        {
+            value =
+                await cartItemRepository.GetByConditionAsync(c => c.UserId == userId, nameof(CartItem.Product));
+
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+                .SetAbsoluteExpiration(TimeSpan.FromSeconds(30));
+            memoryCache.Set(cacheKey, value, cacheEntryOptions);
+        }
+
+        return mapper.Map<List<CartItemDetailDto>>(value);
+    }
+
     public async Task<CartItemDto?> GetCartItemByIdAsync(int id)
     {
         var cartItem = await cartItemRepository.GetByIdAsync(id);
@@ -28,12 +51,83 @@ public class CartItemService(IRepository<CartItem> cartItemRepository, IMapper m
 
     public async Task<CartItemDto?> UpdateCartItemAsync(CartItemDto cartItemDto)
     {
+        string cacheKey = $"{_cacheKeyPrefix}-CartItems{cartItemDto.UserId}";
+        memoryCache.Remove(cacheKey);
+
         var updatedCartItem = await cartItemRepository.UpdateAsync(mapper.Map<CartItem>(cartItemDto));
         return updatedCartItem is null ? null : mapper.Map<CartItemDto>(updatedCartItem);
+    }
+
+    public async Task<bool> AddToCartAsync(AddToCartDto addToCartDto, int userId)
+    {
+        string cacheKey = $"{_cacheKeyPrefix}-CartItems{userId}";
+        memoryCache.Remove(cacheKey);
+
+        var product = await orderUnitOfWork.ProductRepository.GetByIdAsync(addToCartDto.ProductId);
+        if (product is null)
+        {
+            return false;
+        }
+
+        var cartItem =
+            (await orderUnitOfWork.CartItemRepository.GetByConditionAsync(c =>
+                c.UserId == userId && c.ProductId == addToCartDto.ProductId)).FirstOrDefault();
+        if (cartItem is null)
+        {
+            if (addToCartDto.Quantity <= 0)
+            {
+                return false;
+            }
+
+            await orderUnitOfWork.CartItemRepository.CreateAsync(new CartItem
+            {
+                UserId = userId,
+                ProductId = addToCartDto.ProductId,
+                Quantity = addToCartDto.Quantity
+            });
+
+            await orderUnitOfWork.Commit();
+            return true;
+        }
+
+        cartItem.Quantity = addToCartDto.Quantity;
+        if (cartItem.Quantity <= 0)
+        {
+            await orderUnitOfWork.CartItemRepository.DeleteAsync(cartItem.Id);
+        }
+        else
+        {
+            await orderUnitOfWork.CartItemRepository.UpdateAsync(cartItem);
+        }
+
+        await orderUnitOfWork.Commit();
+        return true;
     }
 
     public async Task<bool> DeleteCartItemByIdAsync(int id)
     {
         return await cartItemRepository.DeleteAsync(id);
+    }
+
+    public async Task<bool> DeleteCartItemByIdAsync(int id, int userId)
+    {
+        string cacheKey = $"{_cacheKeyPrefix}-CartItems{userId}";
+        memoryCache.Remove(cacheKey);
+
+        var cartItem =
+            (await orderUnitOfWork.CartItemRepository.GetByConditionAsync(c => c.Id == id && c.UserId == userId)).FirstOrDefault();
+        if (cartItem is null)
+        {
+            return false;
+        }
+
+        if (cartItem.UserId != userId)
+        {
+            return false;
+        }
+
+        await orderUnitOfWork.CartItemRepository.DeleteAsync(id);
+        await orderUnitOfWork.Commit();
+        return true;
     }
 }

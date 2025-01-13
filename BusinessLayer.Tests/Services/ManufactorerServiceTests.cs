@@ -3,9 +3,10 @@ using BusinessLayer.DTOs;
 using BusinessLayer.Installers;
 using BusinessLayer.Services;
 using BusinessLayer.Services.Interfaces;
-using Commons.Enums;
 using JuiceWorld.Entities;
+using JuiceWorld.QueryObjects;
 using JuiceWorld.Repositories;
+using Microsoft.Extensions.Caching.Memory;
 using TestUtilities.MockedObjects;
 using Xunit;
 using Assert = Xunit.Assert;
@@ -23,7 +24,9 @@ public class ManufacturerServiceTests
         var manufacturerRepository = new Repository<Manufacturer>(dbContext);
         var config = new MapperConfiguration(cfg => cfg.AddProfile<MapperProfileInstaller>());
         var mapper = config.CreateMapper();
-        _manufacturerService = new ManufacturerService(manufacturerRepository, mapper);
+        var manufacturerQueryObject = new QueryObject<Manufacturer>(dbContext);
+        var cache = new MemoryCache(new MemoryCacheOptions());
+        _manufacturerService = new ManufacturerService(manufacturerRepository, manufacturerQueryObject, cache, mapper);
     }
 
     [Fact]
