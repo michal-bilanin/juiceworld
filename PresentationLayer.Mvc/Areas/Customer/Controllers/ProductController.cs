@@ -27,17 +27,20 @@ public class ProductController(
     [HttpGet]
     public async Task<IActionResult> Details(int id)
     {
-        if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId))
-        {
-            return BadRequest();
-        }
         var product = await productService.GetProductDetailByIdAsync(id);
-
-        if (product is null) return NotFound();
+        if (product is null)
+        {
+            return NotFound();
+        }
 
         bool isInWishlist = false;
         if (User.Identity is { IsAuthenticated: true })
         {
+            if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId))
+            {
+                return BadRequest();
+            }
+
             isInWishlist = await wishListItemService.IsProductInWishListAsync(id, userId);
         }
 
