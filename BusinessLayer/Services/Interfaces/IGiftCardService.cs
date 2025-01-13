@@ -12,7 +12,7 @@ public interface IGiftCardService
     Task<bool> DeleteGiftCardByIdAsync(int id);
     Task<CouponCodeDto?> RedeemCouponAsync(string CouponCode);
 
-    Task<IEnumerable<CouponCodeDto>> GetCouponCodesAsync();
+    Task<List<CouponCodeDto>> GetCouponCodesAsync();
 
     Task<CouponCodeDto?> GetCouponCodeByIdAsync(int id);
 

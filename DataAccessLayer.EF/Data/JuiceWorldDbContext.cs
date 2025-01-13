@@ -93,10 +93,10 @@ public class JuiceWorldDbContext(DbContextOptions<JuiceWorldDbContext> options)
         return SaveChanges();
     }
 
-    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         SetAuditableProperties();
-        return await base.SaveChangesAsync(cancellationToken);
+        return base.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<int> SaveChangesAsync(int userId, CancellationToken cancellationToken = default)

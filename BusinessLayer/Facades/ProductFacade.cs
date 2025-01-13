@@ -27,19 +27,19 @@ public class ProductFacade(IProductService productService, IImageService imageSe
         return await productService.CreateProductAsync(mapper.Map<ProductDto>(productImageDto));
     }
 
-    public async Task<IEnumerable<ProductDto>> GetAllProductsAsync()
+    public Task<IEnumerable<ProductDto>> GetAllProductsAsync()
     {
-        return await productService.GetAllProductsAsync();
+        return productService.GetAllProductsAsync();
     }
 
-    public async Task<FilteredResult<ProductDto>> GetProductsFilteredAsync(ProductFilterDto productFilter)
+    public Task<FilteredResult<ProductDto>> GetProductsFilteredAsync(ProductFilterDto productFilter)
     {
-        return await productService.GetProductsFilteredAsync(productFilter);
+        return productService.GetProductsFilteredAsync(productFilter);
     }
 
-    public async Task<ProductDto?> GetProductByIdAsync(int id)
+    public Task<ProductDto?> GetProductByIdAsync(int id)
     {
-        return await productService.GetProductByIdAsync(id);
+        return productService.GetProductByIdAsync(id);
     }
 
     public async Task<ProductDetailDto?> GetProductDetailByIdAsync(int id)
