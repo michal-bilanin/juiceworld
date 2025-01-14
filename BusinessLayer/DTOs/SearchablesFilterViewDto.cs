@@ -1,4 +1,4 @@
-namespace PresentationLayer.Mvc.Areas.Customer.Models;
+namespace BusinessLayer.DTOs;
 
 public class SearchablesFilterViewDto
 {

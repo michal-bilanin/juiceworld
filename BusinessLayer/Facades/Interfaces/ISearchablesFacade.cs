@@ -1,4 +1,4 @@
-using PresentationLayer.Mvc.Areas.Customer.Models;
+using BusinessLayer.DTOs;
 
 namespace BusinessLayer.Facades.Interfaces;
 

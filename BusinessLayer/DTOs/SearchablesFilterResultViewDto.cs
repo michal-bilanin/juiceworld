@@ -1,7 +1,6 @@
-using BusinessLayer.DTOs;
 using Infrastructure.QueryObjects;
 
-namespace PresentationLayer.Mvc.Areas.Customer.Models;
+namespace BusinessLayer.DTOs;
 
 public class SearchablesFilterResultViewDto
 {

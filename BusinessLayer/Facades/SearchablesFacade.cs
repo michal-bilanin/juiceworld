@@ -2,7 +2,6 @@ using AutoMapper;
 using BusinessLayer.DTOs;
 using BusinessLayer.Facades.Interfaces;
 using BusinessLayer.Services.Interfaces;
-using PresentationLayer.Mvc.Areas.Customer.Models;
 
 namespace BusinessLayer.Facades;
 
