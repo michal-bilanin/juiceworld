@@ -2,7 +2,7 @@ using Infrastructure.QueryObjects;
 
 namespace BusinessLayer.DTOs;
 
-public class SearchablesFilterResultViewDto
+public class SearchablesFilterResultDto
 {
     public required FilteredResult<ProductDetailDto> Products { get; set; }
     public required FilteredResult<ManufacturerDto> Manufacturers { get; set; }

@@ -1,6 +1,6 @@
 namespace BusinessLayer.DTOs;
 
-public class SearchablesFilterViewDto
+public class SearchablesFilterDto
 {
     public string? NameQuery { get; set; }
     public string? ProductCategory { get; set; }

@@ -11,19 +11,19 @@ public class SearchablesFacade(
     ITagService tagService,
     IMapper mapper) : ISearchablesFacade
 {
-    public async Task<SearchablesFilterResultViewDto> GetSearchablesFilteredAsync(
-        SearchablesFilterViewDto searchablesFilter)
+    public async Task<SearchablesFilterResultDto> GetSearchablesFilteredAsync(
+        SearchablesFilterDto searchablesFilter)
     {
         var productsResult =
             await productService.GetProductDetailsFilteredAsync(
-                mapper.Map<SearchablesFilterViewDto, ProductFilterDto>(searchablesFilter));
+                mapper.Map<SearchablesFilterDto, ProductFilterDto>(searchablesFilter));
         var manufacturersResult =
             await manufacturerService.GetManufacturersAsync(
-                mapper.Map<SearchablesFilterViewDto, ManufacturerFilterDto>(searchablesFilter));
+                mapper.Map<SearchablesFilterDto, ManufacturerFilterDto>(searchablesFilter));
         var tagsResult =
-            await tagService.GetTagsAsync(mapper.Map<SearchablesFilterViewDto, TagFilterDto>(searchablesFilter));
+            await tagService.GetTagsAsync(mapper.Map<SearchablesFilterDto, TagFilterDto>(searchablesFilter));
 
-        return new SearchablesFilterResultViewDto
+        return new SearchablesFilterResultDto
         {
             Products = productsResult,
             Manufacturers = manufacturersResult,

@@ -22,9 +22,9 @@ public class ProductController(
     IMapper mapper) : Controller
 {
     [HttpGet]
-    public async Task<IActionResult> Index([FromQuery] SearchablesFilterViewDto searchablesFilter)
+    public async Task<IActionResult> Index([FromQuery] SearchablesFilterViewModel searchablesFilter)
     {
-        var searchables = await searchablesFacade.GetSearchablesFilteredAsync(searchablesFilter);
+        var searchables = await searchablesFacade.GetSearchablesFilteredAsync(mapper.Map<SearchablesFilterDto>(searchablesFilter));
         return View(searchables);
     }
 
