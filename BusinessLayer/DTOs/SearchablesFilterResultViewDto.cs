@@ -3,7 +3,7 @@ using Infrastructure.QueryObjects;
 
 namespace PresentationLayer.Mvc.Areas.Customer.Models;
 
-public class SearchablesFilterResultViewModel
+public class SearchablesFilterResultViewDto
 {
     public required FilteredResult<ProductDetailDto> Products { get; set; }
     public required FilteredResult<ManufacturerDto> Manufacturers { get; set; }

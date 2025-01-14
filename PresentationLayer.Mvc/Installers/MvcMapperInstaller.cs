@@ -46,7 +46,7 @@ public class MvcMapperInstaller : Profile
         CreateMap<UserUpdateViewModel, UserUpdateDto>().ReverseMap();
         CreateMap<WishlistItemDetailViewModel, WishListItemDetailDto>().ReverseMap();
 
-        CreateMap<SearchablesFilterViewModel, ProductFilterDto>()
+        CreateMap<SearchablesFilterViewDto, ProductFilterDto>()
             .ForMember(dest => dest.NameQuery, opt => opt.MapFrom(src => src.NameQuery))
             .ForMember(dest => dest.PriceMax, opt => opt.MapFrom(src => src.ProductPriceMax))
             .ForMember(dest => dest.PriceMin, opt => opt.MapFrom(src => src.ProductPriceMin))
@@ -56,12 +56,12 @@ public class MvcMapperInstaller : Profile
             .ForMember(dest => dest.TagId, opt => opt.MapFrom(src => src.TagId))
             .ForMember(dest => dest.ManufacturerId, opt => opt.MapFrom(src => src.ManufacturerId));
 
-        CreateMap<SearchablesFilterViewModel, ManufacturerFilterDto>()
+        CreateMap<SearchablesFilterViewDto, ManufacturerFilterDto>()
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.NameQuery))
             .ForMember(dest => dest.PageIndex, opt => opt.MapFrom(src => src.ManufacturerPageIndex))
             .ForMember(dest => dest.PageSize, opt => opt.MapFrom(src => src.ManufacturerPageSize));
 
-        CreateMap<SearchablesFilterViewModel, TagFilterDto>()
+        CreateMap<SearchablesFilterViewDto, TagFilterDto>()
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.NameQuery))
             .ForMember(dest => dest.PageIndex, opt => opt.MapFrom(src => src.TagPageIndex))
             .ForMember(dest => dest.PageSize, opt => opt.MapFrom(src => src.TagPageSize));

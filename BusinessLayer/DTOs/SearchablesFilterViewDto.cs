@@ -1,6 +1,6 @@
 namespace PresentationLayer.Mvc.Areas.Customer.Models;
 
-public class SearchablesFilterViewModel
+public class SearchablesFilterViewDto
 {
     public string? NameQuery { get; set; }
     public string? ProductCategory { get; set; }

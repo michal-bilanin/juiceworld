@@ -1,11 +1,10 @@
 using AutoMapper;
 using BusinessLayer.DTOs;
+using BusinessLayer.Facades.Interfaces;
 using BusinessLayer.Services.Interfaces;
 using PresentationLayer.Mvc.Areas.Customer.Models;
-using PresentationLayer.Mvc.Facades.Interfaces;
-using PresentationLayer.Mvc.Models;
 
-namespace PresentationLayer.Mvc.Facades;
+namespace BusinessLayer.Facades;
 
 public class SearchablesFacade(
     IProductService productService,
@@ -13,19 +12,19 @@ public class SearchablesFacade(
     ITagService tagService,
     IMapper mapper) : ISearchablesFacade
 {
-    public async Task<SearchablesFilterResultViewModel> GetSearchablesFilteredAsync(
-        SearchablesFilterViewModel searchablesFilter)
+    public async Task<SearchablesFilterResultViewDto> GetSearchablesFilteredAsync(
+        SearchablesFilterViewDto searchablesFilter)
     {
         var productsResult =
             await productService.GetProductDetailsFilteredAsync(
-                mapper.Map<SearchablesFilterViewModel, ProductFilterDto>(searchablesFilter));
+                mapper.Map<SearchablesFilterViewDto, ProductFilterDto>(searchablesFilter));
         var manufacturersResult =
             await manufacturerService.GetManufacturersAsync(
-                mapper.Map<SearchablesFilterViewModel, ManufacturerFilterDto>(searchablesFilter));
+                mapper.Map<SearchablesFilterViewDto, ManufacturerFilterDto>(searchablesFilter));
         var tagsResult =
-            await tagService.GetTagsAsync(mapper.Map<SearchablesFilterViewModel, TagFilterDto>(searchablesFilter));
+            await tagService.GetTagsAsync(mapper.Map<SearchablesFilterViewDto, TagFilterDto>(searchablesFilter));
 
-        return new SearchablesFilterResultViewModel
+        return new SearchablesFilterResultViewDto
         {
             Products = productsResult,
             Manufacturers = manufacturersResult,

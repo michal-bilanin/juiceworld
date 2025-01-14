@@ -1,6 +1,6 @@
 ﻿using BusinessLayer.DTOs;
 
-namespace PresentationLayer.Mvc.Facades.Interfaces;
+namespace BusinessLayer.Facades.Interfaces;
 
 public interface IOrderCouponFacade
 {
