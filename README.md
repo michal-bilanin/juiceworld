@@ -98,3 +98,12 @@ The database update follows the same principle as running the migrations. The fu
 ```bash
 DB_CONNECTION_STRING="Host=localhost;Port=5432;Database=juiceworld;Username=postgres;Password=postgres" JWT_SECRET='bAafd@A7d9#@F4*V!LHZs#ebKQrkE6pad2f3kj34c3dXy@' dotnet ef database update --project DataAccessLayer.EF --startup-project WebApi
 ```
+
+### Project demo
+
+The final project will be deployed on the following URL: [https://sypku.fetuje.me](https://sypku.fetuje.me)
+
+Default seeded users:
+
+- Admin: `admin@example.com` / `password`
+- User: `user@example.com` / `password`
