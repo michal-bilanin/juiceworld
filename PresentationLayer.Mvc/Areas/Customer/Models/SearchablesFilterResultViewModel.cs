@@ -1,11 +1,11 @@
-using BusinessLayer.DTOs;
 using Infrastructure.QueryObjects;
+using PresentationLayer.Mvc.Areas.Admin.Models;
 
 namespace PresentationLayer.Mvc.Areas.Customer.Models;
 
 public class SearchablesFilterResultViewModel
 {
-    public required FilteredResult<ProductDetailDto> Products { get; set; }
-    public required FilteredResult<ManufacturerDto> Manufacturers { get; set; }
-    public required FilteredResult<TagDto> Tags { get; set; }
+    public required FilteredResult<ProductDetailViewModel> Products { get; set; }
+    public required FilteredResult<ManufacturerViewModel> Manufacturers { get; set; }
+    public required FilteredResult<TagViewModel> Tags { get; set; }
 }

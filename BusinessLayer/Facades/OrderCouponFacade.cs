@@ -1,8 +1,8 @@
 ﻿using BusinessLayer.DTOs;
+using BusinessLayer.Facades.Interfaces;
 using BusinessLayer.Services.Interfaces;
-using PresentationLayer.Mvc.Facades.Interfaces;
 
-namespace PresentationLayer.Mvc.Facades;
+namespace BusinessLayer.Facades;
 
 public class OrderCouponFacade(
     IGiftCardService giftCardService,

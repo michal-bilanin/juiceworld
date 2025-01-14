@@ -1,13 +1,13 @@
 using System.Security.Claims;
 using AutoMapper;
 using BusinessLayer.DTOs;
+using BusinessLayer.Facades.Interfaces;
 using BusinessLayer.Services.Interfaces;
 using Commons.Enums;
 using Microsoft.AspNetCore.Mvc;
 using PresentationLayer.Mvc.ActionFilters;
 using PresentationLayer.Mvc.Areas.Admin.Models;
 using PresentationLayer.Mvc.Areas.Customer.Models;
-using PresentationLayer.Mvc.Facades.Interfaces;
 using PresentationLayer.Mvc.Models;
 
 namespace PresentationLayer.Mvc.Areas.Customer.Controllers;
@@ -24,7 +24,7 @@ public class ProductController(
     [HttpGet]
     public async Task<IActionResult> Index([FromQuery] SearchablesFilterViewModel searchablesFilter)
     {
-        var searchables = await searchablesFacade.GetSearchablesFilteredAsync(searchablesFilter);
+        var searchables = await searchablesFacade.GetSearchablesFilteredAsync(mapper.Map<SearchablesFilterDto>(searchablesFilter));
         return View(searchables);
     }
 
