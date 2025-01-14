@@ -1,33 +1,39 @@
+using AutoMapper;
 using BusinessLayer.DTOs;
 using BusinessLayer.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using PresentationLayer.Mvc.ActionFilters;
+using PresentationLayer.Mvc.Areas.Admin.Models;
+using PresentationLayer.Mvc.Models;
 
 namespace PresentationLayer.Mvc.Areas.Admin.Controllers;
 
 [Area(Constants.Areas.Admin)]
 [RedirectIfNotAdminActionFilter]
-public class TagController(ITagService tagService) : Controller
+public class TagController(ITagService tagService, IMapper mapper) : Controller
 {
     [HttpGet]
     public async Task<IActionResult> Index()
     {
         var tags = await tagService.GetAllTagsAsync();
-        return View(tags);
+        return View(mapper.Map<List<TagViewModel>>(tags));
     }
 
     [HttpGet]
     public IActionResult Create()
     {
-        return View(new TagDto { Name = "" });
+        return View(new TagViewModel { Name = "" });
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(TagDto viewModel)
+    public async Task<IActionResult> Create(TagViewModel viewModel)
     {
-        if (!ModelState.IsValid) return View(viewModel);
+        if (!ModelState.IsValid)
+        {
+            return View(viewModel);
+        }
 
-        var createdTag = await tagService.CreateTagAsync(viewModel);
+        var createdTag = await tagService.CreateTagAsync(mapper.Map<TagDto>(viewModel));
         if (createdTag == null)
         {
             ModelState.AddModelError("Id", "Failed to create tag.");

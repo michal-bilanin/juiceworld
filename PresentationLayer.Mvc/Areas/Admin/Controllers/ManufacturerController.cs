@@ -1,33 +1,40 @@
+using AutoMapper;
 using BusinessLayer.DTOs;
 using BusinessLayer.Services.Interfaces;
+using Infrastructure.QueryObjects;
 using Microsoft.AspNetCore.Mvc;
 using PresentationLayer.Mvc.ActionFilters;
+using PresentationLayer.Mvc.Areas.Admin.Models;
+using PresentationLayer.Mvc.Models;
 
 namespace PresentationLayer.Mvc.Areas.Admin.Controllers;
 
 [Area(Constants.Areas.Admin)]
 [RedirectIfNotAdminActionFilter]
-public class ManufacturerController(IManufacturerService manufacturerService) : Controller
+public class ManufacturerController(IManufacturerService manufacturerService, IMapper mapper) : Controller
 {
     [HttpGet]
-    public async Task<IActionResult> Index([FromQuery] ManufacturerFilterDto manufacturerFilterDto)
+    public async Task<IActionResult> Index([FromQuery] ManufacturerFilterViewModel manufacturerFilterDto)
     {
-        var manufacturers = await manufacturerService.GetManufacturersAsync(manufacturerFilterDto);
-        return View(manufacturers);
+        var manufacturers = await manufacturerService.GetManufacturersAsync(mapper.Map<ManufacturerFilterDto>(manufacturerFilterDto));
+        return View(mapper.Map<FilteredResult<ManufacturerViewModel>>(manufacturers));
     }
 
     [HttpGet]
     public IActionResult Create()
     {
-        return View(new ManufacturerDto { Name = "" });
+        return View(new ManufacturerViewModel { Name = "" });
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(ManufacturerDto viewModel)
+    public async Task<IActionResult> Create(ManufacturerViewModel viewModel)
     {
-        if (!ModelState.IsValid) return View(viewModel);
+        if (!ModelState.IsValid)
+        {
+            return View(viewModel);
+        }
 
-        var createdManufacturer = await manufacturerService.CreateManufacturerAsync(viewModel);
+        var createdManufacturer = await manufacturerService.CreateManufacturerAsync(mapper.Map<ManufacturerDto>(viewModel));
         if (createdManufacturer == null)
         {
             ModelState.AddModelError("Id", "Failed to create manufacturer.");
@@ -40,7 +47,7 @@ public class ManufacturerController(IManufacturerService manufacturerService) : 
     [HttpGet]
     public async Task<IActionResult> Edit(int id)
     {
-        var manufacturer = await manufacturerService.GetManufacturerByIdAsync(id);
+        var manufacturer = mapper.Map<ManufacturerViewModel>(await manufacturerService.GetManufacturerByIdAsync(id));
         if (manufacturer == null)
         {
             ModelState.AddModelError("Id", "Manufacturer not found.");
@@ -51,11 +58,14 @@ public class ManufacturerController(IManufacturerService manufacturerService) : 
     }
 
     [HttpPost]
-    public async Task<IActionResult> Edit(ManufacturerDto viewModel)
+    public async Task<IActionResult> Edit(ManufacturerViewModel viewModel)
     {
-        if (!ModelState.IsValid) return View(viewModel);
+        if (!ModelState.IsValid)
+        {
+            return View(viewModel);
+        }
 
-        var updatedManufacturer = await manufacturerService.UpdateManufacturerAsync(viewModel);
+        var updatedManufacturer = await manufacturerService.UpdateManufacturerAsync(mapper.Map<ManufacturerDto>(viewModel));
         if (updatedManufacturer == null)
         {
             ModelState.AddModelError("Id", "Failed to update manufacturer.");

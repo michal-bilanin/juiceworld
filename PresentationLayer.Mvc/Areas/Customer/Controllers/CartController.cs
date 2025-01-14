@@ -1,14 +1,17 @@
 using System.Security.Claims;
+using AutoMapper;
 using BusinessLayer.DTOs;
 using BusinessLayer.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using PresentationLayer.Mvc.ActionFilters;
+using PresentationLayer.Mvc.Areas.Customer.Models;
+using PresentationLayer.Mvc.Models;
 
 namespace PresentationLayer.Mvc.Areas.Customer.Controllers;
 
 [Area(Constants.Areas.Customer)]
 [RedirectIfNotAuthenticatedActionFilter]
-public class CartController(ICartItemService cartItemService) : Controller
+public class CartController(ICartItemService cartItemService, IMapper mapper) : Controller
 {
     [HttpGet]
     public async Task<ActionResult> Index()
@@ -23,14 +26,14 @@ public class CartController(ICartItemService cartItemService) : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> AddToCart(AddToCartDto addToCartDto)
+    public async Task<IActionResult> AddToCart(AddToCartViewModel addToCartViewModel)
     {
         if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId))
         {
             return BadRequest();
         }
 
-        var success = await cartItemService.AddToCartAsync(addToCartDto, userId);
+        var success = await cartItemService.AddToCartAsync(mapper.Map<AddToCartDto>(addToCartViewModel), userId);
         if (!success) ViewData[Constants.Keys.ErrorMessage] = "Failed to add item to cart.";
 
         return RedirectToAction(nameof(Index));

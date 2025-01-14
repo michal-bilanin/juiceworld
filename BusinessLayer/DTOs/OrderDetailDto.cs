@@ -20,6 +20,5 @@ public class OrderDetailDto
     public int UserId { get; set; }
 
     public CouponCode? CouponCode { get; set; }
-    public int AddressId { get; set; }
     public List<OrderProductDetailDto> OrderProducts { get; set; } = [];
 }

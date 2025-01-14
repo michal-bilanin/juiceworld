@@ -89,9 +89,9 @@ public class GiftCardService(
         return ret is null ? null : mapper.Map<CouponCodeDto>(ret);
     }
 
-    public async Task<IEnumerable<CouponCodeDto>> GetCouponCodesAsync()
+    public Task<List<CouponCodeDto>> GetCouponCodesAsync()
     {
-        return await couponCodeRepository.GetAllAsync()
+        return couponCodeRepository.GetAllAsync()
             .ContinueWith(task => mapper.Map<List<CouponCodeDto>>(task.Result));
     }
 

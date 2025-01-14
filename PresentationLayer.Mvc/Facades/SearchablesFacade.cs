@@ -1,6 +1,7 @@
 using AutoMapper;
 using BusinessLayer.DTOs;
 using BusinessLayer.Services.Interfaces;
+using PresentationLayer.Mvc.Areas.Customer.Models;
 using PresentationLayer.Mvc.Facades.Interfaces;
 using PresentationLayer.Mvc.Models;
 

@@ -49,28 +49,28 @@ public class Repository<TEntity>(JuiceWorldDbContext context) : IRepository<TEnt
         return true;
     }
 
-    public async Task<TEntity?> GetByIdAsync(object id, params string[] includes)
+    public Task<TEntity?> GetByIdAsync(object id, params string[] includes)
     {
         var query = includes.Aggregate(_dbSet.AsQueryable(), (current, include) => current.Include(include));
-        return await query.FirstOrDefaultAsync(e => e.Id == (int)id);
+        return query.FirstOrDefaultAsync(e => e.Id == (int)id);
     }
 
-    public async Task<IEnumerable<TEntity>> GetAllAsync(params string[] includes)
+    public Task<List<TEntity>> GetAllAsync(params string[] includes)
     {
         var query = includes.Aggregate(_dbSet.AsQueryable(), (current, include) => current.Include(include));
-        return await query.ToListAsync();
+        return query.ToListAsync();
     }
 
-    public async Task<IEnumerable<TEntity>> GetByConditionAsync(Expression<Func<TEntity, bool>> predicate,
+    public Task<List<TEntity>> GetByConditionAsync(Expression<Func<TEntity, bool>> predicate,
         params string[] includes)
     {
         var query = includes.Aggregate(_dbSet.AsQueryable(), (current, include) => current.Include(include));
-        return await query.Where(predicate).ToListAsync();
+        return query.Where(predicate).ToListAsync();
     }
 
-    public async Task<IEnumerable<TEntity>> GetByIdRangeAsync(IEnumerable<object> ids)
+    public Task<List<TEntity>> GetByIdRangeAsync(IEnumerable<object> ids)
     {
-        return await _dbSet.Where(e => ids.Contains(e.Id)).ToListAsync();
+        return _dbSet.Where(e => ids.Contains(e.Id)).ToListAsync();
     }
 
     public async Task<TEntity?> UpdateAsync(TEntity entity, object? userId = null, bool saveChanges = true)

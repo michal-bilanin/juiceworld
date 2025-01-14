@@ -1,14 +1,17 @@
 using System.Security.Claims;
+using AutoMapper;
 using BusinessLayer.DTOs;
 using BusinessLayer.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using PresentationLayer.Mvc.ActionFilters;
+using PresentationLayer.Mvc.Areas.Customer.Models;
+using PresentationLayer.Mvc.Models;
 
 namespace PresentationLayer.Mvc.Areas.Customer.Controllers;
 
 [Area(Constants.Areas.Customer)]
 [RedirectIfNotAuthenticatedActionFilter]
-public class WishlistController(IWishListItemService wishListItemService, ICartItemService cartItemService) : Controller
+public class WishlistController(IWishListItemService wishListItemService, ICartItemService cartItemService, IMapper mapper) : Controller
 {
     [HttpGet]
     public async Task<ActionResult> Index()
@@ -19,13 +22,16 @@ public class WishlistController(IWishListItemService wishListItemService, ICartI
         }
 
         var wishListItems = await wishListItemService.GetWishListItemsByUserIdAsync(userId);
-        return View(wishListItems);
+        return View(mapper.Map<IEnumerable<WishlistItemDetailViewModel>>(wishListItems));
     }
 
     public async Task<IActionResult> Delete(int id)
     {
         var success = await wishListItemService.DeleteWishListItemByIdAsync(id);
-        if (!success) ViewData[Constants.Keys.ErrorMessage] = "Failed to delete item from wishlist.";
+        if (!success)
+        {
+            ViewData[Constants.Keys.ErrorMessage] = "Failed to delete item from wishlist.";
+        }
 
         return RedirectToAction(nameof(Index));
     }
@@ -44,7 +50,10 @@ public class WishlistController(IWishListItemService wishListItemService, ICartI
         };
 
         var success = await cartItemService.AddToCartAsync(addToCartDto, userId);
-        if (!success) ViewData[Constants.Keys.ErrorMessage] = "Failed to add item to cart.";
+        if (!success)
+        {
+            ViewData[Constants.Keys.ErrorMessage] = "Failed to add item to cart.";
+        }
 
         return RedirectToAction(nameof(Index));
     }
