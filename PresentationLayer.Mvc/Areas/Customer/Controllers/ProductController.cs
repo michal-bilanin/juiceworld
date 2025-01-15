@@ -74,7 +74,7 @@ public class ProductController(
     }
 
     [HttpPost]
-    [RedirectIfNotAdminActionFilter]
+    [RedirectIfNotAuthenticatedActionFilter]
     public async Task<IActionResult> AddToWishlist(int productId)
     {
         if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId))
