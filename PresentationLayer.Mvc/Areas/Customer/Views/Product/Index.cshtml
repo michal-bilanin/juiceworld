@@ -7,12 +7,12 @@
     ViewData[Constants.Keys.Title] = "Shop";
 }
 
-<form method="get" action="@Url.Action("Index")" class="form-group mr-2 d-flex flex-row gap-2">
+<form method="get" id="form-group" action="@Url.Action("Index")" class="form-group mr-2 d-flex flex-row gap-2">
     <input type="text" name="NameQuery" value="@ViewContext.HttpContext.Request.Query["NameQuery"].ToString()"
            class="form-control" placeholder="Search by name..."/>
-    <input type="hidden" name="TagPageIndex" value="@Model.Tags.PageIndex"/>
-    <input type="hidden" name="ProductPageIndex" value="@Model.Products.PageIndex"/>
-    <input type="hidden" name="ManufacturerPageIndex" value="@Model.Manufacturers.PageIndex"/>
+    <input type="hidden" id="TagPageIndex" name="TagPageIndex" value="@Model.Tags.PageIndex"/>
+    <input type="hidden" id="ProductPageIndex" name="ProductPageIndex" value="@Model.Products.PageIndex"/>
+    <input type="hidden" id="ManufacturerPageIndex" name="ManufacturerPageIndex" value="@Model.Manufacturers.PageIndex"/>
     <input type="number" name="ProductPriceMin" placeholder="Min Price"
            value="@ViewContext.HttpContext.Request.Query["ProductPriceMin"]"/>
     <input type="number" name="ProductPriceMax" placeholder="Max Price"
@@ -172,6 +172,12 @@
     function setNameQuery(nameQuery) {
         updateSearchParam('NameQuery', nameQuery);
     }
+    
+    document.getElementById('form-group').addEventListener('submit', function () {
+        document.getElementById('TagPageIndex').value = 1;
+        document.getElementById('ProductPageIndex').value = 1;
+        document.getElementById('ManufacturerPageIndex').value = 1;
+    });
 </script>
 
 <style>
