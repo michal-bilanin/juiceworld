@@ -35,6 +35,7 @@ public class MvcMapperInstaller : Profile
 
         CreateMap<PaginationViewModel, PaginationDto>().ReverseMap();
         CreateMap<ProductDetailViewModel, ProductDetailDto>().ReverseMap();
+        CreateMap<ProductImageViewModel, ProductDto>().ReverseMap();
         CreateMap<ProductFilterViewModel, ProductFilterDto>().ReverseMap();
         CreateMap<ProductImageViewModel, ProductImageDto>().ReverseMap();
         CreateMap<ProductViewModel, ProductDto>().ReverseMap();
