@@ -15,6 +15,9 @@ public class MvcMapperInstaller : Profile
         CreateMap<UserSimpleViewModel, UserDto>().ReverseMap();
         CreateMap<UserUpdateRestrictedViewModel, UserDto>().ReverseMap();
         CreateMap<UserUpdateRestrictedViewModel, UserUpdateDto>().ReverseMap();
+        CreateMap<UserUpdateViewModel, UserDto>().ReverseMap();
+        CreateMap<UserUpdateViewModel, UserUpdateDto>().ReverseMap();
+
         CreateMap<AddToCartViewModel, AddToCartDto>().ReverseMap();
         CreateMap<BaseEntityViewModel, BaseEntityDto>().ReverseMap();
         CreateMap<CartItemDetailViewModel, CartItemDetailDto>().ReverseMap();

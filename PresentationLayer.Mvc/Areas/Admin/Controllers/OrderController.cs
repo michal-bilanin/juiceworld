@@ -4,6 +4,7 @@ using BusinessLayer.Services.Interfaces;
 using Infrastructure.QueryObjects;
 using Microsoft.AspNetCore.Mvc;
 using PresentationLayer.Mvc.ActionFilters;
+using PresentationLayer.Mvc.Areas.Customer.Models;
 using PresentationLayer.Mvc.Models;
 
 namespace PresentationLayer.Mvc.Areas.Admin.Controllers;
@@ -16,13 +17,13 @@ public class OrderController(IOrderService orderService, IMapper mapper) : Contr
     public async Task<IActionResult> Index([FromQuery] PaginationViewModel pagination)
     {
         var orders = await orderService.GetOrdersAsync(mapper.Map<PaginationDto>(pagination));
-        return View(mapper.Map<FilteredResult<OrderDetailViewModel>>(orders));
+        return View(mapper.Map<FilteredResult<OrderViewModel>>(orders));
     }
 
     [HttpGet]
     public async Task<IActionResult> Edit(int id)
     {
-        var order = mapper.Map<OrderDetailViewModel>(await orderService.GetOrderByIdAsync(id));
+        var order = mapper.Map<OrderDetailViewModel>(await orderService.GetOrderDetailByIdAsync(id));
         if (order == null)
         {
             ModelState.AddModelError("Id", "Order not found.");

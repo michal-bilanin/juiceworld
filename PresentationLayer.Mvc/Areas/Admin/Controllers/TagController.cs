@@ -50,18 +50,18 @@ public class TagController(ITagService tagService, IMapper mapper) : Controller
         if (tag == null)
         {
             ModelState.AddModelError("Id", "Tag not found.");
-            return View(tag);
+            return View(mapper.Map<TagViewModel>(tag));
         }
 
-        return View(tag);
+        return View(mapper.Map<TagViewModel>(tag));
     }
 
     [HttpPost]
-    public async Task<IActionResult> Edit(TagDto viewModel)
+    public async Task<IActionResult> Edit(TagViewModel viewModel)
     {
         if (!ModelState.IsValid) return View(viewModel);
 
-        var updatedTag = await tagService.UpdateTagAsync(viewModel);
+        var updatedTag = await tagService.UpdateTagAsync(mapper.Map<TagDto>(viewModel));
         if (updatedTag == null)
         {
             ModelState.AddModelError("Id", "Failed to update tag.");
