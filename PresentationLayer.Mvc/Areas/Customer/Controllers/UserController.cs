@@ -128,7 +128,10 @@ public class UserController(
     public async Task<ActionResult> Profile()
     {
         var user = await userService.GetUserByEmailAsync(User.FindFirst(ClaimTypes.Email)?.Value ?? "");
-        if (user is null) return NotFound();
+        if (user is null)
+        {
+            return View(Constants.Views.NotFound);
+        }
 
         return View(mapper.Map<UserProfileViewModel>(user));
     }
@@ -137,10 +140,13 @@ public class UserController(
     [RedirectIfNotAuthenticatedActionFilter]
     public async Task<IActionResult> Edit()
     {
-        if (!int.TryParse(User.FindFirst(ClaimTypes.Sid)?.Value, out var userId)) return BadRequest();
+        if (!int.TryParse(User.FindFirst(ClaimTypes.Sid)?.Value, out var userId))
+        {
+            return View(Constants.Views.BadRequest);
+        }
 
         var user = await userService.GetUserByIdAsync(userId);
-        if (user == null) return BadRequest();
+        if (user == null) return View(Constants.Views.BadRequest);
 
         return View(mapper.Map<UserUpdateRestrictedViewModel>(user));
     }
@@ -156,12 +162,12 @@ public class UserController(
 
         if (!int.TryParse(User.FindFirst(ClaimTypes.Sid)?.Value, out var userId))
         {
-            return BadRequest();
+            return View(Constants.Views.BadRequest);
         }
 
         if (viewModel.Id != userId)
         {
-            return BadRequest();
+            return View(Constants.Views.BadRequest);
         }
 
         if (string.IsNullOrEmpty(viewModel.Password))

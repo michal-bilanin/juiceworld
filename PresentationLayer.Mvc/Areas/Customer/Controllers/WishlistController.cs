@@ -5,7 +5,6 @@ using BusinessLayer.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using PresentationLayer.Mvc.ActionFilters;
 using PresentationLayer.Mvc.Areas.Customer.Models;
-using PresentationLayer.Mvc.Models;
 
 namespace PresentationLayer.Mvc.Areas.Customer.Controllers;
 
@@ -18,7 +17,7 @@ public class WishlistController(IWishListItemService wishListItemService, ICartI
     {
         if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId))
         {
-            return BadRequest();
+            return View(Constants.Views.BadRequest);
         }
 
         var wishListItems = await wishListItemService.GetWishListItemsByUserIdAsync(userId);
@@ -40,7 +39,7 @@ public class WishlistController(IWishListItemService wishListItemService, ICartI
     {
         if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId))
         {
-            return BadRequest();
+            return View(Constants.Views.BadRequest);
         }
 
         var addToCartDto = new AddToCartDto

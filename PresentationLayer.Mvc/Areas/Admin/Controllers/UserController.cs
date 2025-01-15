@@ -96,7 +96,10 @@ public class UserController(IUserService userService, IMapper mapper) : Controll
     public async Task<IActionResult> Delete(int id)
     {
         var deleted = await userService.DeleteUserByIdAsync(id);
-        if (!deleted) return BadRequest();
+        if (!deleted)
+        {
+            return View(Constants.Views.BadRequest);
+        }
 
         return RedirectToAction(nameof(Index));
     }

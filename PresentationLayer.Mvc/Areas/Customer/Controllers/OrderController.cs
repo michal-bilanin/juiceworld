@@ -24,7 +24,7 @@ public class OrderController(
     {
         if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId))
         {
-            return BadRequest();
+            return View(Constants.Views.BadRequest);
         }
 
         var orders = await orderService.GetOrdersByUserIdAsync(userId, mapper.Map<PaginationDto>(pagination));
@@ -36,7 +36,7 @@ public class OrderController(
     {
         if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId))
         {
-            return BadRequest();
+            return View(Constants.Views.BadRequest);
         }
 
         var order = await orderService.GetOrderDetailByIdAsync(id);
@@ -53,7 +53,7 @@ public class OrderController(
     {
         if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId))
         {
-            return BadRequest();
+            return View(Constants.Views.BadRequest);
         }
 
         var cartItems = await cartItemService.GetCartItemsByUserIdAsync(userId);
@@ -66,7 +66,7 @@ public class OrderController(
     {
         if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId))
         {
-            return BadRequest();
+            return View(Constants.Views.BadRequest);
         }
         var cartItems = mapper.Map<IEnumerable<CartItemDetailViewModel>>(await cartItemService.GetCartItemsByUserIdAsync(userId));
 
@@ -76,7 +76,10 @@ public class OrderController(
             return View(orderViewModel);
         }
 
-        if (orderViewModel.UserId != userId) return BadRequest();
+        if (orderViewModel.UserId != userId)
+        {
+            return View(Constants.Views.BadRequest);
+        }
 
         var order = await orderCouponFacade.CreateOrderWithCouponAsync(userId, mapper.Map<CreateOrderDto>(orderViewModel));
         if (order is null)

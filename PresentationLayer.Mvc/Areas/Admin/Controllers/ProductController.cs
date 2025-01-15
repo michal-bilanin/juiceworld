@@ -131,6 +131,6 @@ public class ProductController(IProductFacade productFacade,
     public async Task<IActionResult> Delete(int id)
     {
         var result = await productFacade.DeleteProductByIdAsync(id);
-        return result ? RedirectToAction(nameof(Index)) : NotFound();
+        return result ? RedirectToAction(nameof(Index)) : View(Constants.Views.NotFound);
     }
 }

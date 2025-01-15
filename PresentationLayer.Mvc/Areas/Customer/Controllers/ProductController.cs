@@ -34,7 +34,7 @@ public class ProductController(
         var product = await productService.GetProductDetailByIdAsync(id);
         if (product is null)
         {
-            return NotFound();
+            return View(Constants.Views.NotFound);
         }
 
         bool isInWishlist = false;
@@ -42,7 +42,7 @@ public class ProductController(
         {
             if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId))
             {
-                return BadRequest();
+                return View(Constants.Views.BadRequest);
             }
 
             isInWishlist = await wishListItemService.IsProductInWishListAsync(id, userId);
@@ -61,12 +61,15 @@ public class ProductController(
     {
         if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId))
         {
-            return BadRequest();
+            return View(Constants.Views.BadRequest);
         }
 
         var success = await cartItemService.AddToCartAsync(mapper.Map<AddToCartDto>(addToCartViewModel), userId);
         var product = await productService.GetProductDetailByIdAsync(addToCartViewModel.ProductId);
-        if (product is null) return NotFound();
+        if (product is null)
+        {
+            return View(Constants.Views.NotFound);
+        }
 
         if (!success) ViewData[Constants.Keys.ErrorMessage] = "Failed to add the product to the cart.";
 
@@ -79,7 +82,7 @@ public class ProductController(
     {
         if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId))
         {
-            return BadRequest();
+            return View(Constants.Views.BadRequest);
         }
 
         await wishListItemService.CreateWishListItemAsync(new WishListItemDto
@@ -102,12 +105,15 @@ public class ProductController(
 
         if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId))
         {
-            return BadRequest();
+            return View(Constants.Views.BadRequest);
         }
 
         reviewViewModel.UserId = userId;
         var review = await reviewService.CreateReviewAsync(mapper.Map<ReviewDto>(reviewViewModel));
-        if (review is null) return BadRequest();
+        if (review is null)
+        {
+            return View(Constants.Views.BadRequest);
+        }
 
         return RedirectToAction(nameof(Details), new { id = review.ProductId });
     }
@@ -118,7 +124,7 @@ public class ProductController(
     {
         if (!int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId))
         {
-            return BadRequest();
+            return View(Constants.Views.BadRequest);
         }
 
         var review = await reviewService.GetReviewByIdAsync(id);
@@ -128,7 +134,7 @@ public class ProductController(
         var success = await reviewService.DeleteReviewByIdAsync(id);
         if (!success)
         {
-            return BadRequest();
+            return View(Constants.Views.BadRequest);
         }
 
         return RedirectToAction(nameof(Details), new { id = review.ProductId });

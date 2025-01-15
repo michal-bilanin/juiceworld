@@ -14,6 +14,12 @@ public static class Constants
         public const string Customer = "Customer";
     }
 
+    public static class Views
+    {
+        public const string BadRequest = "BadRequest";
+        public const string NotFound = "NotFound";
+    }
+
     public static class Keys
     {
         public const string Title = "Title";
