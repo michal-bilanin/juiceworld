@@ -18,11 +18,14 @@ public class ProductFacade(IProductService productService, IImageService imageSe
         if (!string.IsNullOrEmpty(productImageDto.ImageValue))
         {
             var imageName = GeneratedImageName(productImageDto.ImageValue);
-            if (!await imageService.SaveImageAsync(productImageDto.ImageValue, imageName))
+            var imageUrl = await imageService.SaveImageAsync(productImageDto.ImageValue, imageName);
+            if (imageUrl == null)
             {
                 return null;
             }
-            productImageDto.Image = imageName;
+
+            productImageDto.ImageName = imageName;
+            productImageDto.ImageUrl = imageUrl;
         }
         return await productService.CreateProductAsync(mapper.Map<ProductDto>(productImageDto));
     }
@@ -46,7 +49,6 @@ public class ProductFacade(IProductService productService, IImageService imageSe
     {
         var prod = await productService.GetProductDetailByIdAsync(id);
         var ret = mapper.Map<ProductDetailDto>(prod);
-        ret.ImageValue = await imageService.GetImageAsync(ret.Image ?? string.Empty);
         return ret;
     }
 
@@ -59,11 +61,14 @@ public class ProductFacade(IProductService productService, IImageService imageSe
         if (!string.IsNullOrEmpty(productDto.ImageValue))
         {
             var imageName = GeneratedImageName(productDto.ImageValue);
-            if (!await imageService.UpdateImageAsync(productDto.ImageValue, product.Image, imageName))
+            var imageUrl = await imageService.UpdateImageAsync(productDto.ImageValue, product.ImageName, imageName);
+            if (imageUrl == null)
             {
                 return null;
             }
-            productDto.Image = imageName;
+
+            productDto.ImageName = imageName;
+            productDto.ImageUrl = imageUrl;
         }
         return await productService.UpdateProductAsync(mapper.Map<ProductDto>(productDto), userId);
     }
@@ -76,7 +81,7 @@ public class ProductFacade(IProductService productService, IImageService imageSe
             return false;
         }
 
-        return (product.Image == null || imageService.DeleteImage(product.Image)) &&
+        return (product.ImageName == null || await imageService.DeleteImageAsync(product.ImageName)) &&
                await productService.DeleteProductByIdAsync(product.Id);
     }
 }

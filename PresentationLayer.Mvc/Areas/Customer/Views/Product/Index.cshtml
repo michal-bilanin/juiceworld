@@ -1,10 +1,12 @@
-@using BusinessLayer.Services
 @using Commons.Enums
 @using PresentationLayer.Mvc
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
 @model BusinessLayer.DTOs.SearchablesFilterResultDto
 
 @{
     ViewData[Constants.Keys.Title] = "Shop";
+    var defaultImageUrl = Configuration["Images:ProductPlaceholder"];
 }
 
 <form method="get" id="form-group" action="@Url.Action("Index")" class="form-group mr-2 d-flex flex-row gap-2">
@@ -68,7 +70,7 @@
             <div class="product-card">
                 <a href="@Url.Action("Details", new { id = product.Id })">
                     <div class="product-image">
-                        <img src="@(string.IsNullOrEmpty(product.Image) ? "/images/product_placeholder.jpg" : $"/../{ImageService.ImgFolderPath}/{product.Image}")" alt="@product.Image" />
+                        <img src="@(string.IsNullOrEmpty(product.ImageUrl) ? defaultImageUrl : product.ImageUrl)" alt="product" />
                     </div>
                     <div class="product-info">
                         <h3>@product.Name</h3>

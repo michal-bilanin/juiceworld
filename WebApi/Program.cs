@@ -3,6 +3,7 @@ using System.Text.Json;
 using BusinessLayer.Installers;
 using Commons.Constants;
 using Commons.Middleware;
+using JuiceWorld.Data;
 using JuiceWorld.Installers;
 using Microsoft.AspNetCore.Diagnostics;
 using WebApi.Installers;
@@ -11,8 +12,10 @@ using WebApi.Middleware;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.DalInstall();
-builder.Services.BusinessLayerInstall();
+builder.Services.BusinessLayerInstall(builder.Configuration);
 builder.Services.WebApiInstall();
+
+builder.Services.AddTransient<IStartupFilter, MigrationStartupFilter>();
 
 var app = builder.Build();
 

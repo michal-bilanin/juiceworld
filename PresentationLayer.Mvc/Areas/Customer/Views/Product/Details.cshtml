@@ -1,8 +1,9 @@
 @using System.Security.Claims
-@using BusinessLayer.Services
 @using Commons.Enums
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @using PresentationLayer.Mvc
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
 @model PresentationLayer.Mvc.Areas.Customer.Models.ProductDetailViewModel
 
 @{
@@ -10,6 +11,7 @@
     int.TryParse(User.FindFirstValue(ClaimTypes.Sid) ?? string.Empty, out var userId);
     var isAuthenticated = User.Identity is { IsAuthenticated: true };
     var isAdmin = User.IsInRole(UserRole.Admin.ToString());
+    var defaultImageUrl = Configuration["Images:ProductPlaceholder"];
 }
 
 <!-- Link to the CSS file -->
@@ -19,9 +21,7 @@
 
 <div class="product-detail">
     <div class="product-image">
-        <img
-            src="@(string.IsNullOrEmpty(Model.ProductDetail.Image) ? "/images/product_placeholder.jpg" : $"/{ImageService.ImgFolderPath}/{Model.ProductDetail.Image}")"
-            alt="@Model.ProductDetail.Image"/></div>
+        <img src="@(string.IsNullOrEmpty(Model.ProductDetail.ImageUrl) ? defaultImageUrl : Model.ProductDetail.ImageUrl)" alt="product" /></div>
     <div class="product-info">
         <p><strong>Manufacturer:</strong> @Model.ProductDetail.Manufacturer.Name</p>
         <p><strong>Price:</strong> @Model.ProductDetail.Price.ToString("C")</p>

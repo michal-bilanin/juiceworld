@@ -1,11 +1,15 @@
 ﻿@using PresentationLayer.Mvc
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+
 @{
     ViewData[Constants.Keys.Title] = "Home Page";
+    var rainbowImageUrl = Configuration["Images:RainbowImage"];
 }
 
 <div class="d-flex justify-content-center align-items-center" style="width: 100%; height: 100%">
     <div class="text-center pb-5" style="margin-top: -75px;">
-        <img src="~/images/rainbow.png" class="img-fluid mx-auto d-block" alt="Rainbow" style="max-width: 300px;"
+        <img src="@rainbowImageUrl" class="img-fluid mx-auto d-block" alt="Rainbow" style="max-width: 300px;"
              draggable="false"/>
         <h1 class="display-4">Welcome to <b>JuiceWorld!</b></h1>
         <div class="text-center">

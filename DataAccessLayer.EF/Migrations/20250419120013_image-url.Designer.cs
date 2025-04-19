@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using JuiceWorld.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace JuiceWorld.Migrations
 {
     [DbContext(typeof(JuiceWorldDbContext))]
-    partial class JuiceWorldDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250419120013_image-url")]
+    partial class imageurl
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -2,18 +2,19 @@ using System.Diagnostics;
 using BusinessLayer;
 using BusinessLayer.Installers;
 using Commons.Constants;
-using Commons.Middleware;
+using JuiceWorld.Data;
 using JuiceWorld.Installers;
-using PresentationLayer.Mvc;
 using PresentationLayer.Mvc.Installers;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.BusinessLayerInstall();
+builder.Services.BusinessLayerInstall(builder.Configuration);
 builder.Services.DalInstall();
 builder.Services.MvcInstall();
+
+builder.Services.AddTransient<IStartupFilter, MigrationStartupFilter>();
 
 var app = builder.Build();
 
@@ -45,8 +46,6 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
-app.UseMiddleware<RequestLoggingMiddleware>("MVC");
 
 app.MapControllerRoute(
     "areas",

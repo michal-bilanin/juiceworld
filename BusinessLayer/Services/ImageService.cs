@@ -1,18 +1,24 @@
-﻿using BusinessLayer.Services.Interfaces;
+﻿using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
+using BusinessLayer.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 
 namespace BusinessLayer.Services;
 
-public class ImageService(ILogger<ImageService> logger) : IImageService
+public class ImageService : IImageService
 {
-    public const string ImgFolderPath = "Images";
+    private readonly BlobContainerClient _blobContainerClient;
+    private readonly ILogger<ImageService> _logger;
 
-    private string ImagePath(string imageName) => Path.Combine(BusinessConstants.WebRootPath, ImgFolderPath, imageName);
+    public ImageService(ILogger<ImageService> logger, BlobServiceClient blobServiceClient, string containerName)
+    {
+        _logger = logger;
+        _blobContainerClient = blobServiceClient.GetBlobContainerClient(containerName);
+        _blobContainerClient.CreateIfNotExists(PublicAccessType.Blob);
+    }
 
     private static readonly Dictionary<string, string> MimeTypes = new()
     {
-        // enough to determine the image type
-        // source https://stackoverflow.com/questions/57976898/how-to-get-mime-type-from-base-64-string
         { "/9j/", ".jpg" },
         { "iVBORw0KGgo", ".png" },
         { "R0lGODlh", ".gif" },
@@ -28,57 +34,46 @@ public class ImageService(ILogger<ImageService> logger) : IImageService
         return string.Empty;
     }
 
-
-    public async Task<bool> SaveImageAsync(string base64Image, string imageName)
-    {
-        Directory.CreateDirectory(Path.Combine(BusinessConstants.WebRootPath, ImgFolderPath));
-        var imageBytes = Convert.FromBase64String(base64Image);
-        var filePath = ImagePath(imageName);
-        try
-        {
-            await File.WriteAllBytesAsync(filePath, imageBytes);
-        }
-        catch (Exception e)
-        {
-            logger.LogError($"ERROR - unable to write to file {filePath} \n ERROR-MESSAGE: {e.Message}");
-            return false;
-        }
-
-        return true;
-    }
-
-    public async Task<string?> GetImageAsync(string imagePath)
-    {
-        var filePath = ImagePath(imagePath);
-        if (!File.Exists(filePath)) return null;
-        return Convert.ToBase64String(await File.ReadAllBytesAsync(filePath));
-    }
-
-    public bool DeleteImage(string imageName)
+    public async Task<string?> SaveImageAsync(string base64Image, string imageName)
     {
         try
         {
-            File.Delete(ImagePath(imageName));
+            var imageBytes = Convert.FromBase64String(base64Image);
+            var blobClient = _blobContainerClient.GetBlobClient(imageName);
+
+            using var stream = new MemoryStream(imageBytes);
+            await blobClient.UploadAsync(stream, overwrite: true);
+            return blobClient.Uri.ToString();
         }
         catch (Exception e)
         {
-            logger.LogError($"ERROR - unable to delete file {imageName} \n ERROR-MESSAGE: {e.Message}");
-            return false;
+            _logger.LogError($"ERROR - unable to upload image {imageName} to Azure Blob Storage \n ERROR-MESSAGE: {e.Message}");
+            return null;
         }
-
-        return true;
     }
 
-    public Task<bool> UpdateImageAsync(string base64Image, string? imageName, string newImageName)
+    public async Task<bool> DeleteImageAsync(string imageName)
+    {
+        try
+        {
+            var blobClient = _blobContainerClient.GetBlobClient(imageName);
+            await blobClient.DeleteIfExistsAsync();
+            return true;
+        }
+        catch (Exception e)
+        {
+            _logger.LogError($"ERROR - unable to delete image {imageName} from Azure Blob Storage \n ERROR-MESSAGE: {e.Message}");
+            return false;
+        }
+    }
+
+    public async Task<string?> UpdateImageAsync(string base64Image, string? imageName, string newImageName)
     {
         if (imageName != null)
         {
-            var oldImagePath = ImagePath(imageName);
-            if (File.Exists(oldImagePath))
-            {
-                File.Delete(oldImagePath);
-            }
+            await DeleteImageAsync(imageName);
         }
-        return SaveImageAsync(base64Image, newImageName);
+
+        return await SaveImageAsync(base64Image, newImageName);
     }
 }
