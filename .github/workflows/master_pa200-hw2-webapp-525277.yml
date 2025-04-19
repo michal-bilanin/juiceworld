@@ -2,8 +2,6 @@
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
 name: Build and deploy ASP.Net Core app to Azure Web App - PA200-HW2-WebApp-525277
-env:
-  AZURE_WEBAPP_PACKAGE_PATH: 'PresentationLayer.Mvc'
 
 on:
   push:
@@ -66,5 +64,4 @@ jobs:
         with:
           app-name: 'PA200-HW2-WebApp-525277'
           slot-name: 'Production'
-          package: .
-          
+          package: 'PresentationLayer.Mvc'
