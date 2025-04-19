@@ -3,7 +3,6 @@
 
 name: Build and deploy ASP.Net Core app to Azure Web App - PA200-HW2-WebApp-525277
 env:
-  AZURE_WEBAPP_NAME: 'PA200-HW2-WebApp-525277'
   AZURE_WEBAPP_PACKAGE_PATH: 'PresentationLayer.Mvc'
 
 on:
