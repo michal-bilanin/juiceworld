@@ -240,7 +240,5 @@ public class JuiceWorldDbContext(DbContextOptions<JuiceWorldDbContext> options)
         }
 
         base.OnModelCreating(modelBuilder);
-
-        modelBuilder.Seed();
     }
 }
