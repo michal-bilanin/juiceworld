@@ -14,6 +14,8 @@ builder.Services.BusinessLayerInstall();
 builder.Services.DalInstall();
 builder.Services.MvcInstall();
 
+builder.Services.AddSingleton<IStartupFilter, MigrationStartupFilter>();
+
 var app = builder.Build();
 
 BusinessConstants.WebRootPath = app.Environment.WebRootPath;
