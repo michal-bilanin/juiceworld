@@ -10,11 +10,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.BusinessLayerInstall(builder.Configuration);
+builder.Services.BusinessLayerInstall();
 builder.Services.DalInstall();
 builder.Services.MvcInstall();
-
-builder.Services.AddTransient<IStartupFilter, MigrationStartupFilter>();
 
 var app = builder.Build();
 

@@ -12,10 +12,8 @@ using WebApi.Middleware;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.DalInstall();
-builder.Services.BusinessLayerInstall(builder.Configuration);
+builder.Services.BusinessLayerInstall();
 builder.Services.WebApiInstall();
-
-builder.Services.AddTransient<IStartupFilter, MigrationStartupFilter>();
 
 var app = builder.Build();
 

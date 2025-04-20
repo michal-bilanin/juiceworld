@@ -3,7 +3,7 @@ using BusinessLayer.Facades;
 using BusinessLayer.Facades.Interfaces;
 using BusinessLayer.Services;
 using BusinessLayer.Services.Interfaces;
-using Microsoft.Extensions.Configuration;
+using Commons.Constants;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -11,7 +11,7 @@ namespace BusinessLayer.Installers;
 
 public static class BusinessLayerInstaller
 {
-    public static IServiceCollection BusinessLayerInstall(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection BusinessLayerInstall(this IServiceCollection services)
     {
         services.AddAutoMapper(typeof(BusinessLayerInstaller));
 
@@ -28,14 +28,19 @@ public static class BusinessLayerInstaller
         services.AddScoped<IProductFacade, ProductFacade>();
         services.AddMemoryCache();
 
-        var connectionString = configuration["AzureBlobStorage:ConnectionString"];
-        var containerName = configuration["AzureBlobStorage:ContainerName"];
+        var connectionString = Environment.GetEnvironmentVariable(EnvironmentConstants.AzureBlobConnectionString);
+        var containerName = Environment.GetEnvironmentVariable(EnvironmentConstants.AzureBlobContainerName);
+
+        if (string.IsNullOrEmpty(connectionString) || string.IsNullOrEmpty(containerName))
+        {
+            throw new InvalidOperationException("Azure Blob Storage environment variables are not set.");
+        }
 
         services.AddSingleton(x => new BlobServiceClient(connectionString));
         services.AddScoped<IImageService>(x => new ImageService(
             x.GetRequiredService<ILogger<ImageService>>(),
             x.GetRequiredService<BlobServiceClient>(),
-            containerName!
+            containerName
         ));
 
         return services;

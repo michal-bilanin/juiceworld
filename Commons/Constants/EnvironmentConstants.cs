@@ -9,4 +9,6 @@ public static class EnvironmentConstants
     public const string LoggingDbCollectionName = "LOGGING_DB_COLLECTION_NAME";
     public const string LoggingDbDatabaseName = "LOGGING_DB_DATABASE_NAME";
     public const string MvcPort = "MVC_PORT";
+    public const string AzureBlobConnectionString = "AZURE_BLOB_CONNECTION_STRING";
+    public const string AzureBlobContainerName = "AZURE_BLOB_CONTAINER_NAME";
 }
